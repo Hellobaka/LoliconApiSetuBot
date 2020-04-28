@@ -1,0 +1,71 @@
+﻿<Window Loaded="Window_Loaded"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:local="clr-namespace:me.cqp.luohuaming.Setu.UI"
+        xmlns:ShowMeTheXAML="clr-namespace:ShowMeTheXAML;assembly=ShowMeTheXAML" x:Class="me.cqp.luohuaming.Setu.UI.MainWindow"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="558" Width="1017" WindowStartupLocation="CenterScreen" WindowStyle="None" ResizeMode="NoResize" BorderBrush="Black">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MateriaLDesignColor.Blue.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MateriaLDesignColor.Lime.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>        
+        <materialDesign:ColorZone
+              Mode="PrimaryMid"
+              Padding="16" MouseDown="ColorZone_MouseDown">
+            <DockPanel Margin="0,0,53,0">
+                <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}" IsChecked="False"
+                                        x:Name="MenuToggleButton"/>
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="22"><Run Text="水银涩♂图机"/></TextBlock>
+            </DockPanel>
+        </materialDesign:ColorZone>
+        <Button x:Name="button_Exit" Content="×" Click="button_Exit_Click" Padding="15,4,16,4" Height="Auto" Margin="958,12,10,500" FontSize="20" Background="#FFD43232"/>
+        <Frame x:Name="frmMain" NavigationUIVisibility="Hidden" Content="Frame" HorizontalAlignment="Left" Height="489" Margin="0,69,0,0" VerticalAlignment="Top" Width="1017" Source="/me.cqp.luohuaming.Setu.UI;component/Settings.xaml"/>
+        <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding IsChecked, ElementName=MenuToggleButton}">
+            <materialDesign:DrawerHost.LeftDrawerContent>
+                <DockPanel MinWidth="212">
+                    <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}" 
+                                    DockPanel.Dock="Top"
+                                    HorizontalAlignment="Right" Margin="16"
+                                    IsChecked="{Binding IsChecked, ElementName=MenuToggleButton, Mode=TwoWay}" />
+                    <ListBox x:Name="MenuListBox" Margin="0 16 0 16" SelectedIndex="0"
+                             ItemsSource="{Binding DemoItems}" PreviewMouseLeftButtonUp="UIElement_OnPreviewMouseLeftButtonUp">
+                        <ListBox.Resources>
+                            <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource MaterialDesignScrollBarMinimal}"/>
+                        </ListBox.Resources>
+                        <ListBoxItem Tag="Settings" MouseLeftButtonUp="ListBoxItem_MouseDown">
+                            <StackPanel Orientation="Horizontal" Tag="Settings"  MouseDown="ListBoxItem_MouseDown">
+                                <materialDesign:PackIcon Kind="Settings" Width="25" Height="25" Margin="10" VerticalAlignment="Center"/>
+                                <TextBlock Text="设置" Tag="Settings" VerticalAlignment="Center" Margin="20 10" MouseDown="ListBoxItem_MouseDown"/>
+                            </StackPanel>
+                        </ListBoxItem>
+                        <ListBoxItem Tag="AboutMe" MouseLeftButtonUp="ListBoxItem_MouseDown">
+                            <StackPanel Orientation="Horizontal" Tag="AboutMe" MouseDown="ListBoxItem_MouseDown">
+                                <materialDesign:PackIcon Kind="GithubBox" Width="25" Height="25" Margin="10" VerticalAlignment="Center"/>
+                                <TextBlock Text="关于" Tag="AboutMe" VerticalAlignment="Center" Margin="20 10" MouseDown="ListBoxItem_MouseDown"/>
+                            </StackPanel>
+                        </ListBoxItem>
+                    </ListBox>
+                </DockPanel>
+            </materialDesign:DrawerHost.LeftDrawerContent>
+        </materialDesign:DrawerHost>
+        <ShowMeTheXAML:XamlDisplay  x:Name="Xamldisplay_Snackbar" Key="snackbar_1" Margin="184,0,179,0" Height="66" VerticalAlignment="Bottom">
+            <!-- simplest form -->
+            <materialDesign:Snackbar MessageQueue="{materialDesign:MessageQueue}"
+                    IsActive="False"
+                    x:Name="Snackbar_Message" Margin="171.363,0,-157.638,0" />
+        </ShowMeTheXAML:XamlDisplay>
+
+    </Grid>
+</Window>

@@ -1,0 +1,32 @@
+﻿<Page x:Class="me.cqp.luohuaming.Setu.UI.AboutMe"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:local="clr-namespace:me.cqp.luohuaming.Setu.UI"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="AboutMe">
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MateriaLDesignColor.Blue.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MateriaLDesignColor.Lime.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+    <Grid>
+        <Button Content="Github" HorizontalAlignment="Left" Margin="463.846,171.692,0,0" VerticalAlignment="Top" Width="147" Height="77.692"/>
+        <materialDesign:PackIcon Kind="GithubBox" HorizontalAlignment="Left" Height="45.691" Margin="76.154,63.693,0,0" VerticalAlignment="Top" Width="48.461"/>
+        <TextBlock HorizontalAlignment="Left" Margin="140.691,77.539,0,0" TextWrapping="Wrap" VerticalAlignment="Top">
+            <Hyperlink Tag="https://github.com/Jie2GG/Native.Framework" Click="Hyperlink_Click">https://github.com/Jie2GG/Native.Framework</Hyperlink>
+        </TextBlock>
+        <materialDesign:PackIcon Kind="Forum" HorizontalAlignment="Left" Height="45.691" Margin="76.154,114.384,0,0" VerticalAlignment="Top" Width="48.461"/>
+        <TextBlock HorizontalAlignment="Left" Margin="140.691,128.769,0,0" TextWrapping="Wrap" VerticalAlignment="Top">
+            <Hyperlink Tag="https://cqp.cc/t/47221" Click="Hyperlink_Click">https://cqp.cc/t/47221</Hyperlink>
+        </TextBlock>
+    </Grid>
+</Page>

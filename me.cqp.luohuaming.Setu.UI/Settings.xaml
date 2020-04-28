@@ -1,0 +1,220 @@
+﻿<Page  Name="Page_Settings"
+      x:Class="me.cqp.luohuaming.Setu.UI.Settings"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:local="clr-namespace:me.cqp.luohuaming.Setu.UI"
+       xmlns:smtx="clr-namespace:ShowMeTheXAML;assembly=ShowMeTheXAML"
+       mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="Settings" Loaded="Page_Settings_Loaded" Width="1017" Height="489" >
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MateriaLDesignColor.Blue.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MateriaLDesignColor.Lime.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <Style x:Key="ItemsControlStyle1" TargetType="{x:Type ItemsControl}">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ItemsControl}">
+                            <Border BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                Background="{TemplateBinding Background}" 
+                                Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+                                <ScrollViewer>
+                                    <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                </ScrollViewer>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </Page.Resources>
+    <materialDesign:DialogHost x:Name="dialoghost_Main"   DialogClosing="DialogHost_OnDialogClosing"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center" Width="1017" Height="489">
+        <materialDesign:DialogHost.DialogContent>
+            <StackPanel
+                  Margin="16">
+                <TextBlock>
+                  确定要删除所有缓存图片？这一过程不可逆！
+                </TextBlock>                
+                <StackPanel
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right">
+                    <Button
+                          Style="{StaticResource MaterialDesignFlatButton}"
+                          IsDefault="True"
+                          Margin="0 8 8 0"
+                          Command="materialDesign:DialogHost.CloseDialogCommand">
+                        <Button.CommandParameter>
+                            <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                                True
+                            </system:Boolean>
+                        </Button.CommandParameter>
+                        GKD！
+                    </Button>
+                    <Button
+                          Style="{StaticResource MaterialDesignFlatButton}"
+                          IsCancel="True"
+                          Margin="0 8 8 0"
+                          Command="materialDesign:DialogHost.CloseDialogCommand">
+                        <Button.CommandParameter>
+                            <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                                False
+                            </system:Boolean>
+                        </Button.CommandParameter>
+                        GCK!
+                    </Button>
+                </StackPanel>
+            </StackPanel>
+        </materialDesign:DialogHost.DialogContent>
+        <Grid Width="1017" Height="489">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+            <TextBlock TextWrapping="Wrap" Text="注意：涩图机的api的服务器位于墙外，访问速度受限于地区与访问时间段，无apikey每天只能调用非常有限的次数，点击链接根据提示自行想办法完成apikey的申请，本人不提供方法" VerticalAlignment="Top" Margin="0,14.131,10,0" HorizontalAlignment="Right" Width="511" Height="44.944">
+               <Hyperlink Tag="https://api.lolicon.app/#/setu" Click="Hyperlink_Click">https://api.lolicon.app/#/setu</Hyperlink>
+        </TextBlock>
+        <TextBlock
+            Style="{StaticResource MaterialDesignHeadline5TextBlock}" Margin="29.343,14.131,677.99,395.056"><Run Text="ApiKey"/></TextBlock>
+        <ToggleButton x:Name="togglebutton_ApiKey"
+          Style="{StaticResource MaterialDesignSwitchToggleButton}"
+          ToolTip="MaterialDesignSwitchToggleButton"
+          IsChecked="True" Margin="40.01,47.985,0,0" HorizontalAlignment="Left" Width="52.667" Height="31.333" VerticalAlignment="Top" />
+        <TextBlock Margin="92.677,55.942,0,0" TextWrapping="Wrap" Text="使用ApiKey" HorizontalAlignment="Left" Width="64.077" Height="15.24" VerticalAlignment="Top"/>
+        <TextBox x:Name="textbox_ApiKey" IsEnabled="{Binding IsChecked, ElementName=togglebutton_ApiKey}"
+          materialDesign:HintAssist.Hint="ApiKey"
+           materialDesign:TextFieldAssist.HasClearButton="True"
+          Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="175.676,38.424,0,0" HorizontalAlignment="Left" Width="224.666" Height="37.427" VerticalAlignment="Top" />
+        <TextBox
+            x:Name="textbox_GroupLimit"
+            materialDesign:HintAssist.Hint="填0即为无限制"
+            materialDesign:HintAssist.HelperText="群单日调用上限" Margin="227.679,145.931,0,0" HorizontalAlignment="Left" Width="180.667" Height="32.2" VerticalAlignment="Top"/>
+        <TextBox
+              x:Name="textbox_PersonLimit"
+              materialDesign:HintAssist.Hint="填0即为无限制"
+              materialDesign:HintAssist.HelperText="个人单日调用上限" Margin="37.347,145.931,0,0" HorizontalAlignment="Left" Width="171.867" Height="32.2" VerticalAlignment="Top"/>
+        <ItemsControl x:Name="ItemControl_Group"
+              ItemsSource="{Binding}"
+              Grid.IsSharedSizeScope="True"
+              Margin="29,247,0,0" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" SnapsToDevicePixels="True" HorizontalAlignment="Left" Width="245" Height="193" VerticalAlignment="Top">
+            <ItemsControl.Template>
+                <ControlTemplate>
+                    <ScrollViewer x:Name="ScrollViewer" Padding="{TemplateBinding Padding}">
+                        <ItemsPresenter />
+                    </ScrollViewer>
+                </ControlTemplate>
+            </ItemsControl.Template>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate
+                        DataType="{}">
+                    <Border
+                        x:Name="Border"
+                        Padding="8" SnapsToDevicePixels="True">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition
+                                      SharedSizeGroup="Checkerz" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <CheckBox
+                                    VerticalAlignment="Center"
+                                    IsChecked="{Binding IsChecked}" />
+                            <StackPanel
+                                    Margin="8 0 0 0"
+                                    Grid.Column="1">
+                                <TextBlock
+                                      FontWeight="Bold"
+                                      Text="{Binding GroupName}" />
+                                <TextBlock
+                                      Text="{Binding GroupId}" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <materialDesign:PopupBox
+              Style="{StaticResource MaterialDesignMultiFloatingActionPopupBox}"
+              PlacementMode="BottomAndAlignCentres"
+              ToolTipService.Placement="Right"
+              ToolTip="快捷操作" Height="41" Width="41" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="197,0,0,48">
+            <StackPanel>
+                <Button Name="button_AllSelect"
+                    ToolTip="全选" Content="全" Click="button_AllSelect_Click">
+                    <!--Opacity="0.5">-->
+                </Button>
+                <Button Name="button_NonSelect"
+                  ToolTip="全不选" Content="否" Click="button_NonSelect_Click"/>
+                <Button Name="button_InvertSelect"
+                  ToolTip="反选" Content="反" Click="button_InvertSelect_Click"/>
+            </StackPanel>
+        </materialDesign:PopupBox>
+        <Button x:Name="button_SettingsSave" Click="button_SettingsSave_Click"
+              Style="{StaticResource MaterialDesignFloatingActionButton}"
+              ToolTip="保存" Margin="0,0,10,10" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+            <materialDesign:PackIcon
+                Kind="CheckBold"
+                Height="24"
+                Width="24" />
+        </Button>
+        <GroupBox Header="图片缓存详情" Height="292.707" Margin="0,0,10,75.949" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="253.6">
+            <Grid Height="245.856" VerticalAlignment="Top" Width="236" Margin="0,0,0,-4.149">
+                <TextBlock HorizontalAlignment="Left" Margin="10,67.056,0,0" TextWrapping="Wrap" Text="图片共计张数:" VerticalAlignment="Top"/>
+                <TextBlock HorizontalAlignment="Left" Margin="10,32.656,0,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Text="图片占用大小:"/></TextBlock>
+                <TextBlock x:Name="textblock_Size" HorizontalAlignment="Left" TextWrapping="Wrap" Text="0.00 MB" VerticalAlignment="Top" Margin="110.4,32.656,0,0"/>
+                <TextBlock x:Name="textblock_Count" HorizontalAlignment="Left" TextWrapping="Wrap" Text="0 张" VerticalAlignment="Top" Margin="110.4,67.056,0,0"/>
+                    <Button x:Name="button_ClearCache" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}" Click="button_ClearCache_Click" Content="清理图片缓存" HorizontalAlignment="Left" VerticalAlignment="Top" Width="173.4" Margin="32.8,203.856,0,0"/>
+                <Button x:Name="button_OpenFloder" Click="button_OpenFloder_Click"                 
+                    Content="打开图片文件夹"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Width="173.4" Margin="32.8,152,0,0">
+                </Button>
+            </Grid>
+        </GroupBox>
+        <TextBlock
+            Style="{StaticResource MaterialDesignHeadline5TextBlock}" Margin="29.343,105.118,0,0" Text="调用次数限制" HorizontalAlignment="Left" Width="158.267" Height="40.813" VerticalAlignment="Top"/>
+        <TextBlock
+            Style="{StaticResource MaterialDesignHeadline5TextBlock}" Margin="29,206,0,0" Text="群开启设置" HorizontalAlignment="Left" Width="159" Height="41" VerticalAlignment="Top"/>
+        <TextBlock
+            Style="{StaticResource MaterialDesignHeadline5TextBlock}" Margin="315.667,206,0,0" HorizontalAlignment="Left" Width="159" Height="41" VerticalAlignment="Top"><Run Text="管理员"/><Run Text="设置"/></TextBlock>
+        <TextBox Name="textbox_Admin" materialDesign:HintAssist.Hint="要添加的管理员QQ" KeyDown="textbox_Admin_KeyDown"
+              Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
+                 HorizontalAlignment="Left" Height="36.667" Margin="317.009,239,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="136.667"/>
+        <Button Name="button_Plus"
+              Style="{StaticResource MaterialDesignIconButton}"
+              ToolTip="+1" 
+               Margin="453.676,247,0,0" Height="36.667" Width="36.667" HorizontalAlignment="Left" VerticalAlignment="Top" Click="button_Plus_Click">
+            <materialDesign:PackIcon
+                Kind="PlusOne" />
+        </Button>
+        <ListBox Name="listbox_Admin" HorizontalAlignment="Left" Height="156.333" Margin="317.009,283.667,0,0" VerticalAlignment="Top" Width="157.658" KeyDown="listbox_Admin_KeyDown"/>
+            <Button x:Name="button_Proxy" Click="button_Proxy_Click" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}" Content="代理设置" HorizontalAlignment="Left" Margin="496,206,0,0" VerticalAlignment="Top" Width="133.667">
+                <Button.CommandParameter>
+                    <StackPanel Margin="16">
+                        <Frame Source="/me.cqp.luohuaming.Setu.UI;component/SetuProxy.xaml"/>
+                    </StackPanel>
+                </Button.CommandParameter>
+            </Button>
+            <Button x:Name="button_OrderDIY" Content="自定义指令设置" HorizontalAlignment="Left" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}" Margin="496,262,0,0" VerticalAlignment="Top" Width="134">
+                <Button.CommandParameter>
+                    <StackPanel Margin="16">
+                        <Frame Source="/me.cqp.luohuaming.Setu.UI;component/OrderDIY.xaml"/>
+                    </StackPanel>
+                </Button.CommandParameter>
+            </Button>
+        </Grid>
+    </materialDesign:DialogHost>
+</Page>

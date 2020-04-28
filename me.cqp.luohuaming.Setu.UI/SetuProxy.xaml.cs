@@ -1,0 +1,174 @@
+﻿using me.cqp.luohuaming.Setu.Code;
+using Native.Tool.Http;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Web.Script.Serialization;
+using System.Windows;
+using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+namespace me.cqp.luohuaming.Setu.UI
+{
+    /// <summary>
+    /// SetuProxy.xaml 的交互逻辑
+    /// </summary>
+    public partial class SetuProxy : Page
+    {
+        public SetuProxy()
+        {
+            InitializeComponent();
+        }
+
+        private void button_Save_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Uri uri = new Uri(textbox_ProxyUri.Text);
+                string path = $"{CQSave.AppDirectory}Config.ini";
+                INIhelper.IniWrite("Proxy", "IsEnabled", togglebutton_IsProxy.IsChecked.GetValueOrDefault() ? "1" : "0", path);
+                INIhelper.IniWrite("Proxy", "ProxyUri", textbox_ProxyUri.Text, path);
+                INIhelper.IniWrite("Proxy", "ProxyName", textbox_ProxyName.Text, path);
+                INIhelper.IniWrite("Proxy", "ProxyPwd", textbox_ProxyPwd.Text, path);
+                textblock_ErrorMsg.Visibility = Visibility.Visible;
+                textblock_ErrorMsg.Foreground = Brushes.Black;
+                textblock_ErrorMsg.Text = $"保存成功，可点击退出返回";
+
+            }
+            catch (Exception ex)
+            {
+                textblock_ErrorMsg.Visibility = Visibility.Visible;
+                textblock_ErrorMsg.Foreground = Brushes.DarkRed;
+                textblock_ErrorMsg.Text = $"错误信息:{ex.Message}";
+            }
+        }
+
+        private void button_Reset_Click(object sender, RoutedEventArgs e)
+        {
+            togglebutton_IsProxy.IsChecked = false;
+            textbox_ProxyUri.Text = "http://127.0.0.1:1080";
+            textbox_ProxyName.Text = "";
+            textbox_ProxyPwd.Text = "";
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            textblock_ErrorMsg.Visibility = Visibility.Hidden;
+            string path = $"{CQSave.AppDirectory}Config.ini";
+            togglebutton_IsProxy.IsChecked = INIhelper.IniRead("Proxy", "IsEnabled", "0", path)=="0"?false:true;
+            textbox_ProxyUri.Text = INIhelper.IniRead("Proxy", "ProxyUri", "http://127.0.0.1:1080", path);
+            textbox_ProxyName.Text = INIhelper.IniRead("Proxy", "ProxyName", "", path);
+            textbox_ProxyPwd.Text = INIhelper.IniRead("Proxy", "ProxyPwd", "", path);
+        }
+        WebProxy proxy;
+        private void button_CheckProxy_Click(object sender, RoutedEventArgs e)
+        {
+            textbox_CheckProxy.Text = "测试开始\n";
+            proxy = new WebProxy();
+            if ((bool)togglebutton_IsProxy.IsChecked)
+            {
+                try
+                {
+                    string uri, username, pwd;
+                    uri = textbox_ProxyUri.Text;
+                    username = textbox_ProxyName.Text;
+                    pwd = textbox_ProxyPwd.Text;
+
+                    //proxy 
+                    proxy.Address = new Uri(uri);
+                    proxy.Credentials = new NetworkCredential(username, pwd);
+                }
+                catch (Exception ex)
+                {
+                    textbox_CheckProxy.AppendText($"Proxy错误,设置的代理无效，信息:{ex.Message}\n");
+                }
+            }
+            progressbar_Main.Visibility = Visibility.Visible;
+            button_CheckProxy.IsEnabled = false;
+            ThreadStart threadStear = new ThreadStart(CheckProxy);
+            Thread thd = new Thread(threadStear);
+            // 开启线程
+            thd.Start();
+        }
+
+        /// <summary>
+        /// 向服务器发送 HTTP GET 请求
+        /// </summary>
+        /// <param name="url">完整的网页地址
+        ///		<para>必须包含 "http://" 或 "https://"</para>
+        /// </param>
+        /// <param name="timeout">超时时间</param>
+        /// <param name="proxy">代理 <see cref="HttpWebClient"/> 的 <see cref="WebProxy"/></param>
+        /// <returns></returns>
+        public static byte[] Get(string url, WebProxy proxy)
+        {
+            HttpWebClient httpWebClient = new HttpWebClient();
+            httpWebClient.TimeOut = 5000;
+            httpWebClient.Proxy = proxy;
+            httpWebClient.AllowAutoRedirect = true;
+            httpWebClient.AutoCookieMerge = true;
+            byte[] result = httpWebClient.DownloadData(new Uri(url));
+            return result;
+        }
+
+        /// <summary>
+        /// 获取时间戳
+        /// </summary>
+        /// <returns></returns>
+        public static long GetTimeStamp()
+        {
+            TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            return Convert.ToInt64(ts.TotalSeconds);
+        }
+
+        public void CheckProxy()
+        {
+            string[] url;
+            if (!File.Exists($"{CQSave.AppDirectory}CheckProxy.json"))
+            {
+                string[] temp = { "https://www.baidu.com", "https://api.lolicon.app", "https://www.pixiv.cat", "https://www.google.com", "https://www.pixiv.net" };
+                url = temp;
+                File.WriteAllText($"{CQSave.AppDirectory}CheckProxy.json", JsonConvert.SerializeObject(url));//序列化
+            }
+            else
+            {
+                string temp = File.ReadAllText($"{CQSave.AppDirectory}CheckProxy.json");
+                url = JsonConvert.DeserializeObject<string[]>(temp);//反序列化
+            }
+            for (int i = 0; i < url.Length; i++)
+            {
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                try
+                {
+                    byte[] by = Get(url[i], proxy);
+                    string str = Encoding.UTF8.GetString(by);
+                    sw.Stop();                    
+                    this.textbox_CheckProxy.Dispatcher.Invoke(new Action(() => { textbox_CheckProxy.AppendText($"与{url[i]}的连接成功:耗时:{sw.ElapsedMilliseconds} ms\n");}));                    
+                }
+                catch (Exception ex)
+                {
+                    this.textbox_CheckProxy.Dispatcher.Invoke(new Action(() => {textbox_CheckProxy.AppendText($"与{url[i]}的连接出错,信息:{ex.Message}\n"); }));                    
+                }
+            }
+            this.progressbar_Main.Dispatcher.Invoke(new Action(() => { progressbar_Main.Visibility = Visibility.Hidden;}));
+            this.button_CheckProxy.Dispatcher.Invoke(new Action(() => {button_CheckProxy.IsEnabled = true; }));            
+        }
+    }
+}
