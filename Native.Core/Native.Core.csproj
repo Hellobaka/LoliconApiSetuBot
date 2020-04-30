@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Native.Core</RootNamespace>
-    <AssemblyName>me.cqp.luohuaming.Setu</AssemblyName>
+    <AssemblyName>Native.Core</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -30,7 +30,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\..\..\CQP-xiaoi\酷Q Pro\dev\</OutputPath>
+    <OutputPath>bin\x86\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -174,4 +174,9 @@ if exist "$(TargetDir)app.json" (
 move "$(TargetDir)app.json" "$(TargetDir)$(TargetName)" 
 )</PostBuildEvent>
   </PropertyGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties app_1json__JsonSchema="https://raw.githubusercontent.com/cqmoe/awesome-coolq/master/schema/app/v9/app-schema.json" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

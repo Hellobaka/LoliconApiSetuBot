@@ -20,7 +20,8 @@ using System.Windows.Threading;
 using Native.Sdk.Cqp.Model;
 using System.Threading;
 using MaterialDesignThemes.Wpf;
-
+using Native.Tool.IniConfig;
+using Native.Tool.IniConfig.Linq;
 
 namespace me.cqp.luohuaming.Setu.UI
 {
@@ -35,7 +36,7 @@ namespace me.cqp.luohuaming.Setu.UI
             get { return _parentWin; }
             set { _parentWin = value; }
         }
-
+        static IniConfig ini;
         public Settings()
         {
             InitializeComponent();
@@ -55,31 +56,32 @@ namespace me.cqp.luohuaming.Setu.UI
         private void button_SettingsSave_Click(object sender, RoutedEventArgs e)
         {
             string path = CQSave.AppDirectory + @"\Config.ini";
-            INIhelper.IniWrite("Config", "ApiSwitch", togglebutton_ApiKey.IsChecked.GetValueOrDefault() ? "1" : "0", path);
+            ini.Object["Config"]["ApiSwitch"]=new IValue(togglebutton_ApiKey.IsChecked.GetValueOrDefault() ? "1" : "0");
             if (togglebutton_ApiKey.IsChecked.GetValueOrDefault())
             {
-                INIhelper.IniWrite("Config", "ApiKey", textbox_ApiKey.Text, path);
+                ini.Object["Config"]["ApiKey"]=new IValue(textbox_ApiKey.Text);
             }
-            INIhelper.IniWrite("Config", "MaxofPerson", (IsPureInteger(textbox_PersonLimit.Text)) ? textbox_PersonLimit.Text : "5", path);
-            INIhelper.IniWrite("Config", "MaxofGroup", (IsPureInteger(textbox_GroupLimit.Text)) ? textbox_GroupLimit.Text : "30", path);
-            int count=0;
-            List<BindingGroup> group =(List<BindingGroup>) ItemControl_Group.DataContext;
-            foreach(var item in group)
+            ini.Object["Config"]["MaxofPerson"]=new IValue((IsPureInteger(textbox_PersonLimit.Text)) ? textbox_PersonLimit.Text : "5");
+            ini.Object["Config"]["MaxofGroup"]=new IValue((IsPureInteger(textbox_GroupLimit.Text)) ? textbox_GroupLimit.Text : "30");
+            int count = 0;
+            List<BindingGroup> group = (List<BindingGroup>)ItemControl_Group.DataContext;
+            foreach (var item in group)
             {
                 if (item.IsChecked)
-                {                    
-                    INIhelper.IniWrite("GroupList", $"Index{count}", item.GroupId.ToString(), path);
-                    count++;                
+                {
+                    ini.Object["GroupList"][$"Index{count}"]=new IValue(item.GroupId.ToString());
+                    count++;
                 }
             }
-            INIhelper.IniWrite("GroupList", "Count", count.ToString(), path);
+            ini.Object["GroupList"]["Count"]=new IValue(count.ToString());
             count = 0;
             foreach (var item in listbox_Admin.Items)
-            {                
-                INIhelper.IniWrite("Admin", $"Index{count}", item.ToString(), path);
+            {
+                ini.Object["Admin"][$"Index{count}"]=new IValue(item.ToString());
                 count++;
             }
-            INIhelper.IniWrite("Admin", "Count", count.ToString(), path);
+            ini.Object["Admin"]["Count"]=new IValue(count.ToString());
+            ini.Save();
             SnackbarMessage_Show("更改已保存", 2);
         }
         /// <summary>
@@ -110,15 +112,17 @@ namespace me.cqp.luohuaming.Setu.UI
         private void Page_Settings_Loaded(object sender, RoutedEventArgs e)
         {
             string path = CQSave.AppDirectory + @"\Config.ini";
-            togglebutton_ApiKey.IsChecked = INIhelper.IniRead("Config", "ApiSwitch", "0", CQSave.AppDirectory + @"\Config.ini") == "1" ? true : false;
-            textbox_ApiKey.Text = INIhelper.IniRead("Config", "ApiKey", "0", CQSave.AppDirectory + @"\Config.ini");
-            textbox_PersonLimit.Text = INIhelper.IniRead("Config", "MaxofPerson", "5", path);
-            textbox_GroupLimit.Text = INIhelper.IniRead("Config", "MaxofGroup", "30", path);
+            ini = new IniConfig(path);
+            ini.Load();
+            togglebutton_ApiKey.IsChecked = ini.Object["Config"]["ApiSwitch"].GetValueOrDefault("0") == "1" ? true : false;
+            textbox_ApiKey.Text = ini.Object["Config"]["ApiKey"].GetValueOrDefault("0");
+            textbox_PersonLimit.Text = ini.Object["Config"]["MaxofPerson"].GetValueOrDefault("5");
+            textbox_GroupLimit.Text = ini.Object["Config"]["MaxofGroup"].GetValueOrDefault("30");
 
-            int count = INIhelper.IniRead("Admin", "Count", "0", path).ToInt32();
-            for(int i=0;i<count;i++)
+            int count = ini.Object["Admin"]["Count"].GetValueOrDefault(0);
+            for (int i = 0; i < count; i++)
             {
-                listbox_Admin.Items.Add(INIhelper.IniRead("Admin", $"Index{i}", "0", path));
+                listbox_Admin.Items.Add(ini.Object["Admin"][$"Index{i}"].GetValueOrDefault(0));
             }
 
             var groups = CQSave.cq.GetGroupList();
@@ -163,16 +167,16 @@ namespace me.cqp.luohuaming.Setu.UI
         public bool CheckGroupOpen(long groupid)
         {
             string path = CQSave.AppDirectory + @"\Config.ini";
-            int count = INIhelper.IniRead("GroupList", "Count", "0", path).ToInt32();
-            for(int i=0;i<count;i++)
+            int count = ini.Object["GroupList"]["Count"].GetValueOrDefault(0);
+            for (int i = 0; i < count; i++)
             {
-                if(groupid==INIhelper.IniRead("GroupList",$"Index{i}","0",path).ToInt64())
+                if (groupid == ini.Object["GroupList"][$"Index{i}"].GetValueOrDefault(0))
                 {
                     return true;
                 }
             }
             return false;
-        }    
+        }
         /// <summary>
         /// 更新图片文件夹信息
         /// </summary>
@@ -242,7 +246,8 @@ namespace me.cqp.luohuaming.Setu.UI
         {
             if (string.IsNullOrWhiteSpace(textbox_Admin.Text)) return;
             long temp;
-            if (!long.TryParse(textbox_Admin.Text, out temp)) {
+            if (!long.TryParse(textbox_Admin.Text, out temp))
+            {
                 SnackbarMessage_Show("格式错误", 2);
                 textbox_Admin.Text = "";
                 return;
@@ -254,10 +259,10 @@ namespace me.cqp.luohuaming.Setu.UI
 
         private void listbox_Admin_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.Key==Key.Delete)
+            if (e.Key == Key.Delete)
             {
                 listbox_Admin.Items.RemoveAt(listbox_Admin.SelectedIndex);
-                if(listbox_Admin.Items.Count==0)
+                if (listbox_Admin.Items.Count == 0)
                 {
                     listbox_Admin.SelectedIndex = 0;
                 }
@@ -270,7 +275,7 @@ namespace me.cqp.luohuaming.Setu.UI
 
         private void textbox_Admin_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.Key==Key.Enter)
+            if (e.Key == Key.Enter)
             {
                 button_Plus_Click(sender, e);
             }
@@ -282,9 +287,9 @@ namespace me.cqp.luohuaming.Setu.UI
             //eventArgs.Cancel();
             if (eventArgs.Parameter == null)
             {
-                return; 
+                return;
             }
-            if ((bool)eventArgs.Parameter !=true) return; 
+            if ((bool)eventArgs.Parameter != true) return;
 
             if (Directory.Exists(CQSave.ImageDirectory + "LoliconPic"))
             {

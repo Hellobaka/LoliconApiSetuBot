@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# CA1305: 指定 IFormatProvider
+dotnet_diagnostic.CA1305.severity = none

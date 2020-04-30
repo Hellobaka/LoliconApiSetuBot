@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Native.Sdk.Cqp.EventArgs;
 using Native.Sdk.Cqp.Interface;
 using Native.Sdk.Cqp.Model;
+using Native.Tool.IniConfig;
 
 namespace me.cqp.luohuaming.Setu.Code
 {
@@ -19,11 +20,12 @@ namespace me.cqp.luohuaming.Setu.Code
             CQSave.ImageDirectory = GetAppImageDirectory(e.CQApi.AppDirectory);
             CQSave.cq = e.CQApi;
             CQSave.cqlog = e.CQLog;
-
+            IniConfig ini = new IniConfig(e.CQApi.AppDirectory+"Config.ini");
+            ini.Load();
             try
             {
-                if (INIhelper.IniRead("Proxy", "IsEnabled", "0", CQSave.AppDirectory + "Config.ini") == "1")
-                { new Uri(INIhelper.IniRead("Proxy", "ProxyUri", "0", e.CQApi.AppDirectory + "Config.ini")); }
+                if (ini.Object["Proxy"][ "IsEnabled"].GetValueOrDefault("0") == "1")
+                { new Uri(ini.Object["Proxy"]["ProxyUri"].GetValueOrDefault("0")); }
             }
             catch(Exception ex)
             {

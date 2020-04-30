@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Native.Tool.Http;
+using Native.Tool.IniConfig;
 using System.IO;
 using System.Net;
 
@@ -137,15 +138,16 @@ namespace me.cqp.luohuaming.Setu.Code
             try
             {
                 WebProxy proxy = null;
-
-                if (INIhelper.IniRead("Proxy", "IsEnabled", "0",CQSave.AppDirectory+"Config.ini") == "1")
+                IniConfig ini = new IniConfig(CQSave.AppDirectory+"Config.ini");
+                ini.Load();
+                if (ini.Object["Proxy"]["IsEnabled"].GetValueOrDefault("0") == "1")
                 {
                     try
                     {                        
                         string uri,username, pwd;                        
-                        uri = INIhelper.IniRead("Proxy", "ProxyUri", "0", CQSave.AppDirectory + "Config.ini");
-                        username = INIhelper.IniRead("Proxy", "ProxyName", "0", CQSave.AppDirectory + "Config.ini");
-                        pwd = INIhelper.IniRead("Proxy", "ProxyPwd", "0", CQSave.AppDirectory + "Config.ini");
+                        uri = ini.Object["Proxy"]["ProxyUri"].GetValueOrDefault("0");
+                        username = ini.Object["Proxy"]["ProxyName"].GetValueOrDefault("0");
+                        pwd = ini.Object["Proxy"]["ProxyName"].GetValueOrDefault("0");
 
                         proxy = new WebProxy();
                         proxy.Address = new Uri(uri);
@@ -160,9 +162,9 @@ namespace me.cqp.luohuaming.Setu.Code
                 List<string> result = new List<string>();
                 string url = string.Empty;
                 //拼接Url
-                if (INIhelper.IniRead("Config", "ApiSwitch", "0", CQSave.AppDirectory + "\\Config.ini") == "1")
+                if (ini.Object["Config"]["ApiSwitch"].GetValueOrDefault("0")== "1")
                 {
-                    string apikey = INIhelper.IniRead("Config", "ApiKey", "0", CQSave.AppDirectory + "\\Config.ini");
+                    string apikey = ini.Object["Config"]["ApiKey"].GetValueOrDefault("0");
                     url = api + $"?apikey={apikey}";
                 }
                 else

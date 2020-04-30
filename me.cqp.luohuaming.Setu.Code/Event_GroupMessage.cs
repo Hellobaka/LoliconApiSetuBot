@@ -9,13 +9,18 @@ using Native.Sdk.Cqp.EventArgs;
 using Native.Sdk.Cqp.Interface;
 using Native.Sdk.Cqp.Model;
 using Native.Tool.Http;
+using Native.Tool.IniConfig;
+using Native.Tool.IniConfig.Linq;
 using Newtonsoft.Json;
 
 namespace me.cqp.luohuaming.Setu.Code
 {
-
+    //INIhelper\.IniRead\((.*), (.*), (.*),.*\)
+    //INIhelper\.IniWrite\((.*), (.*), (.*),.*\)
+    //ini.Object[$1][$2].GetValueOrDefalut($3)
+    //ini.Object[$1][$2]=new IValue($3)
     public class Event_GroupMessage : IGroupMessage
-    {    
+    {
         #region --返回文本--
         /// <summary>
         /// 开始拉取图片
@@ -51,15 +56,17 @@ namespace me.cqp.luohuaming.Setu.Code
         public static string pathUser;
 
         CQGroupMessageEventArgs cq;
-
+        public IniConfig ini, iniUser;
         public void GroupMessage(object sender, CQGroupMessageEventArgs e)
-        {            
-            path = CQSave.AppDirectory+"\\Config.ini";
-            pathUser= CQSave.AppDirectory + "\\ConfigLimit.ini";
+        {
+
+            path = CQSave.AppDirectory + "\\Config.ini";
+            pathUser = CQSave.AppDirectory + "\\ConfigLimit.ini";
             cq = e;
-            
+            ini = new IniConfig(path); iniUser = new IniConfig(pathUser);
+            ini.Load(); iniUser.Load();
             if (e.Message.Text == "#setu")
-            {                                
+            {
                 ReadResponseText();
                 string response = JudgeLegality();
                 if (response == "-401") return;
@@ -75,15 +82,15 @@ namespace me.cqp.luohuaming.Setu.Code
                     int quota_second = 0;
                     if (int.TryParse(pic[1], out quota_second))
                     {
-                        e.CQApi.SendGroupMessage(e.FromGroup, str+$" 下次额度恢复的时间是:{DateTime.Now.AddSeconds(quota_second):HH:mm}");
+                        e.CQApi.SendGroupMessage(e.FromGroup, str + $" 下次额度恢复的时间是:{DateTime.Now.AddSeconds(quota_second):HH:mm}");
                     }
                     else
                     {
-                        e.CQApi.SendGroupMessage(e.FromGroup,str);
+                        e.CQApi.SendGroupMessage(e.FromGroup, str);
                     }
                     if (File.Exists(CQSave.ImageDirectory + $"\\{pic[1]}"))
                     {
-                        QQMessage staues= e.CQApi.SendGroupMessage(e.FromGroup, CQApi.CQCode_Image(pic[1]));                        
+                        QQMessage staues = e.CQApi.SendGroupMessage(e.FromGroup, CQApi.CQCode_Image(pic[1]));
                         if (!staues.IsSuccess)
                         {
                             Setu deserialize = JsonConvert.DeserializeObject<Setu>(pic[0]);
@@ -92,7 +99,7 @@ namespace me.cqp.luohuaming.Setu.Code
                         }
                     }
                 }
-                catch(Exception exc)
+                catch (Exception exc)
                 {
                     e.CQApi.SendGroupMessage(e.FromGroup, $"发生未知错误,错误信息:在{exc.Source}上, 发送错误: {exc.Message}  有{exc.StackTrace}");
                 }
@@ -113,11 +120,11 @@ namespace me.cqp.luohuaming.Setu.Code
         /// <returns></returns>
         string JudgeLegality()
         {
-            int count = INIhelper.IniRead("GroupList", "Count", "0", path).ToInt32();
+            int count = ini.Object["GroupList"]["Count"].GetValueOrDefault(0);
             bool flag = false;
-            for(int i=0;i<count;i++)
+            for (int i = 0; i < count; i++)
             {
-                if (cq.FromGroup.Id == INIhelper.IniRead("GroupList", $"Index{i}", "0", path).ToInt64())
+                if (cq.FromGroup.Id == ini.Object["GroupList"][$"Index{i}"].GetValueOrDefault(0))
                 {
                     flag = true;
                     break;
@@ -125,46 +132,47 @@ namespace me.cqp.luohuaming.Setu.Code
             }
             if (!flag) return "-401";
             int countofPerson, countofGroup, maxofPerson, maxofGroup;
-            countofPerson = INIhelper.IniRead($"Count{cq.FromGroup.Id}", string.Format("Count{0}", cq.FromQQ.Id), "0", pathUser).ToInt32();
-            countofGroup = INIhelper.IniRead($"Count{cq.FromGroup.Id}", "CountofGroup", "0", pathUser).ToInt32();
-            maxofGroup = INIhelper.IniRead("Config", "MaxofGroup", "30", path).ToInt32();
+            countofPerson = ini.Object[$"Count{cq.FromGroup.Id}"][string.Format("Count{0}", cq.FromQQ.Id)].GetValueOrDefault(0);
+            countofGroup = ini.Object[$"Count{cq.FromGroup.Id}"]["CountofGroup"].GetValueOrDefault(0);
+            maxofGroup = ini.Object["Config"]["MaxofGroup"].GetValueOrDefault(30);
             if (countofGroup > maxofGroup)
             {
-                if(maxofGroup!=0)return MaxGroup;                
+                if (maxofGroup != 0) return MaxGroup;
             }
-            maxofPerson = INIhelper.IniRead("Config", "MaxofPerson", "5", path).ToInt32();
+            maxofPerson = ini.Object["Config"]["MaxofPerson"].GetValueOrDefault(5);
             if (countofPerson < maxofPerson)
             {
-                INIhelper.IniWrite($"Count{cq.FromGroup.Id}", string.Format("Count{0}", cq.FromQQ.Id), (++countofPerson).ToString(), pathUser);
-                INIhelper.IniWrite($"Count{cq.FromGroup.Id}", "CountofGroup", (++countofGroup).ToString(), pathUser);
+                iniUser.Object[$"Count{cq.FromGroup.Id}"][string.Format("Count{0}",cq.FromQQ)]=new IValue((++countofPerson).ToString());
+                iniUser.Object[$"Count{cq.FromGroup.Id}"]["CountofGroup"]=new IValue((++countofGroup).ToString());
             }
             else
             {
                 if (maxofPerson != 0) { return MaxMember; }
                 else
                 {
-                    INIhelper.IniWrite($"Count{cq.FromGroup.Id}", string.Format("Count{0}", cq.FromQQ.Id), (++countofPerson).ToString(), pathUser);
-                    INIhelper.IniWrite($"Count{cq.FromGroup.Id}", "CountofGroup", (++countofGroup).ToString(), pathUser);
+                    iniUser.Object[$"Count{cq.FromGroup.Id}"][string.Format("Count{0}",cq.FromQQ)]=new IValue((++countofPerson).ToString());
+                    iniUser.Object[$"Count{cq.FromGroup.Id}"]["CountofGroup"]=new Native.Tool.IniConfig.Linq.IValue((++countofGroup).ToString());
                 }
             }
-            INIhelper.IniWrite("Config", "Timestamp", GetTimeStamp(), path);
-            return StartPullPic.Replace("<#>",(maxofPerson - countofPerson).ToString());
+            iniUser.Object["Config"]["Timestamp"]=new IValue(GetTimeStamp());
+            iniUser.Save();
+            return StartPullPic.Replace("<#>", (maxofPerson - countofPerson).ToString());
         }
         /// <summary>
         /// 读取返回文本内容
         /// </summary>
         void ReadResponseText()
         {
-            SuccessPullPic= INIhelper.IniRead("Text", "MaxGroup", "机器人当日剩余调用次数:<quota>\n下次额度恢复时间为:<quota_time>\ntitle: <title>\nauthor: <author>\np: <p>\npid: <pid>", path);
-            StartPullPic = INIhelper.IniRead("Text", "StartPullPic", "拉取图片中~至少需要15s……\n你今日剩余调用次数为<#>次(￣▽￣)", path);
-            NonQuota= INIhelper.IniRead("Text", "NonQuota", "接口额度达到上限，请等待接口额度回复", path); 
-            FailedDownloadPic = INIhelper.IniRead("Text", "FailedDownloadPic", "图片下载失败，次数已归还", path);
-            MaxMember = INIhelper.IniRead("Text", "MaxMember", "你当日所能调用的次数已达上限(￣▽￣)", path);
-            MaxGroup = INIhelper.IniRead("Text", "MaxGroup", "本群当日所能调用的次数已达上限(￣▽￣)", path);
-            ExtraError= INIhelper.IniRead("Text", "ExtraError", "发生错误，请尝试重新调用，错误信息:<#>", path);
+            SuccessPullPic = ini.Object["Text"]["MaxGroup"].GetValueOrDefault("机器人当日剩余调用次数:<quota>\n下次额度恢复时间为:<quota_time>\ntitle: <title>\nauthor: <author>\np: <p>\npid: <pid>");
+            StartPullPic = ini.Object["Text"]["StartPullPic"].GetValueOrDefault("拉取图片中~至少需要15s……\n你今日剩余调用次数为<#>次(￣▽￣)");
+            NonQuota = ini.Object["Text"]["NonQuota"].GetValueOrDefault("接口额度达到上限，请等待接口额度回复");
+            FailedDownloadPic = ini.Object["Text"]["FailedDownloadPic"].GetValueOrDefault("图片下载失败，次数已归还");
+            MaxMember = ini.Object["Text"]["MaxMember"].GetValueOrDefault("你当日所能调用的次数已达上限(￣▽￣)");
+            MaxGroup = ini.Object["Text"]["MaxGroup"].GetValueOrDefault("本群当日所能调用的次数已达上限(￣▽￣)");
+            ExtraError = ini.Object["Text"]["ExtraError"].GetValueOrDefault("发生错误，请尝试重新调用，错误信息:<#>");
         }
 
-        string ProcessReturns(string str,CQGroupMessageEventArgs e)
+        string ProcessReturns(string str, CQGroupMessageEventArgs e)
         {
             //<code> 返回码
             //<msg> 错误信息之类的
@@ -181,30 +189,33 @@ namespace me.cqp.luohuaming.Setu.Code
             //<width> 原图宽度 px
             //<height> 原图高度 px
             //<#> 自定义变量
-            int countofPerson,countofGroup;
+            int countofPerson, countofGroup;
             switch (str)
             {
                 case "401":
                     cq.CQLog.Info("超出额度", "超出额度，次数已归还");
-                    countofPerson = INIhelper.IniRead($"Count{e.FromGroup.Id}", string.Format("Count{0}", e.FromQQ.Id), "0", pathUser).ToInt32();
-                    countofGroup = INIhelper.IniRead($"Count{e.FromGroup.Id}", "CountofGroup", "0", pathUser).ToInt32();
-                    INIhelper.IniWrite($"Count{e.FromGroup.Id}", string.Format("Count{0}", e.FromQQ.Id), (--countofPerson).ToString(), pathUser);
-                    INIhelper.IniWrite($"Count{e.FromGroup.Id}", "CountofGroup", (--countofGroup).ToString(), pathUser);
+                    countofPerson = iniUser.Object[$"Count{e.FromGroup.Id}"][string.Format("Count{0}", e.FromQQ.Id)].GetValueOrDefault(0);
+                    countofGroup = iniUser.Object[$"Count{e.FromGroup.Id}"]["CountofGroup"].GetValueOrDefault(0);
+                    iniUser.Object[$"Count{e.FromGroup.Id}"][string.Format("Count{0}",e.FromQQ)]=new IValue((--countofPerson).ToString());
+                    iniUser.Object[$"Count{e.FromGroup.Id}"]["CountofGroup"]=new IValue((--countofGroup).ToString());
+                    iniUser.Save();
                     return NonQuota;
                 case "402":
                     cq.CQLog.Info("下载错误", "下载错误，次数已归还");
-                    countofPerson = INIhelper.IniRead($"Count{e.FromGroup.Id}", string.Format("Count{0}", e.FromQQ.Id), "0", pathUser).ToInt32();
-                    countofGroup = INIhelper.IniRead($"Count{e.FromGroup.Id}", "CountofGroup", "0", pathUser).ToInt32();
-                    INIhelper.IniWrite($"Count{e.FromGroup.Id}", string.Format("Count{0}", e.FromQQ.Id), (--countofPerson).ToString(), pathUser);
-                    INIhelper.IniWrite($"Count{e.FromGroup.Id}", "CountofGroup", (--countofGroup).ToString(), pathUser);
-                    return FailedDownloadPic;               
+                    countofPerson = iniUser.Object[$"Count{e.FromGroup.Id}"][string.Format("Count{0}", e.FromQQ.Id)].GetValueOrDefault(0);
+                    countofGroup = iniUser.Object[$"Count{e.FromGroup.Id}"]["CountofGroup"].GetValueOrDefault(0);
+                    iniUser.Object[$"Count{e.FromGroup.Id}"][string.Format("Count{0}",e.FromQQ)]=new IValue((--countofPerson).ToString());
+                    iniUser.Object[$"Count{e.FromGroup.Id}"]["CountofGroup"]=new IValue((--countofGroup).ToString());
+                    iniUser.Save();
+                    return FailedDownloadPic;
                 default:
-                    if(str.StartsWith("403",StringComparison.OrdinalIgnoreCase))
+                    if (str.StartsWith("403", StringComparison.OrdinalIgnoreCase))
                     {
-                        countofPerson = INIhelper.IniRead($"Count{e.FromGroup.Id}", string.Format("Count{0}", e.FromQQ.Id), "0", pathUser).ToInt32();
-                        countofGroup = INIhelper.IniRead($"Count{e.FromGroup.Id}", "CountofGroup", "0", pathUser).ToInt32();
-                        INIhelper.IniWrite($"Count{e.FromGroup.Id}", string.Format("Count{0}", e.FromQQ.Id), (--countofPerson).ToString(), pathUser);
-                        INIhelper.IniWrite($"Count{e.FromGroup.Id}", "CountofGroup", (--countofGroup).ToString(), pathUser);
+                        countofPerson = iniUser.Object[$"Count{e.FromGroup.Id}"][string.Format("Count{0}", e.FromQQ.Id)].GetValueOrDefault(0);
+                        countofGroup = iniUser.Object[$"Count{e.FromGroup.Id}"]["CountofGroup"].GetValueOrDefault(0);
+                        iniUser.Object[$"Count{e.FromGroup.Id}"][string.Format("Count{0}",e.FromQQ)]=new IValue((--countofPerson).ToString());
+                        iniUser.Object[$"Count{e.FromGroup.Id}"]["CountofGroup"]=new IValue((--countofGroup).ToString());
+                        iniUser.Save();
                         return ExtraError.Replace("<#>", str.Substring("403".Length));
                     }
                     else
@@ -217,7 +228,7 @@ namespace me.cqp.luohuaming.Setu.Code
                             result = result.Replace("<quota>", deserialize.quota.ToString());
                             result = result.Replace("<quota_min_ttl>", deserialize.quota_min_ttl.ToString());
                             DateTime dt = DateTime.Now.AddSeconds(deserialize.quota_min_ttl);
-                            result = result.Replace("<quota_time>",(DateTime.Now.Hour <= dt.Hour)? $"{dt:HH:mm}":$"明天 {dt:HH:mm}");
+                            result = result.Replace("<quota_time>", (DateTime.Now.Hour <= dt.Hour) ? $"{dt:HH:mm}" : $"明天 {dt:HH:mm}");
                             List<Data> pic = deserialize.data;
                             Data picinfo = pic[0];
                             result = result.Replace("<pid>", picinfo.pid);
@@ -236,7 +247,7 @@ namespace me.cqp.luohuaming.Setu.Code
                             return $"解析错误，无法继续，错误信息:{exc.Message}";
                         }
                     }
-            }
+            }            
         }
     }
 }

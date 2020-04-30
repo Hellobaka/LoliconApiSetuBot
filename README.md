@@ -1,6 +1,6 @@
 # 水银涩图机~
 ## 程序使用的环境
-基于[Jie2GG](https://github.com/Jie2GG)巨好用的酷Q C# SDK [Native.FarmeWork](https://github.com/Jie2GG/Native.Framework) v4.2.0.0424版本开发，依托于[酷Q](https://cqp.cc/)运行
+基于[Jie2GG](https://github.com/Jie2GG)巨好用的酷Q C# SDK [Native.FarmeWork](https://github.com/Jie2GG/Native.Framework) v4.2.1.0429版本开发，依托于[酷Q](https://cqp.cc/)运行
 ## 接口介绍
 使用了大佬的[Lolicon API](https://api.lolicon.app/#/setu)涩图接口
 这个接口提供的这些图~~很戳我的xp~~我很喜欢，就写了个机器人
@@ -18,11 +18,11 @@
 - [ ] 接入[trace moe](https://trace.moe/)实现以图搜番
 - [ ] 通过语义分析来自行填充搜图参数<sup>[1]</sup>
 
-<font color=#ff0000>[1]</font>例如:收到指令:水银来一份德丽莎的R18涩图
+<font color=#ff0000>[1]</font>例如:收到指令:水银来一份德丽莎的R18涩图<br>
 自行解析为:keyword=德丽莎&r18=true
 
 ## 其他的话
-在我瞎逛论坛的时候发现了和这个项目使用同一接口的[应用](https://cqp.cc/t/48770)，瞬间就失去了将插件发布到社区的欲望，或许以后功能写完了会发布吧……权当自己瞎写着玩了
+在我瞎逛论坛的时候发现了和这个项目使用同一接口的[应用](https://cqp.cc/t/48770)，瞬间就失去了将插件发布到社区的欲望，或许以后功能写完了会发布吧……权当自己瞎写着玩了<br>
 最近差不多热情消磨的差不多了，真就龟速开发了，如果有大佬想赞助支持我的话，在崩坏三抽卡机项目的关于里有赞助码，拜谢
 ## 项目代码如何使用
 酷Q开启开发模式，参考[酷Q文库](https://docs.cqp.im/dev/v9/devmode/)的方法开启<br>

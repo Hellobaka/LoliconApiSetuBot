@@ -40,7 +40,7 @@ namespace me.cqp.luohuaming.Setu.Code
         /// <param name="val">值</param>
         /// <param name="filepath">文件完整路径</param>
         /// <returns></returns>    
-        public static long IniWrite(string section, string key, string val, string filepath)
+        public static long IniWrites(string section, string key, string val, string filepath)
         {
             return WritePrivateProfileString(section, key, val, filepath);
         }
@@ -52,7 +52,7 @@ namespace me.cqp.luohuaming.Setu.Code
         /// <param name="def">缺省值</param>
         /// <param name="filePath">完整路径</param>
         /// <returns></returns>
-        public static string IniRead(string section, string key, string def, string filePath)
+        public static string IniReads(string section, string key, string def, string filePath)
         {
             StringBuilder retval = new StringBuilder();
             val = retval;

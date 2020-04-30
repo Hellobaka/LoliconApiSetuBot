@@ -1,5 +1,7 @@
 ﻿using me.cqp.luohuaming.Setu.Code;
 using Native.Tool.Http;
+using Native.Tool.IniConfig;
+using Native.Tool.IniConfig.Linq;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -42,12 +44,13 @@ namespace me.cqp.luohuaming.Setu.UI
             {
                 Uri uri = new Uri(textbox_ProxyUri.Text);
                 string path = $"{CQSave.AppDirectory}Config.ini";
-                INIhelper.IniWrite("Proxy", "IsEnabled", togglebutton_IsProxy.IsChecked.GetValueOrDefault() ? "1" : "0", path);
-                INIhelper.IniWrite("Proxy", "ProxyUri", textbox_ProxyUri.Text, path);
-                INIhelper.IniWrite("Proxy", "ProxyName", textbox_ProxyName.Text, path);
-                INIhelper.IniWrite("Proxy", "ProxyPwd", textbox_ProxyPwd.Text, path);
+                ini.Object["Proxy"]["IsEnabled"]=new IValue(togglebutton_IsProxy.IsChecked.GetValueOrDefault() ? "1" : "0");
+                ini.Object["Proxy"]["ProxyUri"]=new IValue(textbox_ProxyUri.Text);
+                ini.Object["Proxy"]["ProxyName"]=new IValue(textbox_ProxyName.Text);
+                ini.Object["Proxy"]["ProxyPwd"]=new IValue(textbox_ProxyPwd.Text);
                 textblock_ErrorMsg.Visibility = Visibility.Visible;
                 textblock_ErrorMsg.Foreground = Brushes.Black;
+                ini.Save();
                 textblock_ErrorMsg.Text = $"保存成功，可点击退出返回";
 
             }
@@ -66,15 +69,17 @@ namespace me.cqp.luohuaming.Setu.UI
             textbox_ProxyName.Text = "";
             textbox_ProxyPwd.Text = "";
         }
-
+        static IniConfig ini;
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             textblock_ErrorMsg.Visibility = Visibility.Hidden;
             string path = $"{CQSave.AppDirectory}Config.ini";
-            togglebutton_IsProxy.IsChecked = INIhelper.IniRead("Proxy", "IsEnabled", "0", path)=="0"?false:true;
-            textbox_ProxyUri.Text = INIhelper.IniRead("Proxy", "ProxyUri", "http://127.0.0.1:1080", path);
-            textbox_ProxyName.Text = INIhelper.IniRead("Proxy", "ProxyName", "", path);
-            textbox_ProxyPwd.Text = INIhelper.IniRead("Proxy", "ProxyPwd", "", path);
+            ini = new IniConfig(path);
+            ini.Load();
+            togglebutton_IsProxy.IsChecked = ini.Object["Proxy"]["IsEnabled"].GetValueOrDefault("0") == "0" ? false : true;
+            textbox_ProxyUri.Text = ini.Object["Proxy"]["ProxyUri"].GetValueOrDefault("http://127.0.0.1:1080");
+            textbox_ProxyName.Text = ini.Object["Proxy"]["ProxyName"].GetValueOrDefault("");
+            textbox_ProxyPwd.Text = ini.Object["Proxy"]["ProxyPwd"].GetValueOrDefault("");
         }
         WebProxy proxy;
         private void button_CheckProxy_Click(object sender, RoutedEventArgs e)
@@ -159,16 +164,16 @@ namespace me.cqp.luohuaming.Setu.UI
                 {
                     byte[] by = Get(url[i], proxy);
                     string str = Encoding.UTF8.GetString(by);
-                    sw.Stop();                    
-                    this.textbox_CheckProxy.Dispatcher.Invoke(new Action(() => { textbox_CheckProxy.AppendText($"与{url[i]}的连接成功:耗时:{sw.ElapsedMilliseconds} ms\n");}));                    
+                    sw.Stop();
+                    this.textbox_CheckProxy.Dispatcher.Invoke(new Action(() => { textbox_CheckProxy.AppendText($"与{url[i]}的连接成功:耗时:{sw.ElapsedMilliseconds} ms\n"); }));
                 }
                 catch (Exception ex)
                 {
-                    this.textbox_CheckProxy.Dispatcher.Invoke(new Action(() => {textbox_CheckProxy.AppendText($"与{url[i]}的连接出错,信息:{ex.Message}\n"); }));                    
+                    this.textbox_CheckProxy.Dispatcher.Invoke(new Action(() => { textbox_CheckProxy.AppendText($"与{url[i]}的连接出错,信息:{ex.Message}\n"); }));
                 }
             }
-            this.progressbar_Main.Dispatcher.Invoke(new Action(() => { progressbar_Main.Visibility = Visibility.Hidden;}));
-            this.button_CheckProxy.Dispatcher.Invoke(new Action(() => {button_CheckProxy.IsEnabled = true; }));            
+            this.progressbar_Main.Dispatcher.Invoke(new Action(() => { progressbar_Main.Visibility = Visibility.Hidden; }));
+            this.button_CheckProxy.Dispatcher.Invoke(new Action(() => { button_CheckProxy.IsEnabled = true; }));
         }
     }
 }
