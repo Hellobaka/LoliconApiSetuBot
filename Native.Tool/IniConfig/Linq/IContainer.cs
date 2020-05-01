@@ -28,9 +28,21 @@ namespace Native.Tool.IniConfig.Linq
 		/// <returns>与指定的键相关联的值。 如果找不到指定的键，则 get 操作会引发一个 <see cref="KeyNotFoundException"/>，而set 操作会创建一个使用指定键的新元素。</returns>
 		public TValue this[string key]
 		{
-			get { return this._sortedList[key]; }
+			get
+			{
+				try
+				{					
+					return this._sortedList[key];
+				}
+				catch (KeyNotFoundException)
+				{	
+					this._sortedList.Add(key, tv);
+					return this._sortedList[key];
+				}
+			}
 			set { this._sortedList[key] = value; }
 		}
+		static TValue tv;
 		/// <summary>
 		/// 获取一个按排序顺序包含 <see cref="IContainer{T}"/> 中的键的集合
 		/// </summary>
@@ -162,6 +174,10 @@ namespace Native.Tool.IniConfig.Linq
 		public void Add (string key, TValue value)
 		{
 			this._sortedList.Add (key, value);
+		}
+		public void SetDefault(TValue value)
+		{
+			tv = value;
 		}
 		/// <summary>
 		/// 向 <see cref="IContainer{TValue}"/> 添加一个带有所提供的键和值的元素

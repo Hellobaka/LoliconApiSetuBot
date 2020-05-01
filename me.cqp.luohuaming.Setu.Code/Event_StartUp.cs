@@ -24,7 +24,7 @@ namespace me.cqp.luohuaming.Setu.Code
             ini.Load();
             try
             {
-                if (ini.Object["Proxy"][ "IsEnabled"].GetValueOrDefault("0") == "1")
+                if (ini.Object["Proxy"]["IsEnabled"].GetValueOrDefault("0") == "1")
                 { new Uri(ini.Object["Proxy"]["ProxyUri"].GetValueOrDefault("0")); }
             }
             catch(Exception ex)

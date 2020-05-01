@@ -15,9 +15,9 @@ using Newtonsoft.Json;
 
 namespace me.cqp.luohuaming.Setu.Code
 {
-    //INIhelper\.IniRead\((.*), (.*), (.*),.*\)
-    //INIhelper\.IniWrite\((.*), (.*), (.*),.*\)
-    //ini.Object[$1][$2].GetValueOrDefalut($3)
+    //INIhelper\.IniRead\((\S+), (\S+), (\S+), \S+?\)
+    //INIhelper\.IniWrite\((\S+), (\S+), (\S+), \S+?\)
+    //ini.Object[$1][$2].GetValueOrDefault($3)
     //ini.Object[$1][$2]=new IValue($3)
     public class Event_GroupMessage : IGroupMessage
     {
