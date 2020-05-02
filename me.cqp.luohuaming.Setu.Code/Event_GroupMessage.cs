@@ -132,8 +132,8 @@ namespace me.cqp.luohuaming.Setu.Code
             }
             if (!flag) return "-401";
             int countofPerson, countofGroup, maxofPerson, maxofGroup;
-            countofPerson = ini.Object[$"Count{cq.FromGroup.Id}"][string.Format("Count{0}", cq.FromQQ.Id)].GetValueOrDefault(0);
-            countofGroup = ini.Object[$"Count{cq.FromGroup.Id}"]["CountofGroup"].GetValueOrDefault(0);
+            countofPerson = iniUser.Object[$"Count{cq.FromGroup.Id}"][string.Format("Count{0}", cq.FromQQ.Id)].GetValueOrDefault(0);
+            countofGroup = iniUser.Object[$"Count{cq.FromGroup.Id}"]["CountofGroup"].GetValueOrDefault(0);
             maxofGroup = ini.Object["Config"]["MaxofGroup"].GetValueOrDefault(30);
             if (countofGroup > maxofGroup)
             {
@@ -151,7 +151,7 @@ namespace me.cqp.luohuaming.Setu.Code
                 else
                 {
                     iniUser.Object[$"Count{cq.FromGroup.Id}"][string.Format("Count{0}",cq.FromQQ)]=new IValue((++countofPerson).ToString());
-                    iniUser.Object[$"Count{cq.FromGroup.Id}"]["CountofGroup"]=new Native.Tool.IniConfig.Linq.IValue((++countofGroup).ToString());
+                    iniUser.Object[$"Count{cq.FromGroup.Id}"]["CountofGroup"]=new IValue((++countofGroup).ToString());
                 }
             }
             iniUser.Object["Config"]["Timestamp"]=new IValue(GetTimeStamp());
