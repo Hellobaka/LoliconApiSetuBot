@@ -65,7 +65,7 @@ namespace me.cqp.luohuaming.Setu.Code
             cq = e;
             ini = new IniConfig(path); iniUser = new IniConfig(pathUser);
             ini.Load(); iniUser.Load();
-            if (e.Message.Text == "#setu")
+            if (e.Message.Text.Replace("＃","#") == "#setu")
             {
                 ReadResponseText();
                 string response = JudgeLegality();
@@ -124,7 +124,7 @@ namespace me.cqp.luohuaming.Setu.Code
             bool flag = false;
             for (int i = 0; i < count; i++)
             {
-                if (cq.FromGroup.Id == ini.Object["GroupList"][$"Index{i}"].GetValueOrDefault(0))
+                if (cq.FromGroup.Id == ini.Object["GroupList"][$"Index{i}"].GetValueOrDefault((long)0))
                 {
                     flag = true;
                     break;

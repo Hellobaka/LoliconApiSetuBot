@@ -122,7 +122,7 @@ namespace me.cqp.luohuaming.Setu.UI
             int count = ini.Object["Admin"]["Count"].GetValueOrDefault(0);
             for (int i = 0; i < count; i++)
             {
-                listbox_Admin.Items.Add(ini.Object["Admin"][$"Index{i}"].GetValueOrDefault(0));
+                listbox_Admin.Items.Add(ini.Object["Admin"][$"Index{i}"].GetValueOrDefault((long)0));
             }
 
             var groups = CQSave.cq.GetGroupList();
@@ -170,7 +170,7 @@ namespace me.cqp.luohuaming.Setu.UI
             int count = ini.Object["GroupList"]["Count"].GetValueOrDefault(0);
             for (int i = 0; i < count; i++)
             {
-                if (groupid == ini.Object["GroupList"][$"Index{i}"].GetValueOrDefault(0))
+                if (groupid == ini.Object["GroupList"][$"Index{i}"].GetValueOrDefault((long)0))
                 {
                     return true;
                 }
