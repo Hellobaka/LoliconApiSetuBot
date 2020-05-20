@@ -11,8 +11,9 @@
 - [x] 每日自动重置次数
 - [x] 透过本地代理(socks5代理测试可通)
 - [x] 使用Material Design绘制UI，挺好看
-- [ ] 自定义指令与回答
+- [x] 自定义指令与回答
 - [x] 完善的异常~~处理~~报告机制（由于接口位于墙外，高峰期拉取图片失败率过高，当然也有图太涩被tx吞掉的原因）
+- [ ] 用户自定义接口，仅可用于直接访问就是图片的接口
 - [ ] 接入[Pixiv Api](https://api.imjad.cn/pixiv_v2.md)用于实现搜图与获取日榜周榜
 - [ ] 接入[SauceNAO](https://saucenao.com)实现以图搜图
 - [ ] 接入[trace moe](https://trace.moe/)实现以图搜番
