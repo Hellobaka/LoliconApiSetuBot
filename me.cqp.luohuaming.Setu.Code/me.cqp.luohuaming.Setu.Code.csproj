@@ -57,6 +57,7 @@
     <Compile Include="Event_PrivateMessage.cs" />
     <Compile Include="Event_StartUp.cs" />
     <Compile Include="GetSetu.cs" />
+    <Compile Include="PicHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

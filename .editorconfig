@@ -2,3 +2,9 @@
 
 # CA1305: 指定 IFormatProvider
 dotnet_diagnostic.CA1305.severity = none
+
+# CA1707: 标识符不应包含下划线
+dotnet_diagnostic.CA1707.severity = none
+
+# CA1031: 不捕获常规异常类型
+dotnet_diagnostic.CA1031.severity = none

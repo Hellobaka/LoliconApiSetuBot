@@ -4,27 +4,14 @@ using Native.Tool.IniConfig;
 using Native.Tool.IniConfig.Linq;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Web.Script.Serialization;
 using System.Windows;
-using System.Windows.Automation.Peers;
-using System.Windows.Automation.Provider;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace me.cqp.luohuaming.Setu.UI
 {
@@ -44,10 +31,10 @@ namespace me.cqp.luohuaming.Setu.UI
             {
                 Uri uri = new Uri(textbox_ProxyUri.Text);
                 string path = $"{CQSave.AppDirectory}Config.ini";
-                ini.Object["Proxy"]["IsEnabled"]=new IValue(togglebutton_IsProxy.IsChecked.GetValueOrDefault() ? "1" : "0");
-                ini.Object["Proxy"]["ProxyUri"]=new IValue(textbox_ProxyUri.Text);
-                ini.Object["Proxy"]["ProxyName"]=new IValue(textbox_ProxyName.Text);
-                ini.Object["Proxy"]["ProxyPwd"]=new IValue(textbox_ProxyPwd.Text);
+                ini.Object["Proxy"]["IsEnabled"] = new IValue(togglebutton_IsProxy.IsChecked.GetValueOrDefault() ? "1" : "0");
+                ini.Object["Proxy"]["ProxyUri"] = new IValue(textbox_ProxyUri.Text);
+                ini.Object["Proxy"]["ProxyName"] = new IValue(textbox_ProxyName.Text);
+                ini.Object["Proxy"]["ProxyPwd"] = new IValue(textbox_ProxyPwd.Text);
                 textblock_ErrorMsg.Visibility = Visibility.Visible;
                 textblock_ErrorMsg.Foreground = Brushes.Black;
                 ini.Save();
@@ -147,7 +134,7 @@ namespace me.cqp.luohuaming.Setu.UI
             string[] url;
             if (!File.Exists($"{CQSave.AppDirectory}CheckProxy.json"))
             {
-                string[] temp = { "https://www.baidu.com", "https://api.lolicon.app", "https://www.pixiv.cat", "https://www.google.com", "https://www.pixiv.net" };
+                string[] temp = { "https://www.baidu.com", "https://api.lolicon.app", "https://pixiv.cat", "https://www.google.com", "https://www.pixiv.net" };
                 url = temp;
                 File.WriteAllText($"{CQSave.AppDirectory}CheckProxy.json", JsonConvert.SerializeObject(url));//序列化
             }

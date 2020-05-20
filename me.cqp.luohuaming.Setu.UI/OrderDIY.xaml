@@ -4,15 +4,100 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:me.cqp.luohuaming.Setu.UI"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="OrderDIY">
-
-    <Grid Height="450">
-        <ScrollViewer CanContentScroll="True" Height="450" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-            <StackPanel Height="800">
-
-            </StackPanel>
+      d:DesignHeight="504" d:DesignWidth="400" MaxHeight="504" MaxWidth="400"
+      Title="OrderDIY" Loaded="Page_Loaded">
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MateriaLDesignColor.Blue.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MateriaLDesignColor.Lime.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+    <StackPanel>
+        <ScrollViewer MaxHeight="400">
+            <materialDesign:Card
+                Background="{DynamicResource MaterialDesignBackground}" Margin="5" Width="400">
+                <StackPanel>
+                    <Expander
+                        Header="指令设置" IsExpanded="True">
+                        <StackPanel x:Name="stackpanel_1"
+                            TextBlock.Foreground="{DynamicResource MaterialDesignBody}"
+                            Margin="24,8,24,16">
+                            <TextBlock
+                                Text="拉取setu:"  Margin="0,0,0,7"/>
+                            <TextBox x:Name="text_LoliConPic"
+                                Text="#setu" Padding="2 0 0 0"
+                                TextWrapping="Wrap" />
+                            <TextBlock
+                                Text="清除限制:"  Margin="0,10,0,7"/>
+                            <TextBox x:Name="text_ClearLimit"
+                                Text="#clear" Padding="2 0 0 0"
+                                TextWrapping="Wrap" />
+                        </StackPanel>                
+                    </Expander>
+                    <Border
+                        Background="{DynamicResource MaterialDesignDivider}"
+                        Height="1"
+                        SnapsToDevicePixels="True" />
+                    <Expander
+                        Header="自定义回答">
+                        <StackPanel x:Name="stackpanel_AnwDIY"
+                            TextBlock.Foreground="{DynamicResource MaterialDesignBody}"
+                            Margin="24,8,24,16">
+                            <TextBlock  Margin="0,5,0,7"
+                                        Text="拉取图片指令执行" />
+                            <TextBox x:Name="text_StartPullPic" Padding="2,0,0,0"
+                                       Text="拉取图片中~至少需要15s……/n你今日剩余调用次数为{count}次(￣▽￣)"
+                                       TextWrapping="Wrap" AcceptsReturn="True" />
+                            <TextBlock  Margin="0,5,0,7"
+                                        Text="拉取图片成功" />
+                            <TextBox x:Name="text_Sucess"  Padding="2,0,0,0"
+                                       Text="机器人当日剩余调用次数:&lt;quota&gt;\n下次额度恢复时间为: &lt;quota_time&gt;\ntitle: &lt;title &gt;\nauthor: &lt;author&gt;\np: &lt;p&gt;\npid: &lt;pid&gt;"
+                                       TextWrapping="Wrap" AcceptsReturn="True"/>
+                            <TextBlock  Margin="0,5,0,7"
+                                        Text="图片下载失败" />
+                            <TextBox  x:Name="text_DownloadFailed" Padding="2,0,0,0"
+                                       Text="下载错误，次数已归还"
+                                       TextWrapping="Wrap" AcceptsReturn="True"/>
+                            <TextBlock  Margin="0,5,0,7"
+                                        Text="超出额度" />
+                            <TextBox  x:Name="text_OutofQuota" Padding="2,0,0,0"
+                                       Text="超出额度，次数已归还"
+                                       TextWrapping="Wrap" AcceptsReturn="True"/>
+                            <TextBlock  Margin="0,5,0,7"
+                                        Text="图片发送失败" />
+                            <TextBox  x:Name="text_SendPicFailed" Padding="2,0,0,0"
+                                       Text="由于不可抗力导致图被吞，复制进浏览器看看吧:&lt;url&gt;"
+                                       TextWrapping="Wrap" AcceptsReturn="True"/>
+                            <TextBlock  Margin="0,5,0,7"
+                                        Text="其他错误" />
+                            <TextBox  x:Name="text_ExtraError" Padding="2,0,0,0"
+                                       Text="发生错误，请尝试重新调用，错误信息:&lt;wrong_msg&gt;"
+                                       TextWrapping="Wrap" AcceptsReturn="True"/>
+                            <TextBlock  Margin="0,5,0,7"
+                                        Text="个人调用次数达到上限" />
+                            <TextBox  x:Name="text_MaxMember" Padding="2,0,0,0"
+                                       Text="你当日所能调用的次数已达上限(￣▽￣)"
+                                       TextWrapping="Wrap" AcceptsReturn="True"/>
+                            <TextBlock  Margin="0,5,0,7"
+                                        Text="群调用次数达到上限" />
+                            <TextBox  x:Name="text_MaxGroup" Padding="2,0,0,0"
+                                       Text="本群当日所能调用的次数已达上限(￣▽￣)"
+                                       TextWrapping="Wrap" AcceptsReturn="True"/>
+                        </StackPanel>
+                    </Expander>
+                </StackPanel>
+            </materialDesign:Card>              
         </ScrollViewer>
-    </Grid>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 10 0 0">
+            <Button x:Name="button_Close" Margin="0 0 10 0" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">退出</Button>
+            <Button x:Name="button_Save" Margin="0 0 10 0" Click="button_Save_Click" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">保存</Button>
+            <Button x:Name="button_Reset" Click="button_Reset_Click">重置</Button>
+        </StackPanel> 
+    </StackPanel>
 </Page>

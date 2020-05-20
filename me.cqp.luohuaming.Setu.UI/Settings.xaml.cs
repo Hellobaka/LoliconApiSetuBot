@@ -1,24 +1,14 @@
-﻿using me.cqp.luohuaming.Setu.Code;
+﻿#define DEBUG
+using me.cqp.luohuaming.Setu.Code;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.IO;
-using System.Timers;
 using System.Windows.Threading;
-using Native.Sdk.Cqp.Model;
-using System.Threading;
 using MaterialDesignThemes.Wpf;
 using Native.Tool.IniConfig;
 using Native.Tool.IniConfig.Linq;
@@ -111,7 +101,7 @@ namespace me.cqp.luohuaming.Setu.UI
         private DispatcherTimer dispatcherTimer = null;
         private void Page_Settings_Loaded(object sender, RoutedEventArgs e)
         {
-            string path = CQSave.AppDirectory + @"\Config.ini";
+            string path = CQSave.AppDirectory + "Config.ini";
             ini = new IniConfig(path);
             ini.Load();
             togglebutton_ApiKey.IsChecked = ini.Object["Config"]["ApiSwitch"].GetValueOrDefault("0") == "1" ? true : false;
@@ -146,10 +136,11 @@ namespace me.cqp.luohuaming.Setu.UI
                 temp.GroupId = 0;
                 group.Add(temp);
             }
+
             //List<BindingGroup> group = new List<BindingGroup>();
-            //for (int i = 0; i < 20; i++)
+            //for (int i = 0; i < 2; i++)
             //{
-            //    Thread.Sleep(10);
+            //    Thread.Sleep(5);
             //    BindingGroup temp = new BindingGroup();
             //    Random rd = new Random();
             //    temp.IsChecked = rd.Next(0, 2) == 1 ? true : false;
@@ -157,6 +148,7 @@ namespace me.cqp.luohuaming.Setu.UI
             //    temp.GroupId = rd.Next();
             //    group.Add(temp);
             //}
+
             ItemControl_Group.DataContext = group;
 
             dispatcherTimer = new System.Windows.Threading.DispatcherTimer();

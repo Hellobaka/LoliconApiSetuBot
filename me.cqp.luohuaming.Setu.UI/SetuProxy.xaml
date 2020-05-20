@@ -1,5 +1,4 @@
-﻿<Page Loaded="Page_Loaded" 
-      x:Class="me.cqp.luohuaming.Setu.UI.SetuProxy"
+﻿<Page x:Class="me.cqp.luohuaming.Setu.UI.SetuProxy"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -7,7 +6,7 @@
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       xmlns:local="clr-namespace:me.cqp.luohuaming.Setu.UI"
       mc:Ignorable="d"
-      Title="SetuProxy" Width="582" Height="210">
+      Title="SetuProxy" Width="582" Height="210" Loaded="Page_Loaded">
     <Page.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -28,33 +27,23 @@
         <TextBox x:Name="textbox_ProxyName" IsEnabled="{Binding IsChecked, ElementName=togglebutton_IsProxy}" HorizontalAlignment="Left" Height="23" Margin="84.557,79.332,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="166.667"/>
         <TextBlock HorizontalAlignment="Left" IsEnabled="{Binding IsChecked, ElementName=togglebutton_IsProxy}" Margin="20,110.516,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="15.147" Width="59.557" Text="密码:"/>
         <TextBox x:Name="textbox_ProxyPwd" IsEnabled="{Binding IsChecked, ElementName=togglebutton_IsProxy}" HorizontalAlignment="Left" Height="23" Margin="84.557,107.332,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="166.667"/>
-        <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" x:Name="button_Save" Click="button_Save_Click" Content="保存" HorizontalAlignment="Left" Margin="96.224,168,0,0" VerticalAlignment="Top" Width="75"/>
-        <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" x:Name="button_Reset" Click="button_Reset_Click" Content="重置" HorizontalAlignment="Left" Margin="176.224,168,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button Style="{StaticResource MaterialDesignFlatButton}" Click="button_Save_Click" IsDefault="True" x:Name="button_Save" Content="保存" HorizontalAlignment="Left" Margin="96.224,168,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button Style="{StaticResource MaterialDesignFlatButton}" Click="button_Reset_Click" IsDefault="True" x:Name="button_Reset" Content="重置" HorizontalAlignment="Left" Margin="176.224,168,0,0" VerticalAlignment="Top" Width="75"/>
         <TextBlock Margin="59.419,16,0,0" TextWrapping="Wrap" Text="使用Proxy" HorizontalAlignment="Left" Width="64.077" Height="15.24" VerticalAlignment="Top"/>
         <TextBlock x:Name="textblock_ErrorMsg" HorizontalAlignment="Left" Margin="20.776,141.999,0,0" TextWrapping="Wrap" Text="错误信息:" VerticalAlignment="Top" Width="231.224" Foreground="#FFB81818" Visibility="Hidden"/>
         <Button Style="{StaticResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"  IsDefault="True" x:Name="button_Close" Content="关闭" HorizontalAlignment="Left" Margin="10,168,0,0" VerticalAlignment="Top" Width="75"/>
-        <Button x:Name="button_CheckProxy" Content="代理测通" HorizontalAlignment="Left" Margin="273,10,0,0" VerticalAlignment="Top" Width="246" Click="button_CheckProxy_Click"/>
+        <Button x:Name="button_CheckProxy" Click="button_CheckProxy_Click" Content="代理测通" HorizontalAlignment="Left" Margin="273,10,0,0" VerticalAlignment="Top" Width="246"/>
         <ProgressBar Name="progressbar_Main"
-              Style="{StaticResource MaterialDesignCircularProgressBar}"
-              Value="0"
-              IsIndeterminate="True" Margin="533,6,12,164" Height="Auto" Width="Auto" RenderTransformOrigin="0.5,0.5" Visibility="Hidden" >
-            <ProgressBar.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform ScaleY="-1"/>
-                    <SkewTransform/>
-                    <RotateTransform/>
-                    <TranslateTransform/>
-                </TransformGroup>
-            </ProgressBar.RenderTransform>
+                     Style="{StaticResource MaterialDesignCircularProgressBar}"
+                     Value="0"
+                     IsIndeterminate="True" Margin="533,6,12,164" Height="Auto" Width="Auto" RenderTransformOrigin="0.5,0.5" Visibility="Hidden" >
         </ProgressBar>
         <TextBox Name="textbox_CheckProxy"
-            TextWrapping="Wrap"
-            VerticalAlignment="Stretch"
-            MinWidth="280"
-            AcceptsReturn="True"
-            VerticalScrollBarVisibility="Auto"
-            SpellCheck.IsEnabled="True"
-            Height="80" Margin="273,55,0,75" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" Width="298">
+                 TextWrapping="Wrap"
+                 MinWidth="280"
+                 AcceptsReturn="True"
+                 VerticalScrollBarVisibility="Auto"
+                 Height="80" Margin="273,55,0,75" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" Width="298">
         </TextBox>
     </Grid>
 </Page>

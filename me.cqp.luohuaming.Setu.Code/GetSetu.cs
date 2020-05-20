@@ -179,10 +179,17 @@ namespace me.cqp.luohuaming.Setu.Code
                     //访问接口
                     byte[] by = Get(url, 10000, proxy);
                     json = Encoding.UTF8.GetString(by);
+                    if (string.IsNullOrEmpty(json))
+                    {
+                        throw new NullReferenceException();
+                    }
                 }
                 catch (Exception e)
                 {
                     CQSave.cqlog.Info("Error", e.Message + " ");
+                    result.Add("403" +e.Message);
+                    result.Add(@"\LoliconPic\error.jpg");
+                    return result;
                 }
                 CQSave.cqlog.Debug("debug", json + " ");
                 //检查路径是否存在

@@ -444,7 +444,7 @@ namespace Native.Tool.IniConfig
 			}
 			string temp=null;
 			IValue value = new IValue(temp);
-			tempSection.SetDefault(value);
+			if(tempSection!=null)tempSection.SetDefault(value);
 		}
 		#endregion
 	}
