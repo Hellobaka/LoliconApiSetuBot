@@ -20,7 +20,7 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Grid>        
+    <Grid>
         <materialDesign:ColorZone
               Mode="PrimaryMid"
               Padding="16" MouseDown="ColorZone_MouseDown">
@@ -52,6 +52,12 @@
                                 <TextBlock Text="设置" Tag="Settings" VerticalAlignment="Center" Margin="20 10" MouseDown="ListBoxItem_MouseDown"/>
                             </StackPanel>
                         </ListBoxItem>
+                        <ListBoxItem Tag="CustomAPI" MouseLeftButtonUp="ListBoxItem_MouseDown">
+                            <StackPanel Orientation="Horizontal" Tag="CustomAPI" MouseDown="ListBoxItem_MouseDown">
+                                <materialDesign:PackIcon Kind="ChatTyping" Width="25" Height="25" Margin="10" VerticalAlignment="Center"/>
+                                <TextBlock Text="自定义接口" Tag="CustomAPI" VerticalAlignment="Center" Margin="20 10" MouseDown="ListBoxItem_MouseDown"/>
+                            </StackPanel>
+                        </ListBoxItem>
                         <ListBoxItem Tag="AboutMe" MouseLeftButtonUp="ListBoxItem_MouseDown">
                             <StackPanel Orientation="Horizontal" Tag="AboutMe" MouseDown="ListBoxItem_MouseDown">
                                 <materialDesign:PackIcon Kind="GithubBox" Width="25" Height="25" Margin="10" VerticalAlignment="Center"/>
@@ -62,12 +68,9 @@
                 </DockPanel>
             </materialDesign:DrawerHost.LeftDrawerContent>
         </materialDesign:DrawerHost>
-        <ShowMeTheXAML:XamlDisplay  x:Name="Xamldisplay_Snackbar" Margin="184,0,179,0" Height="66" VerticalAlignment="Bottom">
-            <!-- simplest form -->
-            <materialDesign:Snackbar MessageQueue="{materialDesign:MessageQueue}"
+        <!-- simplest form -->
+        <materialDesign:Snackbar  Height="66" VerticalAlignment="Bottom" MessageQueue="{materialDesign:MessageQueue}"
                     IsActive="False"
-                    x:Name="Snackbar_Message" Margin="171.363,0,-157.638,0" />
-        </ShowMeTheXAML:XamlDisplay>
-
+                    x:Name="Snackbar_Message" Margin="304,0,317,-7" Width="396" />
     </Grid>
 </Window>

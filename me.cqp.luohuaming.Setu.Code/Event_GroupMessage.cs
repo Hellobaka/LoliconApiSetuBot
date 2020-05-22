@@ -16,10 +16,35 @@ using Newtonsoft.Json;
 
 namespace me.cqp.luohuaming.Setu.Code
 {
+    #region --解析类--
     //INIhelper\.IniRead\((\S+), (\S+), (\S+), \S+?\)
     //INIhelper\.IniWrite\((\S+), (\S+), (\S+), \S+?\)
     //ini.Object[$1][$2].GetValueOrDefault($3)
     //ini.Object[$1][$2]=new IValue($3)
+    public class ItemToSave
+    {
+        /// <summary>
+        /// 是否开启接口
+        /// </summary>
+        public bool Enabled;
+        /// <summary>
+        /// 指令
+        /// </summary>
+        public string Order;
+        /// <summary>
+        /// API链接
+        /// </summary>
+        public string URL;
+        /// <summary>
+        /// 备注
+        /// </summary>
+        public string Remark;
+        /// <summary>
+        /// 调用次数限制
+        /// </summary>
+        public bool Usestrict;
+    }
+    #endregion
     public class Event_GroupMessage : IGroupMessage
     {
         public static bool revoke = false;
@@ -29,6 +54,14 @@ namespace me.cqp.luohuaming.Setu.Code
         {
             //读取自定义指令与回答
             PicHelper.ReadOrderandAnswer();
+            List<ItemToSave> ls=new List<ItemToSave>();
+            if (File.Exists(CQSave.AppDirectory+"CustomAPI.json"))
+            {
+                string temp = File.ReadAllText(CQSave.AppDirectory + "CustomAPI.json");
+                //反序列化
+                ls = JsonConvert.DeserializeObject<List<ItemToSave>>(temp);
+            }
+
             if (e.Message.Text.Replace("＃", "#") .StartsWith(PicHelper.LoliConPic,StringComparison.CurrentCulture))
             {
                 e.Handler = true;
@@ -91,6 +124,10 @@ namespace me.cqp.luohuaming.Setu.Code
                 File.Delete(CQSave.AppDirectory + "ConfigLimit.ini");
                 e.FromGroup.SendGroupMessage(CQApi.CQCode_At(e.FromQQ), "重置成功");
                 return;
+            }
+            else if (PicHelper.CheckCustomAPI(ls,e))
+            {
+                PicHelper.CustomAPI_Call(ls, e);
             }
         }
 

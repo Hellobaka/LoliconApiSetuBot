@@ -82,7 +82,7 @@ namespace me.cqp.luohuaming.Setu.UI
         /// <param name="seconds">存留的秒数</param>
         public void SnackbarMessage_Show(string message, double seconds)
         {
-            parentwindow.Xamldisplay_Snackbar.Visibility = Visibility.Visible;
+            parentwindow.Snackbar_Message.Visibility = Visibility.Visible;
             parentwindow.Snackbar_Message.MessageQueue.Enqueue(message, null, null, null, false, true, TimeSpan.FromSeconds(seconds));
             //Xamldisplay_Snackbar.Visibility = Visibility.Collapsed;
         }

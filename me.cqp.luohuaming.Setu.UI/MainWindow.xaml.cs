@@ -85,6 +85,13 @@ namespace me.cqp.luohuaming.Setu.UI
                     frmMain.Content = pg;
                     pg.parentwindow = this;
                 }
+                else if (tag == "CustomAPI")
+                {
+                    if (frmMain.Content.GetType().Name == "CustomAPI") return;
+                    CustomAPI pg = new CustomAPI();
+                    frmMain.Content = pg;
+                    pg.parentwindow = this;
+                }
             }
             catch(Exception exc)
             {
@@ -115,7 +122,7 @@ namespace me.cqp.luohuaming.Setu.UI
         /// <param name="seconds">存留的秒数</param>
         public void SnackbarMessage_Show(string message, double seconds)
         {
-            Xamldisplay_Snackbar.Visibility = Visibility.Visible;
+            Snackbar_Message.Visibility = Visibility.Visible;
             Snackbar_Message.MessageQueue.Enqueue(message, null, null, null, false, true, TimeSpan.FromSeconds(seconds));
             //Xamldisplay_Snackbar.Visibility = Visibility.Collapsed;
         }

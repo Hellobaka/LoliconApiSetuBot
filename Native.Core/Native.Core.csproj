@@ -105,9 +105,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Export\CQExport.log">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
       <DependentUpon>CQExport.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
     </None>
     <None Include="FodyWeavers.xml" />
     <None Include="app.json">
@@ -116,12 +116,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Export\CQExport.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>CQExport.log</LastGenOutput>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
@@ -139,6 +133,12 @@
       <Project>{d7a958b3-79d9-49f8-8bb4-9619bab6ecba}</Project>
       <Name>Native.Sdk</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Export\CQExport.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>CQExport.log</LastGenOutput>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ImportGroup Label=".NET DllExport">

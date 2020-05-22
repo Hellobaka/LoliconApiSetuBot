@@ -1,9 +1,14 @@
-﻿using Native.Sdk.Cqp.EventArgs;
+﻿using Native.Sdk.Cqp;
+using Native.Sdk.Cqp.EventArgs;
+using Native.Sdk.Cqp.Model;
+using Native.Tool.Http;
 using Native.Tool.IniConfig;
 using Native.Tool.IniConfig.Linq;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Security.AccessControl;
@@ -90,8 +95,7 @@ namespace me.cqp.luohuaming.Setu.Code
             maxofPerson = ini.Object["Config"]["MaxofPerson"].GetValueOrDefault(5);
             if (countofPerson < maxofPerson)
             {
-                iniUser.Object[$"Count{e.FromGroup.Id}"][string.Format("Count{0}", e.FromQQ)] = new IValue((++countofPerson).ToString());
-                iniUser.Object[$"Count{e.FromGroup.Id}"]["CountofGroup"] = new IValue((++countofGroup).ToString());
+                MinusMemberQuota(e);
             }
             else
             {
@@ -103,8 +107,7 @@ namespace me.cqp.luohuaming.Setu.Code
                 }
                 else
                 {
-                    iniUser.Object[$"Count{e.FromGroup.Id}"][string.Format("Count{0}", e.FromQQ)] = new IValue((++countofPerson).ToString());
-                    iniUser.Object[$"Count{e.FromGroup.Id}"]["CountofGroup"] = new IValue((++countofGroup).ToString());
+                    MinusMemberQuota(e);
                 }
             }
             iniUser.Object["Config"]["Timestamp"] = new IValue(GetTimeStamp());
@@ -113,6 +116,7 @@ namespace me.cqp.luohuaming.Setu.Code
             ls.Add(StartPullPic.Replace("<count>", (maxofPerson - countofPerson).ToString()));
             return ls;
         }
+
 
         /// <summary>
         /// 读取返回自定义指令与回答内容
@@ -261,6 +265,19 @@ namespace me.cqp.luohuaming.Setu.Code
         }
 
         /// <summary>
+        /// 为用户的可用次数减1
+        /// </summary>
+        /// <param name="e"></param>
+        public static void MinusMemberQuota(CQGroupMessageEventArgs e)
+        {
+            int countofPerson = iniUser.Object[$"Count{e.FromGroup.Id}"][string.Format("Count{0}", e.FromQQ.Id)].GetValueOrDefault(0);
+            int countofGroup = iniUser.Object[$"Count{e.FromGroup.Id}"]["CountofGroup"].GetValueOrDefault(0);
+            iniUser.Object[$"Count{e.FromGroup.Id}"][string.Format("Count{0}", e.FromQQ)] = new IValue((++countofPerson).ToString());
+            iniUser.Object[$"Count{e.FromGroup.Id}"]["CountofGroup"] = new IValue((++countofGroup).ToString());
+            iniUser.Save();
+        }
+
+        /// <summary>
         /// 获取时间戳
         /// </summary>
         /// <returns></returns>
@@ -303,6 +320,83 @@ namespace me.cqp.luohuaming.Setu.Code
                 }
             }
             return false;
+        }
+        /// <summary>
+        /// 查看指令是否是自定义接口内的
+        /// </summary>
+        /// <param name="ls"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        public static bool CheckCustomAPI(List<ItemToSave> ls, CQGroupMessageEventArgs e)
+        {
+            if (ls.Count == 0) return false;
+
+            foreach (var item in ls)
+            {
+                if (e.Message.Text == item.Order &&item.Enabled)
+                {                    
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static void CustomAPI_Call(List<ItemToSave> ls,CQGroupMessageEventArgs e)
+        {
+            var str = JudgeLegality(e);
+            e.FromGroup.SendGroupMessage(str[1]);
+            if (str[0] != "0") return;
+            var result = CustomAPI_Image(ls, e);
+            QQMessage staues = e.FromGroup.SendGroupMessage(result[2]);
+            if (!staues.IsSuccess)//图片发送失败
+            {
+                if(Convert.ToBoolean(result[1]))
+                    PlusMemberQuota(e);
+                e.FromGroup.SendGroupMessage($"图片发送失败");
+            }
+        }
+
+        public static List<string> CustomAPI_Image(List<ItemToSave> ls, CQGroupMessageEventArgs e)
+        {
+            List<string> result = new List<string>();
+            List<ItemToSave> order = new List<ItemToSave>();
+            foreach(var item in ls)
+            {
+                if (item.Order == e.Message.Text) order.Add(item);
+            }
+            try
+            {
+                //尝试拉取图片，若有多个相同的接口则随机来一个
+                ItemToSave item = order[new Random().Next(0, order.ToList().Count)];
+                result.Add(item.URL);result.Add(item.Usestrict.ToString());
+                byte[] temp = HttpWebClient.Get(item.URL);
+                e.CQLog.Info("自定义接口", $"自定义接口调用 网址{item.URL}");
+                if (!item.Usestrict) PlusMemberQuota(e);
+                
+                //以后要用的路径,先生成一个
+                string targetdir = Path.Combine(Environment.CurrentDirectory, "data", "image", "LoliConPic", "CustomAPI");
+                if (!Directory.Exists(targetdir))
+                {
+                    Directory.CreateDirectory(targetdir);
+                }
+                //将字节数组转换为图片
+                MemoryStream memStream = new MemoryStream(temp);
+                Image mImage = Image.FromStream(memStream);
+                Bitmap bp = new Bitmap(mImage);
+                string imagename = DateTime.Now.ToString("yyyyMMddHHss") + ".jpg";
+                string fullpath = Path.Combine(targetdir,imagename );
+                bp.Save(fullpath);
+
+                GetSetu.AntiHX(fullpath);
+                string imagepath = Path.Combine("LoliConPic", "CustomAPI", imagename);
+                result.Add(CQApi.CQCode_Image(imagepath).ToSendString());
+                return result;
+            }
+            catch(Exception exc)
+            {
+                result.Add("自定义接口调用失败，错误信息" + exc.Message);
+                return result;
+            }
         }
 
     }
