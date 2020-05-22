@@ -32,10 +32,12 @@
         </materialDesign:ColorZone>
         <Button x:Name="button_Exit" Content="×" Click="button_Exit_Click" Padding="15,4,16,4" Height="Auto" Margin="958,12,10,500" FontSize="20" Background="#FFD43232"/>
         <Frame x:Name="frmMain" NavigationUIVisibility="Hidden" Content="Frame" HorizontalAlignment="Left" Height="489" Margin="0,69,0,0" VerticalAlignment="Top" Width="1017" Source="/me.cqp.luohuaming.Setu.UI;component/Settings.xaml"/>
+
+
         <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding IsChecked, ElementName=MenuToggleButton}">
             <materialDesign:DrawerHost.LeftDrawerContent>
                 <DockPanel MinWidth="212">
-                    <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}" 
+                    <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}"
                                     DockPanel.Dock="Top"
                                     HorizontalAlignment="Right" Margin="16"
                                     IsChecked="{Binding IsChecked, ElementName=MenuToggleButton, Mode=TwoWay}" />
@@ -60,7 +62,7 @@
                 </DockPanel>
             </materialDesign:DrawerHost.LeftDrawerContent>
         </materialDesign:DrawerHost>
-        <ShowMeTheXAML:XamlDisplay  x:Name="Xamldisplay_Snackbar" Key="snackbar_1" Margin="184,0,179,0" Height="66" VerticalAlignment="Bottom">
+        <ShowMeTheXAML:XamlDisplay  x:Name="Xamldisplay_Snackbar" Margin="184,0,179,0" Height="66" VerticalAlignment="Bottom">
             <!-- simplest form -->
             <materialDesign:Snackbar MessageQueue="{materialDesign:MessageQueue}"
                     IsActive="False"

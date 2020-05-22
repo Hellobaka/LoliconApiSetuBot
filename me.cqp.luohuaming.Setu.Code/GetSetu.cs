@@ -10,6 +10,7 @@ using Native.Tool.Http;
 using Native.Tool.IniConfig;
 using System.IO;
 using System.Net;
+using System.Globalization;
 
 namespace me.cqp.luohuaming.Setu.Code
 {
@@ -126,8 +127,13 @@ namespace me.cqp.luohuaming.Setu.Code
 
     public class GetSetu
     {
-        string api = "https://api.lolicon.app/setu";
-        public List<string> GetSetuPic()
+        string api = "https://api.lolicon.app/setu?";
+        /// <summary>
+        /// 获取图片
+        /// </summary>
+        /// <param name="ordertext">除指令外的控制文本</param>
+        /// <returns></returns>
+        public List<string> GetSetuPic(string ordertext)
         {
             //定义
             //List数组内 第一个元素为信息 第二个元素为图片路径
@@ -138,40 +144,45 @@ namespace me.cqp.luohuaming.Setu.Code
             try
             {
                 WebProxy proxy = null;
-                IniConfig ini = new IniConfig(CQSave.AppDirectory+"Config.ini");
+                IniConfig ini = new IniConfig(CQSave.AppDirectory + "Config.ini");
                 ini.Load();
                 if (ini.Object["Proxy"]["IsEnabled"].GetValueOrDefault("0") == "1")
                 {
                     try
-                    {                        
-                        string uri,username, pwd;                        
+                    {
+                        //代理设置
+                        string uri, username, pwd;
                         uri = ini.Object["Proxy"]["ProxyUri"].GetValueOrDefault("0");
                         username = ini.Object["Proxy"]["ProxyName"].GetValueOrDefault("0");
                         pwd = ini.Object["Proxy"]["ProxyName"].GetValueOrDefault("0");
 
                         proxy = new WebProxy();
                         proxy.Address = new Uri(uri);
-                        proxy.Credentials = new NetworkCredential(username,pwd);
+                        proxy.Credentials = new NetworkCredential(username, pwd);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         CQSave.cqlog.Info("Proxy错误", $"设置的代理无效，信息:{ex.Message}");
                     }
                 }
-
+                Event_GroupMessage.revoke = false;
                 List<string> result = new List<string>();
                 string url = string.Empty;
                 //拼接Url
-                if (ini.Object["Config"]["ApiSwitch"].GetValueOrDefault("0")== "1")
+                if (ini.Object["Config"]["ApiSwitch"].GetValueOrDefault("0") == "1")
                 {
                     string apikey = ini.Object["Config"]["ApiKey"].GetValueOrDefault("0");
-                    url = api + $"?apikey={apikey}";
+                    url = api + $"apikey={apikey}&";
                 }
                 else
                 {
                     url = api;
                 }
-                byte[] b = { 0 };
+                url += GetOrderText(ordertext);
+                if (url.Contains("r18=1")&&ini.Object["R18"]["R18PicRevoke"]=="1")
+                {
+                    Event_GroupMessage.revoke = true;//用于后续撤回
+                }
                 string json = "";
                 CQSave.cqlog.Debug("debug", url);
                 try
@@ -187,7 +198,7 @@ namespace me.cqp.luohuaming.Setu.Code
                 catch (Exception e)
                 {
                     CQSave.cqlog.Info("Error", e.Message + " ");
-                    result.Add("403" +e.Message);
+                    result.Add("403" + e.Message);
                     result.Add(@"\LoliconPic\error.jpg");
                     return result;
                 }
@@ -199,11 +210,10 @@ namespace me.cqp.luohuaming.Setu.Code
                 }
                 //反序列化json
                 Setu deserialize = JsonConvert.DeserializeObject<Setu>(json);
-                //返回429 额度不足
-                if (deserialize.code == 429)
+                if (deserialize.code != 0)//非成功调用
                 {
-                    result.Add("401");
-                    result.Add($"{deserialize.quota_min_ttl}");
+                    result.Add(json);
+                    result.Add(@"\LoliconPic\error.jpg");
                     return result;
                 }
                 //获取Data数组信息
@@ -217,16 +227,20 @@ namespace me.cqp.luohuaming.Setu.Code
                             TimeOut = 10000,//超时时间10s
                             Proxy = proxy
                         };
-                        http.DownloadFile(item.url, CQSave.ImageDirectory + @"\LoliconPic\" + item.pid + ".jpg");
-                        AntiHX(CQSave.ImageDirectory + @"\LoliconPic\" + item.pid + ".jpg");
+                        string path = CQSave.ImageDirectory + @"\LoliconPic\" + item.pid + ".jpg";
+                        if (!File.Exists(path))
+                        {
+                            http.DownloadFile(item.url, path);
+                            AntiHX(CQSave.ImageDirectory + @"\LoliconPic\" + item.pid + ".jpg");
+                        }
                         result.Add(json);
-                        result.Add( @"\LoliconPic\" + item.pid + ".jpg");
+                        result.Add(@"\LoliconPic\" + item.pid + ".jpg");
                         http.Dispose();
                     }
                     catch (Exception e)
                     {
-                        CQSave.cqlog.Info("Error", "在"+e.Source+"上, 发送错误: "+ e.Message + " 有"+e.StackTrace);
-                        result.Add("403" + e.Message);
+                        CQSave.cqlog.Info("Error", "在" + e.Source + "上, 发送错误: " + e.Message + " 有" + e.StackTrace);
+                        result.Add("402" + e.Message);
                         result.Add(@"\LoliconPic\error.jpg");
                         return result;
                     }
@@ -256,7 +270,7 @@ namespace me.cqp.luohuaming.Setu.Code
         /// <returns></returns>
         public static byte[] Get(string url, int timeout, WebProxy proxy)
         {
-            HttpWebClient httpWebClient = new HttpWebClient();            
+            HttpWebClient httpWebClient = new HttpWebClient();
             httpWebClient.TimeOut = timeout;
             httpWebClient.Proxy = proxy;
             httpWebClient.AllowAutoRedirect = true;
@@ -281,19 +295,19 @@ namespace me.cqp.luohuaming.Setu.Code
             Rectangle rect = new Rectangle(0, 0, 1, 1);
             g1.DrawRectangle(pen, rect);
 
-            pixelColor = bitMap.GetPixel(img.Width-1, 0);
+            pixelColor = bitMap.GetPixel(img.Width - 1, 0);
             targetcolor = ChangeColor(pixelColor);
             pen = new Pen(targetcolor);
-            rect = new Rectangle(img.Width-1, 0, 1, 1);
+            rect = new Rectangle(img.Width - 1, 0, 1, 1);
             g1.DrawRectangle(pen, rect);
 
-            pixelColor = bitMap.GetPixel(0, img.Height-1);
+            pixelColor = bitMap.GetPixel(0, img.Height - 1);
             targetcolor = ChangeColor(pixelColor);
             pen = new Pen(targetcolor);
-            rect = new Rectangle(0, img.Height-1, 1, 1);
+            rect = new Rectangle(0, img.Height - 1, 1, 1);
             g1.DrawRectangle(pen, rect);
 
-            pixelColor = bitMap.GetPixel(img.Width-1, img.Height-1);
+            pixelColor = bitMap.GetPixel(img.Width - 1, img.Height - 1);
             targetcolor = ChangeColor(pixelColor);
             pen = new Pen(targetcolor);
             rect = new Rectangle(img.Width - 1, img.Height - 1, 1, 1);
@@ -313,13 +327,13 @@ namespace me.cqp.luohuaming.Setu.Code
         static Color ChangeColor(Color col)
         {
             byte red, blue, green;
-            if(col.R==0 || col.R==255)
+            if (col.R == 0 || col.R == 255)
             {
                 red = (col.R == 0) ? (byte)1 : Convert.ToByte(244);
             }
             else
             {
-                red =Convert.ToByte(col.R+1);
+                red = Convert.ToByte(col.R + 1);
             }
             if (col.G == 0 || col.G == 255)
             {
@@ -339,6 +353,25 @@ namespace me.cqp.luohuaming.Setu.Code
             }
             Color result = Color.FromArgb(red, green, blue);
             return result;
+        }
+
+        static string GetOrderText(string ordertext)
+        {
+            ordertext = ordertext.ToLower().Replace(" ", "");
+            if (string.IsNullOrEmpty(ordertext)) return string.Empty;
+            int r18 = 0;
+            string keyword = string.Empty;
+            if (ordertext.Contains("r18"))
+            {
+                IniConfig ini = new IniConfig(CQSave.AppDirectory + "Config.ini");
+                ini.Load();
+                if (ini.Object["R18"]["Enabled"].GetValueOrDefault("0") == "1")
+                    r18 = 1;
+                else
+                    CQSave.cqlog.Warning("R18开关", "R18开关处于关闭状态，若想调用，请打开扩展设置中的选项");
+            }
+            keyword = ordertext.Replace("r18", "");
+            return $"r18={r18}&keyword={keyword}";
         }
     }
 }

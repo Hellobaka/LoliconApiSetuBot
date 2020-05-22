@@ -4,7 +4,9 @@ using Native.Tool.IniConfig.Linq;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Security.AccessControl;
 
 namespace me.cqp.luohuaming.Setu.Code
 {
@@ -43,6 +45,10 @@ namespace me.cqp.luohuaming.Setu.Code
         /// 图片发送失败
         /// </summary>
         public static string SendPicFailed;
+        /// <summary>
+        /// 未找到满足关键字的图片
+        /// </summary>
+        public static string PicNotFound;
         #endregion
 
         #region --指令文本--
@@ -63,9 +69,10 @@ namespace me.cqp.luohuaming.Setu.Code
         /// 判断是否符合取图的条件
         /// </summary>
         /// <returns></returns>
-        public static string JudgeLegality(CQGroupMessageEventArgs e)
+        public static List<string> JudgeLegality(CQGroupMessageEventArgs e)
         {
-            if (e == null || !InGroup(e)) return string.Empty;
+            List<string> ls = new List<string>();
+            if (e == null || !InGroup(e)) return ls;
 
             int countofPerson, countofGroup, maxofPerson, maxofGroup;
             countofPerson = iniUser.Object[$"Count{e.FromGroup.Id}"][string.Format("Count{0}", e.FromQQ.Id)].GetValueOrDefault(0);
@@ -73,7 +80,12 @@ namespace me.cqp.luohuaming.Setu.Code
             maxofGroup = ini.Object["Config"]["MaxofGroup"].GetValueOrDefault(30);
             if (countofGroup > maxofGroup)
             {
-                if (maxofGroup != 0) return MaxGroup;
+                if (maxofGroup != 0) 
+                {
+                    ls.Add("-1");
+                    ls.Add(MaxGroup);
+                    return ls; 
+                }
             }
             maxofPerson = ini.Object["Config"]["MaxofPerson"].GetValueOrDefault(5);
             if (countofPerson < maxofPerson)
@@ -83,7 +95,12 @@ namespace me.cqp.luohuaming.Setu.Code
             }
             else
             {
-                if (maxofPerson != 0) { return MaxMember; }
+                if (maxofPerson != 0)
+                {
+                    ls.Add("-1");
+                    ls.Add(MaxMember);
+                    return ls;
+                }
                 else
                 {
                     iniUser.Object[$"Count{e.FromGroup.Id}"][string.Format("Count{0}", e.FromQQ)] = new IValue((++countofPerson).ToString());
@@ -92,7 +109,9 @@ namespace me.cqp.luohuaming.Setu.Code
             }
             iniUser.Object["Config"]["Timestamp"] = new IValue(GetTimeStamp());
             iniUser.Save();
-            return StartPullPic.Replace("<count>", (maxofPerson - countofPerson).ToString());
+            ls.Add("0");
+            ls.Add(StartPullPic.Replace("<count>", (maxofPerson - countofPerson).ToString()));
+            return ls;
         }
 
         /// <summary>
@@ -120,6 +139,8 @@ namespace me.cqp.luohuaming.Setu.Code
             MaxGroup = ini.Object["AnswerDIY"]["MaxGroup"].GetValueOrDefault("本群当日所能调用的次数已达上限(￣▽￣)")
                 .Replace(@"\n", "\n");
             ExtraError = ini.Object["AnswerDIY"]["ExtraError"].GetValueOrDefault("发生错误，请尝试重新调用，错误信息:<wrong_msg>")
+                .Replace(@"\n", "\n");
+            PicNotFound = ini.Object["AnswerDIY"]["PicNotFound"].GetValueOrDefault("未找到满足关键字的图片")
                 .Replace(@"\n", "\n");
 
             LoliConPic = ini.Object["OrderDIY"]["LoliConPic"].GetValueOrDefault("#setu")
@@ -155,28 +176,26 @@ namespace me.cqp.luohuaming.Setu.Code
             int countofPerson, countofGroup;
             try
             {
-                if (str.StartsWith("403")) throw new Exception();
+                //有两种情况：返回的是json，可以解析；返回的是错误信息，只能手动解析
                 Setu deserialize = JsonConvert.DeserializeObject<Setu>(str);
+                //计算额度恢复时间
                 DateTime dt = DateTime.Now.AddSeconds(deserialize.quota_min_ttl);
-                switch (str)
+                switch (deserialize.code)
                 {
-                    case "401":
+                    case 429:
                         e.CQLog.Info("超出额度", "超出额度，次数已归还");
                         PlusMemberQuota(e);
                         OutofQuota = OutofQuota.Replace("<quota_time>", (DateTime.Now.Hour <= dt.Hour) ? $"{dt:HH:mm}" : $"明天 {dt:HH:mm}");
                         return OutofQuota;
-                    case "402":
-                        e.CQLog.Info("下载错误", "下载错误，次数已归还");
+                    case 404:
+                        e.CQLog.Info("图片未找到", "未找到符合要求的图片");
                         PlusMemberQuota(e);
-                        return DownloadFailed;
-                    default:
-                        if (str.StartsWith("403", StringComparison.OrdinalIgnoreCase))
-                        {
-                            PlusMemberQuota(e);
-                            return ExtraError.Replace("<wrong_msg>", str.Substring("403".Length));
-                        }
-                        else
-                        {
+                        return PicNotFound;
+                    case 401:
+                        e.CQLog.Info("APIKEY无效", "APIKEY无效,请更换");
+                        PlusMemberQuota(e);
+                        return "APIKEY无效，请更换";
+                    case 0:
                             string result = Sucess.Replace("<code>", deserialize.code.ToString());
                             result = result.Replace("<msg>", deserialize.msg);
                             result = result.Replace("<quota>", deserialize.quota.ToString());
@@ -194,13 +213,34 @@ namespace me.cqp.luohuaming.Setu.Code
                             result = result.Replace("<width> ", picinfo.width);
                             result = result.Replace("<height>", picinfo.height);
                             return result;
-
-                        }
+                    default://其他情况，返回json本体
+                        return str;
                 }
             }
-            catch (Exception exc)
+            catch//解析失败，手动解析
             {
-                return $"解析错误，无法继续，错误信息:{exc.Message}";
+                try
+                {
+                    switch (str.Substring(0,3))//剥离出错误码本身
+                    {
+                        case "402":
+                            e.CQLog.Info("下载错误", "下载错误，次数已归还");
+                            PlusMemberQuota(e);
+                            return DownloadFailed;
+                        case "403":
+                            e.CQLog.Info("其他错误", str.Substring(3));
+                            PlusMemberQuota(e);
+                            return ExtraError.Replace("<wrong_msg>", str.Substring(3));
+                        default:
+                            throw new Exception(str.Substring(0, 3));             
+                    }
+                }
+                catch (Exception exc)
+                {
+                    e.CQLog.Info("解析错误", $"错误信息:{exc.Message}");
+                    PlusMemberQuota(e);
+                    return $"解析错误，无法继续，错误信息:{exc.Message}";
+                }
             }
 
         }

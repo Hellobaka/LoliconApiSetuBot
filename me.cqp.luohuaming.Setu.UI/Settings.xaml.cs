@@ -12,6 +12,7 @@ using System.Windows.Threading;
 using MaterialDesignThemes.Wpf;
 using Native.Tool.IniConfig;
 using Native.Tool.IniConfig.Linq;
+using System.Threading;
 
 namespace me.cqp.luohuaming.Setu.UI
 {
@@ -194,6 +195,49 @@ namespace me.cqp.luohuaming.Setu.UI
 
         private void button_ClearCache_Click(object sender, RoutedEventArgs e)
         {
+            TextBlock text = new TextBlock();
+            text.Text = "确定要删除所有缓存图片？这一过程不可逆！";
+
+            Button bt_Yes = new Button();
+            bt_Yes.Content = "GKD!";
+            bt_Yes.Margin = new Thickness(0, 10, 5, 0);
+            bt_Yes.Click += ClearCache;
+
+            Button bt_No = new Button();
+            bt_No.Content = "GCK!";
+            bt_No.Margin = new Thickness(5, 10, 0, 0);
+            bt_No.Click += (object sender2, RoutedEventArgs e2) => { dialoghost_Main.IsOpen = false; };
+
+            StackPanel panelHorizontal = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                HorizontalAlignment = HorizontalAlignment.Center
+            };
+            panelHorizontal.Children.Add(bt_Yes);
+            panelHorizontal.Children.Add(bt_No);
+
+            StackPanel panel = new StackPanel();
+            panel.Margin = new Thickness(16, 16, 16, 16);
+            panel.Children.Add(text);
+            panel.Children.Add(panelHorizontal);
+
+            dialoghost_Main.DialogContent = panel;
+            dialoghost_Main.IsOpen = true;
+        }
+
+        private void ClearCache(object sender, RoutedEventArgs e)
+        {
+            if (Directory.Exists(CQSave.ImageDirectory + "LoliconPic"))
+            {
+                DirectoryInfo directoryInfo = new DirectoryInfo(CQSave.ImageDirectory + "LoliconPic");
+                FileInfo[] fileInfo = directoryInfo.GetFiles();
+                foreach (var item in fileInfo)
+                {
+                    item.Delete();
+                }
+            }
+            SnackbarMessage_Show("清理完成", 2);
+            dialoghost_Main.IsOpen = false;
         }
 
         private void button_OpenFloder_Click(object sender, RoutedEventArgs e)
@@ -273,31 +317,37 @@ namespace me.cqp.luohuaming.Setu.UI
             }
         }
 
-        private void DialogHost_OnDialogClosing(object sender, DialogClosingEventArgs eventArgs)
+        private void ShowDialogwithPage(object sender, RoutedEventArgs e)
         {
-            //you can cancel the dialog close:
-            //eventArgs.Cancel();
-            if (eventArgs.Parameter == null)
-            {
-                return;
-            }
-            if ((bool)eventArgs.Parameter != true) return;
-
-            if (Directory.Exists(CQSave.ImageDirectory + "LoliconPic"))
-            {
-                DirectoryInfo directoryInfo = new DirectoryInfo(CQSave.ImageDirectory + "LoliconPic");
-                FileInfo[] fileInfo = directoryInfo.GetFiles();
-                foreach (var item in fileInfo)
-                {
-                    item.Delete();
-                }
-            }
-            SnackbarMessage_Show("清理完成", 2);
+            StackPanel panel = new StackPanel();
+            panel.Margin = new Thickness(16,16,16,16);
+            Frame fm = new Frame();
+            fm.Content = GetPage((sender as MenuItem).Tag.ToString());
+            panel.Children.Add(fm);
+            dialoghost_Main.DialogContent = panel;
+            dialoghost_Main.IsOpen = true;
         }
 
-        private void button_Proxy_Click(object sender, RoutedEventArgs e)
+        Page GetPage(string tag)
         {
-
+            Page pg;
+            switch (tag)
+            {
+                case "SetuProxy":
+                    pg = new SetuProxy();
+                    break;
+                case "OrderDIY":
+                    pg = new OrderDIY();
+                    break;
+                case "ExtraConfig":
+                    pg = new ExtraConfig();
+                    break;
+                default:
+                    pg = new Page();
+                    break;
+            }
+            return pg;
         }
+
     }
 }

@@ -74,6 +74,9 @@
     <Compile Include="AboutMe.xaml.cs">
       <DependentUpon>AboutMe.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ExtraConfig.xaml.cs">
+      <DependentUpon>ExtraConfig.xaml</DependentUpon>
+    </Compile>
     <Compile Include="OrderDIY.xaml.cs">
       <DependentUpon>OrderDIY.xaml</DependentUpon>
     </Compile>
@@ -84,6 +87,10 @@
       <DependentUpon>SetuProxy.xaml</DependentUpon>
     </Compile>
     <Page Include="AboutMe.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ExtraConfig.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

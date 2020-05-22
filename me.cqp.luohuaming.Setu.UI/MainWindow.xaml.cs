@@ -73,12 +73,14 @@ namespace me.cqp.luohuaming.Setu.UI
                 //this.frmMain.Navigate(new Uri("pack://application:,,,/me.cqp.luohuaming.Setu.UI;component/" + tag + ".xaml", UriKind.Absolute));
                 if (tag == "Settings")
                 {
+                    if (frmMain.Content.GetType().Name == "Settings") return;
                     Settings pg = new Settings();
                     frmMain.Content = pg;
                     pg.parentwindow = this;
                 }
                 else if (tag == "AboutMe")
                 {
+                    if (frmMain.Content.GetType().Name == "AboutMe") return;
                     AboutMe pg = new AboutMe();
                     frmMain.Content = pg;
                     pg.parentwindow = this;
