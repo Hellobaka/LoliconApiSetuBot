@@ -58,6 +58,12 @@
                                 <TextBlock Text="自定义接口" Tag="CustomAPI" VerticalAlignment="Center" Margin="20 10" MouseDown="ListBoxItem_MouseDown"/>
                             </StackPanel>
                         </ListBoxItem>
+                        <ListBoxItem Tag="LocalPic" MouseLeftButtonUp="ListBoxItem_MouseDown">
+                            <StackPanel Orientation="Horizontal" Tag="LocalPic" MouseDown="ListBoxItem_MouseDown">
+                                <materialDesign:PackIcon Kind="FolderEditOutline" Width="25" Height="25" Margin="10" VerticalAlignment="Center"/>
+                                <TextBlock Text="本地图片" Tag="LocalPic" VerticalAlignment="Center" Margin="20 10" MouseDown="ListBoxItem_MouseDown"/>
+                            </StackPanel>
+                        </ListBoxItem>
                         <ListBoxItem Tag="AboutMe" MouseLeftButtonUp="ListBoxItem_MouseDown">
                             <StackPanel Orientation="Horizontal" Tag="AboutMe" MouseDown="ListBoxItem_MouseDown">
                                 <materialDesign:PackIcon Kind="GithubBox" Width="25" Height="25" Margin="10" VerticalAlignment="Center"/>

@@ -53,12 +53,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CQSave.cs" />
+    <Compile Include="Deserializtion\ItemToSave.cs" />
+    <Compile Include="Deserializtion\Pixiv_R18Illust.cs" />
     <Compile Include="Event_GroupMessage.cs" />
     <Compile Include="Event_PrivateMessage.cs" />
     <Compile Include="Event_StartUp.cs" />
     <Compile Include="GetSetu.cs" />
     <Compile Include="PicHelper.cs" />
+    <Compile Include="PixivAPI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Deserializtion\Pixiv_Illust.cs" />
+    <Compile Include="Deserializtion\Pixiv_HotSearch.cs" />
+    <Compile Include="Deserializtion\Pixiv_Rank.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Native.Sdk\Native.Sdk.csproj">

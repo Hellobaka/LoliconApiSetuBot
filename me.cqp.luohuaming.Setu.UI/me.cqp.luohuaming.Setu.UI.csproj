@@ -52,6 +52,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -80,6 +81,10 @@
     <Compile Include="ExtraConfig.xaml.cs">
       <DependentUpon>ExtraConfig.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ItemToSave.cs" />
+    <Compile Include="LocalPic.xaml.cs">
+      <DependentUpon>LocalPic.xaml</DependentUpon>
+    </Compile>
     <Compile Include="OrderDIY.xaml.cs">
       <DependentUpon>OrderDIY.xaml</DependentUpon>
     </Compile>
@@ -98,6 +103,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ExtraConfig.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LocalPic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

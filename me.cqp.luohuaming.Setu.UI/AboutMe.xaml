@@ -18,15 +18,32 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Page.Resources>
-    <Grid>
-        <Button Content="Github" HorizontalAlignment="Left" Margin="463.846,171.692,0,0" VerticalAlignment="Top" Width="147" Height="77.692"/>
-        <materialDesign:PackIcon Kind="GithubBox" HorizontalAlignment="Left" Height="45.691" Margin="76.154,63.693,0,0" VerticalAlignment="Top" Width="48.461"/>
-        <TextBlock HorizontalAlignment="Left" Margin="140.691,77.539,0,0" TextWrapping="Wrap" VerticalAlignment="Top">
-            <Hyperlink Tag="https://github.com/Jie2GG/Native.Framework" Click="Hyperlink_Click">https://github.com/Jie2GG/Native.Framework</Hyperlink>
-        </TextBlock>
-        <materialDesign:PackIcon Kind="Forum" HorizontalAlignment="Left" Height="45.691" Margin="76.154,114.384,0,0" VerticalAlignment="Top" Width="48.461"/>
-        <TextBlock HorizontalAlignment="Left" Margin="140.691,128.769,0,0" TextWrapping="Wrap" VerticalAlignment="Top">
-            <Hyperlink Tag="https://cqp.cc/t/47221" Click="Hyperlink_Click">https://cqp.cc/t/47221</Hyperlink>
-        </TextBlock>
-    </Grid>
+    <materialDesign:DialogHost x:Name="dialog_AboutMe" >
+        <Grid Height="450" Width="797">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="9*"/>
+                <RowDefinition Height="10*"/>
+                <RowDefinition Height="71*"/>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0">
+                <materialDesign:PackIcon Kind="GithubBox" HorizontalAlignment="Left" Height="45" Margin="10,0,0,0" VerticalAlignment="Top" Width="49"/>
+                <TextBlock HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center">
+                    <Hyperlink Tag="https://github.com/Jie2GG/Native.Framework" Click="Hyperlink_Click">https://github.com/Jie2GG/Native.Framework</Hyperlink>
+                </TextBlock>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left">
+                <materialDesign:PackIcon Kind="Forum" HorizontalAlignment="Left" Height="45.691" Margin="10,0,0,0" VerticalAlignment="Top" Width="48.461"/>
+                <TextBlock HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center">
+                    <Hyperlink Tag="https://cqp.cc/t/47221" Click="Hyperlink_Click">https://cqp.cc/t/47221</Hyperlink>
+                </TextBlock>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center" Margin="0,0,10,287" Width="787">
+                <Button x:Name="btn_CkUpdate" Click="Btn_CkUpdate_Click" Grid.Row="2" VerticalAlignment="Top" Margin="30,20,30,0">Check Update</Button>
+                <ProgressBar x:Name="progressbar_update" Visibility="Hidden" Style="{StaticResource MaterialDesignCircularProgressBar}" Height="Auto" Margin="0,10,0,16" Width="42"/>
+            </StackPanel>
+        </Grid>
+    </materialDesign:DialogHost>
 </Page>

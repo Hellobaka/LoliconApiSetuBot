@@ -421,7 +421,7 @@ namespace Native.Tool.IniConfig
 				throw new ArgumentNullException ("textReader");
 			}
 
-			ISection tempSection = null;
+			ISection tempSection = new ISection("");
 			while (textReader.Peek () != -1)
 			{
 				string line = textReader.ReadLine ();

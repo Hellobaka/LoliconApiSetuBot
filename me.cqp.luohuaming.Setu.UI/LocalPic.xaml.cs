@@ -10,17 +10,18 @@ using System.Drawing;
 using Image = System.Drawing.Image;
 using System.Diagnostics;
 using Newtonsoft.Json;
-using MaterialDesignThemes.Wpf.Transitions;
 using me.cqp.luohuaming.Setu.Code;
+using MaterialDesignThemes.Wpf;
+using System.Linq;
 
 namespace me.cqp.luohuaming.Setu.UI
 {
     /// <summary>
-    /// CustomAPI.xaml 的交互逻辑
+    /// LocalPic.xaml 的交互逻辑
     /// </summary>
-    public partial class CustomAPI : Page
+    public partial class LocalPic : Page
     {
-        public CustomAPI()
+        public LocalPic()
         {
             InitializeComponent();
         }
@@ -53,7 +54,7 @@ namespace me.cqp.luohuaming.Setu.UI
         /// <returns></returns>
         private List<Control> GetTemplateList()
         {
-            //模板依次为 CheckBox,ToggleButton,TextBox,TextBox,TextBox,CheckBox,CheckBox,Button
+            //模板依次为 CheckBox,ToggleButton,TextBox,TextBox,TextBox,CheckBox,CheckBoxButton
             List<Control> ls = new List<Control>();
             //统一Margin
             Thickness thickness = new Thickness(10, 0, 0, 0);
@@ -79,8 +80,8 @@ namespace me.cqp.luohuaming.Setu.UI
             {
                 Margin = thickness,
                 MinWidth = 250,
-                Text = "API链接",
-                Tag = "API链接",
+                Text = "本地图片文件夹路径",
+                Tag = "本地图片文件夹路径",
                 Opacity = 0.6
             };
             text2.GotFocus += TextBox_FocusChanged;
@@ -95,7 +96,7 @@ namespace me.cqp.luohuaming.Setu.UI
             };
             text3.GotFocus += TextBox_FocusChanged;
             text3.LostFocus += TextBox_FocusChanged;
-            ls.Add(text1); ls.Add(text2); ls.Add(text3);
+            ls.Add(text1); ls.Add(text2);ls.Add(GetFileSelectorButton()); ls.Add(text3);
             //CheckBox
             CheckBox checkBox = new CheckBox();
             checkBox.Margin = thickness;
@@ -165,10 +166,12 @@ namespace me.cqp.luohuaming.Setu.UI
             }
         }
 
+        private static Control PicFolderButton;
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!File.Exists(CQSave.AppDirectory + "CustomAPI.json")) return;
-            string temp = File.ReadAllText(CQSave.AppDirectory + "CustomAPI.json");
+            PicFolderButton = ((Control)(StackPanel_Main.Children[0] as StackPanel).Children[4]);
+            if (!File.Exists(CQSave.AppDirectory + "LocalPic.json")) return;
+            string temp = File.ReadAllText(CQSave.AppDirectory + "LocalPic.json");
             //反序列化
             List<ItemToSave> ls = JsonConvert.DeserializeObject<List<ItemToSave>>(temp);
             //读取到了内容,为了写内容方便,先清空内容
@@ -184,10 +187,53 @@ namespace me.cqp.luohuaming.Setu.UI
                 var child = StackPanel_Main.Children[i] as StackPanel;
                 (child.Children[1] as ToggleButton).IsChecked = ls[i].Enabled;
                 (child.Children[2] as TextBox).Text = ls[i].Order;
-                (child.Children[3] as TextBox).Text = ls[i].URL;
-                (child.Children[4] as TextBox).Text = ls[i].Remark;
-                (child.Children[5] as CheckBox).IsChecked = ls[i].Usestrict;
-                (child.Children[6] as CheckBox).IsChecked = ls[i].AutoRevoke;
+                (child.Children[3] as TextBox).Text = ls[i].Path;
+                (child.Children[5] as TextBox).Text = string.IsNullOrWhiteSpace(ls[i].Remark)?"备注...":ls[i].Remark;
+                (child.Children[6] as CheckBox).IsChecked = ls[i].Usestrict;
+                (child.Children[7] as CheckBox).IsChecked = ls[i].AutoRevoke;
+            }
+        }
+        /// <summary>
+        /// 获取文件选择器按钮模板
+        /// </summary>
+        /// <returns></returns>
+        private Button GetFileSelectorButton()
+        {
+            Button BackUp = PicFolderButton as Button;
+            PackIcon packIcon = new PackIcon()
+            {
+                Style=((PackIcon)BackUp.Content).Style,
+                Kind = PackIconKind.FolderEditOutline
+            };
+            
+            Button button = new Button()
+            {
+                Width = 25,
+                Height = 25,
+                Style = BackUp.Style,
+                Background= BackUp.Background,
+                Content= packIcon
+            };            
+            button.Click += FileSelectorOpen;
+            return button;
+        }
+        /// <summary>
+        /// 弹出文件夹选择窗口
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FileSelectorOpen(object sender,RoutedEventArgs e)
+        {
+            // 在WPF中， OpenFileDialog位于Microsoft.Win32名称空间
+            System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog
+            {
+                Description="选择文件夹..."
+            };
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                var pathTextBox = (TextBox)((sender as Button).Parent as StackPanel).Children[3];
+                pathTextBox.Opacity = 1;
+                pathTextBox.Text=dialog.SelectedPath;
             }
         }
         /// <summary>
@@ -197,33 +243,25 @@ namespace me.cqp.luohuaming.Setu.UI
         /// <param name="e"></param>
         private void btn_Test_Click(object sender, RoutedEventArgs e)
         {
-            //获取按钮的父容器以获取URL元素
+            //获取按钮的父容器以获取Path元素
             var parent = VisualTreeHelper.GetParent((UIElement)sender);
-            //URL元素在父容器中是[3]个
-            var textURL = (TextBox)VisualTreeHelper.GetChild(parent, 3);
-            string url = textURL.Text;
+            //Path元素在父容器中是[3]个
+            string path = ((TextBox)VisualTreeHelper.GetChild(parent, 3)).Text;
             try
             {
-                //尝试拉取图片
-                byte[] temp = HttpWebClient.Get(url);
-                //以后要用的路径,先生成一个
-                string targetdir = Path.Combine(Environment.CurrentDirectory, "data", "image", "CustomAPIPic");
-                if (!Directory.Exists(targetdir))
-                {
-                    Directory.CreateDirectory(targetdir);
-                }
-                //将字节数组转换为图片
-                MemoryStream memStream = new MemoryStream(temp);
-                Image mImage = Image.FromStream(memStream);
-                Bitmap bp = new Bitmap(mImage);
-                string fullpath = Path.Combine(targetdir, DateTime.Now.ToString("yyyyMMddHHss") + ".jpg");
-                bp.Save(fullpath);
-                parentwindow.SnackbarMessage_Show($"接口测试通过,图片已成功保存", 1);
-                Process.Start(new ProcessStartInfo(targetdir));
+                DirectoryInfo directoryInfo = new DirectoryInfo(path);
+                FileInfo[] fileInfos = directoryInfo.GetFiles("*.*")
+                    .Where(x=>x.FullName.EndsWith("jpg")||x.FullName.EndsWith("gif")
+                    ||x.FullName.EndsWith("png")||x.FullName.EndsWith("bmp")
+                    ||x.FullName.EndsWith("webp")||x.FullName.EndsWith("tif")||x.FullName.EndsWith("tga")).ToArray();
+                //随机取一个
+                string picpath = fileInfos.OrderBy(_ => Guid.NewGuid()).First().FullName;
+                parentwindow.SnackbarMessage_Show($"接口测试通过", 1);
+                Process.Start(new ProcessStartInfo(picpath));
             }
             catch
             {
-                parentwindow.SnackbarMessage_Show($"接口测试失败,检查接口是否有误", 1);
+                parentwindow.SnackbarMessage_Show($"接口测试失败,检查路径是否有误", 1);
             }
         }
 
@@ -233,34 +271,34 @@ namespace me.cqp.luohuaming.Setu.UI
             foreach (UIElement item in StackPanel_Main.Children)
             {
                 //判断是否存在填了链接但是没有填指令的情况
-                if (((item as StackPanel).Children[3] as TextBox).Text != "API链接" &&
+                if (((item as StackPanel).Children[3] as TextBox).Text != "本地图片文件夹路径" &&
                     ((item as StackPanel).Children[2] as TextBox).Text == "指令...")
                 {
-                    parentwindow.SnackbarMessage_Show("存在一行链接已设置但指令未设置，请纠正", 1);
+                    parentwindow.SnackbarMessage_Show("存在一行路径已设置但指令未设置，请纠正", 1);
                     return;
                 }
-                if (((item as StackPanel).Children[3] as TextBox).Text == "API链接" && ((item as StackPanel).Children[2] as TextBox).Text == "指令...")
+                if (((item as StackPanel).Children[3] as TextBox).Text == "本地图片文件夹路径" && ((item as StackPanel).Children[2] as TextBox).Text == "指令...")
                 {
                     continue;
                 }
                 //不是空
-                if (((item as StackPanel).Children[3] as TextBox).Text != "API链接" && ((item as StackPanel).Children[2] as TextBox).Text != "指令...")
+                if (((item as StackPanel).Children[3] as TextBox).Text != "本地图片文件夹路径" && ((item as StackPanel).Children[2] as TextBox).Text != "指令...")
                 {
                     ItemToSave save = new ItemToSave
                     {
                         Enabled = (bool)((item as StackPanel).Children[1] as ToggleButton).IsChecked,
                         Order = ((item as StackPanel).Children[2] as TextBox).Text,
-                        URL = ((item as StackPanel).Children[3] as TextBox).Text,
-                        Remark = ((item as StackPanel).Children[4] as TextBox).Text,
-                        Usestrict= (bool)((item as StackPanel).Children[5] as CheckBox).IsChecked,
-                        AutoRevoke = (bool)((item as StackPanel).Children[6] as CheckBox).IsChecked,
+                        Path = ((item as StackPanel).Children[3] as TextBox).Text,
+                        Remark = ((item as StackPanel).Children[5] as TextBox).Text,
+                        Usestrict = (bool)((item as StackPanel).Children[6] as CheckBox).IsChecked,
+                        AutoRevoke = (bool)((item as StackPanel).Children[7] as CheckBox).IsChecked,
                     };
                     ls.Add(save);
                 }
             }
             //序列化
             string temp = JsonConvert.SerializeObject(ls);
-            File.WriteAllText(CQSave.AppDirectory + "CustomAPI.json", temp);
+            File.WriteAllText(CQSave.AppDirectory + "LocalPic.json", temp);
             parentwindow.SnackbarMessage_Show("设置已保存", 1);
         }
         //按ListBoxItem事件
@@ -294,7 +332,7 @@ namespace me.cqp.luohuaming.Setu.UI
         /// <summary>
         /// 验证指令是否符合文件夹命名规则
         /// </summary>
-        /// <param name="order"></param>
+        /// <param name="order">需要判断的字符串</param>
         /// <returns></returns>
         private bool OrderValidation(string order)
         {

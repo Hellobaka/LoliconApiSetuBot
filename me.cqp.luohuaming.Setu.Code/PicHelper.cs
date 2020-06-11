@@ -9,9 +9,12 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Timers;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Security.AccessControl;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace me.cqp.luohuaming.Setu.Code
 {
@@ -71,7 +74,7 @@ namespace me.cqp.luohuaming.Setu.Code
         private static IniConfig ini, iniUser;
 
         /// <summary>
-        /// 判断是否符合取图的条件
+        /// 判断是否符合取图的条件,若满足,减少1额度
         /// </summary>
         /// <returns></returns>
         public static List<string> JudgeLegality(CQGroupMessageEventArgs e)
@@ -96,6 +99,7 @@ namespace me.cqp.luohuaming.Setu.Code
             if (countofPerson < maxofPerson)
             {
                 MinusMemberQuota(e);
+                countofPerson++;
             }
             else
             {
@@ -108,6 +112,7 @@ namespace me.cqp.luohuaming.Setu.Code
                 else
                 {
                     MinusMemberQuota(e);
+                    countofPerson++;
                 }
             }
             iniUser.Object["Config"]["Timestamp"] = new IValue(GetTimeStamp());
@@ -116,7 +121,6 @@ namespace me.cqp.luohuaming.Setu.Code
             ls.Add(StartPullPic.Replace("<count>", (maxofPerson - countofPerson).ToString()));
             return ls;
         }
-
 
         /// <summary>
         /// 读取返回自定义指令与回答内容
@@ -321,6 +325,7 @@ namespace me.cqp.luohuaming.Setu.Code
             }
             return false;
         }
+
         /// <summary>
         /// 查看指令是否是自定义接口内的
         /// </summary>
@@ -330,7 +335,6 @@ namespace me.cqp.luohuaming.Setu.Code
         public static bool CheckCustomAPI(List<ItemToSave> ls, CQGroupMessageEventArgs e)
         {
             if (ls.Count == 0) return false;
-
             foreach (var item in ls)
             {
                 if (e.Message.Text == item.Order &&item.Enabled)
@@ -341,18 +345,23 @@ namespace me.cqp.luohuaming.Setu.Code
             return false;
         }
 
-        public static void CustomAPI_Call(List<ItemToSave> ls,CQGroupMessageEventArgs e)
+        public static void CustomAPI_Call(List<ItemToSave> ls, CQGroupMessageEventArgs e)
         {
-            var str = JudgeLegality(e);
-            e.FromGroup.SendGroupMessage(str[1]);
-            if (str[0] != "0") return;
             var result = CustomAPI_Image(ls, e);
-            QQMessage staues = e.FromGroup.SendGroupMessage(result[2]);
+            QQMessage staues = e.FromGroup.SendGroupMessage(result[1]);
             if (!staues.IsSuccess)//图片发送失败
             {
-                if(Convert.ToBoolean(result[1]))
-                    PlusMemberQuota(e);
                 e.FromGroup.SendGroupMessage($"图片发送失败");
+                PlusMemberQuota(e);
+            }
+            if (Convert.ToBoolean(result[0]))//自动撤回
+            {
+                IniConfig ini = new IniConfig(CQSave.AppDirectory + "Config.ini"); ini.Load();
+                Task task = new Task(() =>
+                {
+                    Thread.Sleep(ini.Object["R18"]["RevokeTime"] * 1000);
+                    RevokePic(staues.Id);
+                }); task.Start();
             }
         }
 
@@ -360,44 +369,111 @@ namespace me.cqp.luohuaming.Setu.Code
         {
             List<string> result = new List<string>();
             List<ItemToSave> order = new List<ItemToSave>();
-            foreach(var item in ls)
+            foreach (var item in ls)
             {
                 if (item.Order == e.Message.Text) order.Add(item);
             }
             try
             {
                 //尝试拉取图片，若有多个相同的接口则随机来一个
-                ItemToSave item = order[new Random().Next(0, order.ToList().Count)];
-                result.Add(item.URL);result.Add(item.Usestrict.ToString());
-                byte[] temp = HttpWebClient.Get(item.URL);
-                e.CQLog.Info("自定义接口", $"自定义接口调用 网址{item.URL}");
-                if (!item.Usestrict) PlusMemberQuota(e);
-                
+                ItemToSave item = order[new Random().Next(0, order.Count)];
+                result.Add(item.AutoRevoke.ToString());
                 //以后要用的路径,先生成一个
-                string targetdir = Path.Combine(Environment.CurrentDirectory, "data", "image", "LoliConPic", "CustomAPI");
+                string targetdir = Path.Combine(Environment.CurrentDirectory, "data", "image", "CustomAPIPic", item.Order);
                 if (!Directory.Exists(targetdir))
                 {
                     Directory.CreateDirectory(targetdir);
                 }
+                string imagename = DateTime.Now.ToString("yyyyMMddHHss") + ".jpg";
+                string fullpath = Path.Combine(targetdir, imagename);
+                byte[] temp = HttpWebClient.Get(item.URL);
+
                 //将字节数组转换为图片
                 MemoryStream memStream = new MemoryStream(temp);
                 Image mImage = Image.FromStream(memStream);
                 Bitmap bp = new Bitmap(mImage);
-                string imagename = DateTime.Now.ToString("yyyyMMddHHss") + ".jpg";
-                string fullpath = Path.Combine(targetdir,imagename );
                 bp.Save(fullpath);
 
+                e.CQLog.Info("自定义接口", $"图片下载成功，尝试发送");
+
                 GetSetu.AntiHX(fullpath);
-                string imagepath = Path.Combine("LoliConPic", "CustomAPI", imagename);
+                string imagepath = Path.Combine("CustomAPIPic", item.Order, imagename);
                 result.Add(CQApi.CQCode_Image(imagepath).ToSendString());
                 return result;
             }
-            catch(Exception exc)
+            catch (Exception exc)
             {
-                result.Add("自定义接口调用失败，错误信息" + exc.Message);
+                result.Add("自定义接口调用失败");
+                e.CQLog.Info("自定义接口", $"调用失败，错误信息：{exc.Message}");
                 return result;
             }
         }
 
+        private static void RevokePic(int RevokeId)
+        {
+            CQSave.cq.RemoveMessage(RevokeId);
+        }
+
+        public static bool CheckLocalPic(List<ItemToSave> ls, CQGroupMessageEventArgs e)
+        {
+            return CheckCustomAPI(ls, e);
+        }
+
+        public static void LocalPic_Call(List<ItemToSave> ls, CQGroupMessageEventArgs e)
+        {
+            var result = LocalPic_Image(ls, e);
+            QQMessage staues = e.FromGroup.SendGroupMessage(result[1]);
+            if (!staues.IsSuccess)//图片发送失败
+            {
+                e.FromGroup.SendGroupMessage($"图片发送失败");
+                PlusMemberQuota(e);
+            }
+            File.Delete(Path.Combine(CQSave.ImageDirectory, result[2]));
+            if (Convert.ToBoolean(result[0]))//自动撤回
+            {
+                IniConfig ini = new IniConfig(CQSave.AppDirectory + "Config.ini"); ini.Load();
+                Task task = new Task(() =>
+                {
+                    Thread.Sleep(ini.Object["R18"]["RevokeTime"] * 1000);
+                    RevokePic(staues.Id); 
+                });task.Start();
+            }
+        }
+
+        public static List<string> LocalPic_Image(List<ItemToSave> ls, CQGroupMessageEventArgs e)
+        {
+            List<string> result = new List<string>();
+            ItemToSave item = ls.Where(x => x.Order == e.Message.Text).OrderBy(_ => Guid.NewGuid()).First();
+            result.Add(item.AutoRevoke.ToString());
+            try
+            {
+                DirectoryInfo directoryInfo = new DirectoryInfo(item.Path);
+                FileInfo[] fileInfos = directoryInfo.GetFiles("*.*")
+                    .Where(x => x.FullName.EndsWith("jpg") || x.FullName.EndsWith("gif")
+                    || x.FullName.EndsWith("png") || x.FullName.EndsWith("bmp")
+                    || x.FullName.EndsWith("webp") || x.FullName.EndsWith("tif") || x.FullName.EndsWith("tga")).ToArray();
+                //随机取一个
+                var picinfo = fileInfos.OrderBy(_ => Guid.NewGuid()).First();
+                string picpathOrigin = picinfo.FullName;
+                if (!Directory.Exists(CQSave.ImageDirectory + "\\LocalPic"))
+                    Directory.CreateDirectory(CQSave.ImageDirectory + "\\LocalPic");
+                string picpathFinal = CQSave.ImageDirectory + "\\LocalPic\\" + picinfo.Name;
+                File.Copy(picpathOrigin, picpathFinal);
+                e.CQLog.Info("本地图片接口", $"图片获取成功，尝试发送");
+                GetSetu.AntiHX(picpathFinal);
+                string imageCQCodePath = Path.Combine("LocalPic", picinfo.Name);
+                result.Add(CQApi.CQCode_Image(imageCQCodePath).ToSendString());
+                result.Add(imageCQCodePath);
+                return result;
+            }
+            catch (Exception exc)
+            {
+                result.Add("本地图片接口调用失败");
+                e.CQLog.Info("本地图片接口", $"调用失败，错误信息：{exc.Message}");
+                if (item.Usestrict)
+                    PlusMemberQuota(e);
+                return result;
+            }
+        }
     }
 }

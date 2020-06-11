@@ -92,6 +92,13 @@ namespace me.cqp.luohuaming.Setu.UI
                     frmMain.Content = pg;
                     pg.parentwindow = this;
                 }
+                else if (tag == "LocalPic")
+                {
+                    if (frmMain.Content.GetType().Name == "LocalPic") return;
+                    LocalPic pg = new LocalPic();
+                    frmMain.Content = pg;
+                    pg.parentwindow = this;
+                }
             }
             catch(Exception exc)
             {

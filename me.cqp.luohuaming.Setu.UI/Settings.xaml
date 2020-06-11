@@ -80,7 +80,6 @@
                         </MenuItem.CommandParameter>
                     </MenuItem>
                 </MenuItem>
-
             </Menu>           
 
             <TextBlock Grid.Row="1" Grid.Column="2" TextWrapping="Wrap" Text="注意：涩图机的api的服务器位于墙外，访问速度受限于地区与访问时间段，无apikey每天只能调用非常有限的次数，点击链接根据提示自行想办法完成apikey的申请，本人不提供方法" VerticalAlignment="Center" Margin="20,16,16,15" HorizontalAlignment="Center" Width="497" Height="45">

@@ -31,6 +31,16 @@ namespace me.cqp.luohuaming.Setu.Code
             {
                 e.CQLog.Warning("代理设置无效",$"代理参数有误，错误信息:{ex.Message}");
             }
+            ini = new IniConfig(e.CQApi.AppDirectory + "ConfigLimit.ini");
+            ini.Load();
+            if(JudgeifTimestampOverday(ini.Object["Config"]["Timestamp"].GetValueOrDefault(0), GetTimeStamp()))
+            {
+                if (File.Exists(CQSave.AppDirectory + "ConfigLimit.ini"))
+                {
+                    File.Delete(CQSave.AppDirectory + "ConfigLimit.ini");
+                    CQSave.cqlog.Info("涩图机重置", "限制已重置");
+                }
+            }
             timersTimer.Interval = 1000;
             timersTimer.Enabled = true;
             timersTimer.Elapsed += TimersTimer_Elapsed;
@@ -59,6 +69,32 @@ namespace me.cqp.luohuaming.Setu.Code
                     File.Delete(CQSave.AppDirectory + "ConfigLimit.ini");
                     CQSave.cqlog.Info("涩图机重置","限制已重置");
                 }
+            }
+        }
+
+        /// <summary>
+        /// 判断两个时间戳是否隔天
+        /// </summary>
+        /// <param name="dt1">用于判断的时间戳</param>
+        /// <param name="dt2">实时时间戳</param>
+        public static bool JudgeifTimestampOverday(long dt1, long dt2)
+        {
+            long Time2, testTimeLingchen, Time1;
+            testTimeLingchen = dt1 - ((dt1 + 8 * 3600) % 86400);
+            if (dt2 > dt1)
+            {
+                if (dt2 - testTimeLingchen > 24 * 60 * 60)
+                {
+                    return true;//是明天
+                }
+                else
+                {
+                    return false;//是今天
+                }
+            }
+            else
+            {
+                return true;//是昨天
             }
         }
 
