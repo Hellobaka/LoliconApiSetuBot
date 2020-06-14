@@ -16,7 +16,8 @@
 - [x] 关键字、R18图
 - [x] R18图自定义时长撤回
 - [x] 用户自定义接口，仅可用于直接访问就是图片的接口
-- [ ] 接入[Pixiv Api](https://api.imjad.cn/pixiv_v2.md)用于实现搜图与获取日榜周榜
+- [x] 接入[Pixiv Api](https://api.imjad.cn/pixiv_v2.md)用于实现搜图与获取日榜周榜
+- [x] 接入[pixivic.com](https://pixivic.com/)用于实现热度搜索
 - [ ] 接入[SauceNAO](https://saucenao.com)实现以图搜图
 - [ ] 接入[trace moe](https://trace.moe/)实现以图搜番
 
