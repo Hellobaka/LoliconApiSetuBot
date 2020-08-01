@@ -31,6 +31,11 @@
             <TextBlock FontSize="16" Margin="10,5,0,0">时间设置，最长120秒（设置过长无法撤回）</TextBlock>
             <TextBox x:Name="text_Revoke" Margin="10,5,0,0"></TextBox>
         </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <TextBlock FontSize="20">发送失败尝试压缩图片</TextBlock>
+            <ToggleButton x:Name="Toggle_CompressImg" Style="{StaticResource MaterialDesignSwitchToggleButton}" HorizontalAlignment="Left" Margin="10,5,0,0"/>
+
+        </StackPanel>
         <StackPanel Margin="0,20,0,0" Orientation="Horizontal" HorizontalAlignment="Center">
             <Button x:Name="btn_Exit" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Content="退出" Margin="5,0,5,0"/>
             <Button x:Name="btn_Save" Click="btn_Save_Click" Content="保存" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="5,0,5,0"/>

@@ -8,6 +8,8 @@ using me.cqp.luohuaming.Setu.Code.Deserializtion.HotSearch;
 using me.cqp.luohuaming.Setu.Code.Deserializtion.PixivIllust;
 using me.cqp.luohuaming.Setu.Code.Deserializtion.PixivR18Illust;
 using me.cqp.luohuaming.Setu.Code.Deserializtion.PixivRank;
+using Native.Sdk.Cqp;
+using Native.Sdk.Cqp.Model;
 using Native.Tool.Http;
 using Native.Tool.IniConfig;
 using Newtonsoft.Json;
@@ -23,7 +25,7 @@ namespace me.cqp.luohuaming.Setu.Code
     public class IllustInfo
     {
         public string IllustText { get; set; }
-        public string IllustCQCode { get; set; }
+        public CQCode IllustCQCode { get; set; }
         public string IllustUrl { get; set; }
     }
     public class PixivAPI
@@ -93,7 +95,7 @@ namespace me.cqp.luohuaming.Setu.Code
                 IllustInfo illustInfo = new IllustInfo()
                 {
                     IllustText = "图片解析失败，作品不存在或被删除",
-                    IllustCQCode = "[CQ:at,file=error.jpg]"
+                    IllustCQCode = CQApi.CQCode_Image("Error.jpg")
                 };
                 return illustInfo;
             }
@@ -123,7 +125,7 @@ namespace me.cqp.luohuaming.Setu.Code
                     illustInfo = new IllustInfo()
                     {
                         IllustText = "搜索结果为空",
-                        IllustCQCode = "[CQ:at,file=error.jpg]"
+                        IllustCQCode = CQApi.CQCode_Image("Error.jpg")
                     };
                 }
                 return illustInfo;
@@ -141,12 +143,10 @@ namespace me.cqp.luohuaming.Setu.Code
                 IllustInfo illustInfo = new IllustInfo()
                 {
                     IllustText = "解析失败，无法获取热门搜索",
-                    IllustCQCode = "[CQ:at,file=error.jpg]"
+                    IllustCQCode = CQApi.CQCode_Image("Error.jpg")
                 };
                 return illustInfo;
             }
-
-           
         }
     }
 }

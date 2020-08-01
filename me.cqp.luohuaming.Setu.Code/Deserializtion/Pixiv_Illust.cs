@@ -1,4 +1,6 @@
-﻿using Native.Tool.Http;
+﻿using Native.Sdk.Cqp;
+using Native.Sdk.Cqp.Model;
+using Native.Tool.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -102,7 +104,7 @@ namespace me.cqp.luohuaming.Setu.Code.Deserializtion.PixivIllust
         /// </summary>
         /// <param name="info">Pixiv_Illust.illust类成员</param>
         /// <returns></returns>
-        public static string GetIllustPic(Illust info)
+        public static CQCode GetIllustPic(Illust info)
         {
             string path = Path.Combine(Environment.CurrentDirectory, "data", "image", "LoliconPic", $"{info.id}.jpg");
             string pathcqcode = Path.Combine("LoliConPic", $"{info.id}.jpg");
@@ -124,10 +126,10 @@ namespace me.cqp.luohuaming.Setu.Code.Deserializtion.PixivIllust
                 catch (Exception e)
                 {
                     CQSave.cqlog.Info("插画详情", $"图片下载失败，错误信息:{e.Message}");
-                    return "[CQ:image,file=error.jpg]";
+                    return CQApi.CQCode_Image("Error.jpg");
                 }
             }
-            return $"[CQ:image,file={pathcqcode}]";
+            return CQApi.CQCode_Image(pathcqcode);
         }
 
     }

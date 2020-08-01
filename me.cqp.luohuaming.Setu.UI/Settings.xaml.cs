@@ -47,6 +47,7 @@ namespace me.cqp.luohuaming.Setu.UI
         private void button_SettingsSave_Click(object sender, RoutedEventArgs e)
         {
             string path = CQSave.AppDirectory + @"\Config.ini";
+            ini = new IniConfig(path);ini.Load();
             ini.Object["Config"]["ApiSwitch"]=new IValue(togglebutton_ApiKey.IsChecked.GetValueOrDefault() ? "1" : "0");
             if (togglebutton_ApiKey.IsChecked.GetValueOrDefault())
             {

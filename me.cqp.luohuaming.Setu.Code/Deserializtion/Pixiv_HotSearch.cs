@@ -1,4 +1,5 @@
-﻿using Native.Sdk.Cqp.Model;
+﻿using Native.Sdk.Cqp;
+using Native.Sdk.Cqp.Model;
 using Native.Tool.Http;
 using System;
 using System.Collections.Generic;
@@ -67,7 +68,7 @@ namespace me.cqp.luohuaming.Setu.Code.Deserializtion.HotSearch
             CQSave.cqlog.Info("搜索详情", "详情获取成功，正在拉取图片");
             return text;
         }
-        public static string GetSearchPic(Datum info)
+        public static CQCode GetSearchPic(Datum info)
         {
             string path = Path.Combine(Environment.CurrentDirectory, "data", "image", "LoliconPic", $"{info.id}.jpg");
             string pathcqcode = Path.Combine("LoliConPic", $"{info.id}.jpg");
@@ -88,10 +89,10 @@ namespace me.cqp.luohuaming.Setu.Code.Deserializtion.HotSearch
                 catch (Exception e)
                 {
                     CQSave.cqlog.Info("搜索详情", $"图片下载失败，错误信息:{e.Message}");
-                    return "[CQ:image,file=error.jpg]";
+                    return CQApi.CQCode_Image("Error.jpg");
                 }
             }
-            return $"[CQ:image,file={pathcqcode}]";
+            return CQApi.CQCode_Image(pathcqcode);
         }
 
     }

@@ -23,6 +23,8 @@ namespace me.cqp.luohuaming.Setu.UI
             ini.Object["R18"]["Enabled"] = new IValue((bool)Toggle_R18.IsChecked ? "1" : "0");
             ini.Object["R18"]["R18PicRevoke"] = new IValue((bool)Toggle_Revoke.IsChecked ? "1" : "0");
             ini.Object["R18"]["RevokeTime"] = new IValue(text_Revoke.Text);
+            ini.Object["Config"]["FailedCompress"] = new IValue((bool)Toggle_CompressImg.IsChecked ? "1" : "0");
+
             ini.Save();
         }
 
@@ -32,6 +34,8 @@ namespace me.cqp.luohuaming.Setu.UI
             ini.Object["R18"]["Enabled"] = new IValue((bool)Toggle_R18.IsChecked ? "1" : "0");
             ini.Object["R18"]["R18PicRevoke"] = new IValue((bool)Toggle_Revoke.IsChecked ? "1" : "0");
             ini.Object["R18"]["RevokeTime"] = new IValue(text_Revoke.Text);
+            ini.Object["Config"]["FailedCompress"] = new IValue((bool)Toggle_CompressImg.IsChecked ? "1" : "0");
+
             ini.Save();
             btn_Apply.IsEnabled = false;
         }
@@ -43,9 +47,12 @@ namespace me.cqp.luohuaming.Setu.UI
             Toggle_R18.IsChecked = ini.Object["R18"]["Enabled"].GetValueOrDefault("0") == "1" ? true : false;
             Toggle_Revoke.IsChecked = ini.Object["R18"]["R18PicRevoke"].GetValueOrDefault("0") == "1" ? true : false;
             text_Revoke.Text = ini.Object["R18"]["RevokeTime"].GetValueOrDefault("0");
+            Toggle_CompressImg.IsChecked = ini.Object["Config"]["FailedCompress"].GetValueOrDefault("0") == "1" ? true : false;
+
 
             Toggle_R18.Click += EnabledApplyButton;
             Toggle_Revoke.Click += EnabledApplyButton;
+            Toggle_CompressImg.Click += EnabledApplyButton;
             text_Revoke.TextChanged += EnabledApplyButton;
         }
 

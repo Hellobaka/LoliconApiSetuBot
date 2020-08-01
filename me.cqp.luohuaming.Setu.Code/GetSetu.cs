@@ -2,15 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Native.Tool.Http;
 using Native.Tool.IniConfig;
 using System.IO;
 using System.Net;
-using System.Globalization;
 
 namespace me.cqp.luohuaming.Setu.Code
 {
@@ -84,24 +80,6 @@ namespace me.cqp.luohuaming.Setu.Code
     //403	由于不规范的操作而被拒绝调用
     //404	找不到符合关键字的色图
     //429	达到调用额度限制
-
-    //SauceNao 解析
-    public class Header
-    {
-        public string similarity { get; set; }
-        public string thumbnail { get; set; }
-        public int index_id { get; set; }
-        public string index_name { get; set; }
-    }
-    public class Result
-    {
-        public Header header { get; set; }
-        public Data data { get; set; }
-    }
-    public class SauceNao
-    {
-        public IList<Result> results { get; set; }
-    }
     #endregion
 
     #region --api接口说明--
