@@ -42,7 +42,8 @@ namespace me.cqp.luohuaming.Setu.Code
                 //反序列化
                 LocalPic = JsonConvert.DeserializeObject<List<ItemToSave>>(temp);
             }
-            var ls = sauceNao_Saves.Copy();
+            List<SauceNao_Save> ls = new List<SauceNao_Save>();
+            sauceNao_Saves.ForEach(x => ls.Add(x));
             foreach(var item in ls)
             {
                 if (item.GroupID == e.FromGroup.Id && item.QQID == e.FromQQ.Id)
@@ -62,6 +63,7 @@ namespace me.cqp.luohuaming.Setu.Code
                             {
                                 PicHelper.SauceNao_Call(item2, e);
                                 Thread.Sleep(1000);
+                                return;
                             }
                         }
                     }

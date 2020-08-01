@@ -25,14 +25,13 @@ namespace me.cqp.luohuaming.Setu.Code.Deserializtion
             public int? konachan_id { get; set; }
             public int? member_id { get; set; }
             public int? bcy_id { get; set; }
-            public int? member_link_id { get; set; }
             public string title { get; set; }
-            public object creator { get; set; }
             public string material { get; set; }
             public string characters { get; set; }
-            public string source { get; set; }           
-            public string member_name { get; set; }            
-            public string bcy_type { get; set; }
+            public string source { get; set; }
+            public string member_name { get; set; }
+            public string eng_name { get; set; }
+            public string jp_name { get; set; }
         }
 
         public class Result
@@ -72,11 +71,20 @@ namespace me.cqp.luohuaming.Setu.Code.Deserializtion
                         sb.AppendLine("yandere_ID:" + item.data.yandere_id);
                     if (item.data.da_id != null)
                         sb.AppendLine("Da_ID:" + item.data.da_id);
-                    sb.Append("图片链接：");
-                    foreach (var item2 in item.data.ext_urls)
+                    if (item.data.source != null)
+                        sb.AppendLine("来源:" + item.data.source);
+                    if (item.data.eng_name != null)
+                        sb.AppendLine("英文名称:" + item.data.eng_name);
+                    if (item.data.jp_name != null)
+                        sb.AppendLine("日文名称:" + item.data.jp_name);
+                    if (item.data.ext_urls != null)
                     {
-                         sb.AppendLine(item2);
-                    }
+                        sb.Append("图片链接：");
+                        foreach (var item2 in item.data.ext_urls)
+                        {
+                             sb.AppendLine(item2);
+                        }
+                    }                    
                     sb.AppendLine("缩略图：{1}");
                 }
                 return sb.ToString();

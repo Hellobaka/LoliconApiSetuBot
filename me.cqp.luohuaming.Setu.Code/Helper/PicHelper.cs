@@ -66,23 +66,23 @@ namespace me.cqp.luohuaming.Setu.Code
         /// <summary>
         /// 调用LoliCon接口
         /// </summary>
-        private static string LoliConPic;
+        public static string LoliConPic;
         /// <summary>
         /// 清除限制
         /// </summary>
-        private static string ClearLimit;
+        public static string ClearLimit;
         /// <summary>
         /// 按pid搜图
         /// </summary>
-        private static string PIDSearch;
+        public static string PIDSearch;
         /// <summary>
         /// 按关键字搜图
         /// </summary>
-        private static string HotSearch;
+        public static string HotSearch;
         /// <summary>
         /// SauceNAO相似度搜索
         /// </summary>
-        private static string SauceNaoSearch;
+        public static string SauceNaoSearch;
         #endregion
 
         private static string path, pathUser;
