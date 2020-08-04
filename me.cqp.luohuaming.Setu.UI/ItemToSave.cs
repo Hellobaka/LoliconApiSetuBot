@@ -21,7 +21,7 @@ namespace me.cqp.luohuaming.Setu.UI
         /// </summary>
         public string URL;
         /// <summary>
-        /// API链接
+        /// 路径
         /// </summary>
         public string Path;
         /// <summary>

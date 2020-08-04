@@ -83,6 +83,9 @@
       <DependentUpon>ExtraConfig.xaml</DependentUpon>
     </Compile>
     <Compile Include="ItemToSave.cs" />
+    <Compile Include="JsonDeserize.xaml.cs">
+      <DependentUpon>JsonDeserize.xaml</DependentUpon>
+    </Compile>
     <Compile Include="LocalPic.xaml.cs">
       <DependentUpon>LocalPic.xaml</DependentUpon>
     </Compile>
@@ -104,6 +107,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ExtraConfig.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="JsonDeserize.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

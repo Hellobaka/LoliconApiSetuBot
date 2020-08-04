@@ -26,189 +26,197 @@ namespace me.cqp.luohuaming.Setu.Code
         private static List<SauceNao_Save> sauceNao_Saves = new List<SauceNao_Save>();
         public void GroupMessage(object sender, CQGroupMessageEventArgs e)
         {
-            //读取自定义指令与回答
-            PicHelper.ReadOrderandAnswer();
-            List<ItemToSave> CustomAPI=new List<ItemToSave>();
-            if (File.Exists(CQSave.AppDirectory+"CustomAPI.json"))
+            try
             {
-                string temp = File.ReadAllText(CQSave.AppDirectory + "CustomAPI.json");
-                //反序列化
-                CustomAPI = JsonConvert.DeserializeObject<List<ItemToSave>>(temp);
-            }
-            List<ItemToSave> LocalPic = new List<ItemToSave>();
-            if (File.Exists(CQSave.AppDirectory + "LocalPic.json"))
-            {
-                string temp = File.ReadAllText(CQSave.AppDirectory + "LocalPic.json");
-                //反序列化
-                LocalPic = JsonConvert.DeserializeObject<List<ItemToSave>>(temp);
-            }
-            List<SauceNao_Save> ls = new List<SauceNao_Save>();
-            sauceNao_Saves.ForEach(x => ls.Add(x));
-            foreach(var item in ls)
-            {
-                if (item.GroupID == e.FromGroup.Id && item.QQID == e.FromQQ.Id)
+                //读取自定义指令与回答
+                PicHelper.ReadOrderandAnswer();
+                List<ItemToSave> CustomAPI = new List<ItemToSave>();
+                if (File.Exists(CQSave.AppDirectory + "CustomAPI.json"))
                 {
-                    if (e.Message.CQCodes.Where(x => x.IsImageCQCode).ToList().Count == 0)
+                    string temp = File.ReadAllText(CQSave.AppDirectory + "CustomAPI.json");
+                    //反序列化
+                    CustomAPI = JsonConvert.DeserializeObject<List<ItemToSave>>(temp);
+                }
+                List<ItemToSave> LocalPic = new List<ItemToSave>();
+                if (File.Exists(CQSave.AppDirectory + "LocalPic.json"))
+                {
+                    string temp = File.ReadAllText(CQSave.AppDirectory + "LocalPic.json");
+                    //反序列化
+                    LocalPic = JsonConvert.DeserializeObject<List<ItemToSave>>(temp);
+                }
+                List<SauceNao_Save> ls = new List<SauceNao_Save>();
+                sauceNao_Saves.ForEach(x => ls.Add(x));
+                foreach (var item in ls)
+                {
+                    if (item.GroupID == e.FromGroup.Id && item.QQID == e.FromQQ.Id)
                     {
-                        sauceNao_Saves.Remove(item);
-                        e.FromGroup.SendGroupMessage("发送的不是图片，调用失败");
-                        break;
-                    }
-                    else
-                    {
-                        sauceNao_Saves.Remove(item);
-                        foreach (var item2 in e.Message.CQCodes)
+                        if (e.Message.CQCodes.Where(x => x.IsImageCQCode).ToList().Count == 0)
                         {
-                            if (item2.IsImageCQCode)
+                            sauceNao_Saves.Remove(item);
+                            e.FromGroup.SendGroupMessage("发送的不是图片，调用失败");
+                            return;
+                        }
+                        else
+                        {
+                            sauceNao_Saves.Remove(item);
+                            foreach (var item2 in e.Message.CQCodes)
                             {
-                                PicHelper.SauceNao_Call(item2, e);
-                                Thread.Sleep(1000);
-                                return;
+                                if (item2.IsImageCQCode)
+                                {
+                                    PicHelper.SauceNao_Call(item2, e);
+                                    Thread.Sleep(1000);
+                                    return;
+                                }
                             }
                         }
                     }
                 }
-            }
-            if (!string.IsNullOrEmpty(PicHelper.LoliConPic) && e.Message.Text.Replace("＃", "#") .StartsWith(PicHelper.LoliConPic))
-            {
-                if (!CanCallFunc(e)) return;
-
-                //拉取图片，处理时间受地区与网速限制
-                GetSetu setu = new GetSetu();
-                List<string> pic = setu.GetSetuPic(e.Message.Text.Substring(PicHelper.LoliConPic.Length));
-                try
+                if (!string.IsNullOrEmpty(PicHelper.LoliConPic) && e.Message.Text.Replace("＃", "#").StartsWith(PicHelper.LoliConPic))
                 {
-                    List<string> save = pic;
-                    // 处理返回文本，替换可配置文本为结果，发送处理结果
-                    string str = PicHelper.ProcessReturns(pic[0], e);
-                    if(!string.IsNullOrEmpty(str))
-                        e.CQApi.SendGroupMessage(e.FromGroup, str);
-                    if (File.Exists(CQSave.ImageDirectory + $"\\{pic[1]}"))//文件是否下载成功
+                    if (!CanCallFunc(e)) return;
+
+                    //拉取图片，处理时间受地区与网速限制
+                    GetSetu setu = new GetSetu();
+                    List<string> pic = setu.GetSetuPic(e.Message.Text.Substring(PicHelper.LoliConPic.Length));
+                    try
                     {
-                        QQMessage staues = e.CQApi.SendGroupMessage(e.FromGroup, CQApi.CQCode_Image(pic[1]));
-                        if (!staues.IsSuccess)//图片发送失败
+                        List<string> save = pic;
+                        // 处理返回文本，替换可配置文本为结果，发送处理结果
+                        string str = PicHelper.ProcessReturns(pic[0], e);
+                        if (!string.IsNullOrEmpty(str))
+                            e.CQApi.SendGroupMessage(e.FromGroup, str);
+                        if (File.Exists(CQSave.ImageDirectory + $"\\{pic[1]}"))//文件是否下载成功
                         {
-                            IniConfig ini = new IniConfig(CQSave.AppDirectory + "Config.ini");ini.Load();
-                            if (ini.Object["Config"]["FailedCompress"].GetValueOrDefault("0") == "0" || !e.FromGroup.SendGroupMessage(CompressImg.CompressImage(pic[1])).IsSuccess)
+                            QQMessage staues = e.CQApi.SendGroupMessage(e.FromGroup, CQApi.CQCode_Image(pic[1]));
+                            if (!staues.IsSuccess)//图片发送失败
                             {
-                                Setu deserialize = JsonConvert.DeserializeObject<Setu>(pic[0]);
-                                List<Data> msg = deserialize.data;
-                                if(!string.IsNullOrEmpty(PicHelper.SendPicFailed))
-                                    e.CQApi.SendGroupMessage(e.FromGroup, PicHelper.SendPicFailed.Replace("<url>", msg[0].url));
-                                PicHelper.SaveErrorMsg(pic[1]);
-                                return;
+                                IniConfig ini = new IniConfig(CQSave.AppDirectory + "Config.ini"); ini.Load();
+                                if (ini.Object["Config"]["FailedCompress"].GetValueOrDefault("0") == "0" || !e.FromGroup.SendGroupMessage(CompressImg.CompressImage(pic[1])).IsSuccess)
+                                {
+                                    Setu deserialize = JsonConvert.DeserializeObject<Setu>(pic[0]);
+                                    List<Data> msg = deserialize.data;
+                                    if (!string.IsNullOrEmpty(PicHelper.SendPicFailed))
+                                        e.CQApi.SendGroupMessage(e.FromGroup, PicHelper.SendPicFailed.Replace("<url>", msg[0].url));
+                                    PicHelper.SaveErrorMsg(pic[1]);
+                                    return;
+                                }
+                            }
+                            if (revoke)//自动撤回
+                            {
+                                IniConfig ini = new IniConfig(CQSave.AppDirectory + "Config.ini"); ini.Load();
+                                Task task = new Task(() =>
+                                {
+                                    Thread.Sleep(ini.Object["R18"]["RevokeTime"] * 1000);
+                                    PicHelper.RevokePic(staues.Id);
+                                }); task.Start();
                             }
                         }
-                        if (revoke)//自动撤回
+                        else
                         {
-                            IniConfig ini = new IniConfig(CQSave.AppDirectory + "Config.ini"); ini.Load();
-                            Task task = new Task(() =>
-                            {
-                                Thread.Sleep(ini.Object["R18"]["RevokeTime"] * 1000);
-                                PicHelper.RevokePic(staues.Id);
-                            }); task.Start();
+                            return;
                         }
                     }
-                    else
+                    catch (Exception exc)
                     {
+                        e.CQApi.SendGroupMessage(e.FromGroup, $"发生未知错误,错误信息:在{exc.Source}上, 发生错误: {exc.Message}  有{exc.StackTrace}");
+                    }
+                }
+                else if (!string.IsNullOrEmpty(PicHelper.ClearLimit) && e.Message.Text == PicHelper.ClearLimit)
+                {
+                    if (!PicHelper.InGroup(e) || !PicHelper.IsAdmin(e)) return;
+
+                    else if (!PicHelper.IsAdmin(e))
+                    {
+                        e.FromGroup.SendGroupMessage(CQApi.CQCode_At(e.FromQQ), "权限不足，拒绝操作");
                         return;
                     }
+                    File.Delete(CQSave.AppDirectory + "ConfigLimit.ini");
+                    e.FromGroup.SendGroupMessage(CQApi.CQCode_At(e.FromQQ), "重置成功");
+                    return;
                 }
-                catch (Exception exc)
+                else if (PicHelper.CheckCustomAPI(CustomAPI, e))
                 {
-                    e.CQApi.SendGroupMessage(e.FromGroup, $"发生未知错误,错误信息:在{exc.Source}上, 发生错误: {exc.Message}  有{exc.StackTrace}");
+                    if (!CanCallFunc(e)) return;
+                    PicHelper.CustomAPI_Call(CustomAPI, e);
                 }
-            }
-            else if (!string.IsNullOrEmpty(PicHelper.ClearLimit) && e.Message.Text == PicHelper.ClearLimit)
-            {
-                if (!PicHelper.InGroup(e) || !PicHelper.IsAdmin(e)) return;
+                else if (PicHelper.CheckLocalPic(LocalPic, e))
+                {
+                    if (!CanCallFunc(e)) return;
+                    PicHelper.LocalPic_Call(LocalPic, e);
+                }
+                else if (!string.IsNullOrEmpty(PicHelper.PIDSearch) && e.Message.Text.ToLower().StartsWith(PicHelper.PIDSearch))
+                {
+                    if (!CanCallFunc(e)) return;
 
-                else if (!PicHelper.IsAdmin(e))
-                {
-                    e.FromGroup.SendGroupMessage(CQApi.CQCode_At(e.FromQQ), "权限不足，拒绝操作");
-                    return;
-                }
-                File.Delete(CQSave.AppDirectory + "ConfigLimit.ini");
-                e.FromGroup.SendGroupMessage(CQApi.CQCode_At(e.FromQQ), "重置成功");
-                return;
-            }
-            else if (PicHelper.CheckCustomAPI(CustomAPI,e))
-            {
-                if (!CanCallFunc(e)) return;
-                PicHelper.CustomAPI_Call(CustomAPI, e);
-            }
-            else if (PicHelper.CheckLocalPic(LocalPic, e))
-            {
-                if (!CanCallFunc(e)) return;
-                PicHelper.LocalPic_Call(LocalPic, e);
-            }
-            else if (!string.IsNullOrEmpty(PicHelper.PIDSearch) && e.Message.Text.ToLower().StartsWith(PicHelper.PIDSearch))
-            {
-                if (!CanCallFunc(e)) return;
-
-                if (e.Message.Text.Trim().Length == PicHelper.PIDSearch.Length)
-                {
-                    e.FromGroup.SendGroupMessage("指令无效，请在指令后添加pid");
-                    return;
-                }
-                if(!int.TryParse( e.Message.Text.Substring(PicHelper.PIDSearch.Length).Replace(" ",""),out int pid))
-                {
-                    e.FromGroup.SendGroupMessage("指令无效，检查是否为纯数字");
-                    return;
-                }
-                e.FromGroup.SendGroupMessage($"正在查询pid={pid}的插画信息，请等待……");
-                IllustInfo illustInfo = PixivAPI.GetIllustInfo(pid);
-                e.FromGroup.SendGroupMessage(illustInfo.IllustText);
-                QQMessage message = e.FromGroup.SendGroupMessage(illustInfo.IllustCQCode);
-                if (!message.IsSuccess && !string.IsNullOrEmpty(illustInfo.IllustUrl))
-                {
-                    IniConfig ini = new IniConfig(CQSave.AppDirectory + "Config.ini"); ini.Load();
-                    if (ini.Object["Config"]["FailedCompress"].GetValueOrDefault("0") == "0" || !e.FromGroup.SendGroupMessage(CompressImg.CompressImage(illustInfo.IllustCQCode.Items["file"])).IsSuccess)
+                    if (e.Message.Text.Trim().Length == PicHelper.PIDSearch.Length)
                     {
-                        e.FromGroup.SendGroupMessage($"图片发送失败，把链接复制进浏览器看看吧:{illustInfo.IllustUrl}");
-                        PicHelper.SaveErrorMsg(illustInfo.IllustCQCode);
+                        e.FromGroup.SendGroupMessage("指令无效，请在指令后添加pid");
+                        return;
                     }
-                }
-            }
-            else if (!string.IsNullOrEmpty(PicHelper.HotSearch) && e.Message.Text.Trim().StartsWith(PicHelper.HotSearch))
-            {
-                if (!CanCallFunc(e)) return;
-
-                string keyword = e.Message.Text.Replace(" ", "").Substring(PicHelper.HotSearch.Length);
-                e.FromGroup.SendGroupMessage($"正在查询关键字为{keyword}的插画信息，请等待……");
-                IllustInfo illustInfo = PixivAPI.GetHotSearch(keyword);
-                e.FromGroup.SendGroupMessage(illustInfo.IllustText);
-                QQMessage message = e.FromGroup.SendGroupMessage(illustInfo.IllustCQCode);
-                if (!message.IsSuccess && !string.IsNullOrEmpty(illustInfo.IllustUrl))
-                {
-                    IniConfig ini = new IniConfig(CQSave.AppDirectory + "Config.ini"); ini.Load();
-                    if (ini.Object["Config"]["FailedCompress"].GetValueOrDefault("0") == "0" || !e.FromGroup.SendGroupMessage(CompressImg.CompressImage(illustInfo.IllustCQCode.Items["file"])).IsSuccess)
+                    if (!int.TryParse(e.Message.Text.Substring(PicHelper.PIDSearch.Length).Replace(" ", ""), out int pid))
                     {
-                        e.FromGroup.SendGroupMessage($"图片发送失败，把链接复制进浏览器看看吧:{illustInfo.IllustUrl}");
-                        PicHelper.SaveErrorMsg(illustInfo.IllustCQCode);
+                        e.FromGroup.SendGroupMessage("指令无效，检查是否为纯数字");
+                        return;
                     }
-                }
-            }
-            else if(!string.IsNullOrEmpty(PicHelper.SauceNaoSearch) && e.Message.Text.Trim().StartsWith(PicHelper.SauceNaoSearch))
-            {
-                if (!CanCallFunc(e)) return;
-                if(e.Message.CQCodes.Count!=0)
-                {
-                    foreach (var item in e.Message.CQCodes)
+                    e.FromGroup.SendGroupMessage($"正在查询pid={pid}的插画信息，请等待……");
+                    IllustInfo illustInfo = PixivAPI.GetIllustInfo(pid);
+                    e.FromGroup.SendGroupMessage(illustInfo.IllustText);
+                    QQMessage message = e.FromGroup.SendGroupMessage(illustInfo.IllustCQCode);
+                    if (!message.IsSuccess && !string.IsNullOrEmpty(illustInfo.IllustUrl))
                     {
-                        if (item.IsImageCQCode)
+                        IniConfig ini = new IniConfig(CQSave.AppDirectory + "Config.ini"); ini.Load();
+                        if (ini.Object["Config"]["FailedCompress"].GetValueOrDefault("0") == "0" || !e.FromGroup.SendGroupMessage(CompressImg.CompressImage(illustInfo.IllustCQCode.Items["file"])).IsSuccess)
                         {
-                            PicHelper.SauceNao_Call(item,e);
-                            Thread.Sleep(1000);
+                            e.FromGroup.SendGroupMessage($"图片发送失败，把链接复制进浏览器看看吧:{illustInfo.IllustUrl}");
+                            PicHelper.SaveErrorMsg(illustInfo.IllustCQCode);
                         }
                     }
                 }
-                else
+                else if (!string.IsNullOrEmpty(PicHelper.HotSearch) && e.Message.Text.Trim().StartsWith(PicHelper.HotSearch))
                 {
-                    sauceNao_Saves.Add(new SauceNao_Save(e.FromGroup.Id, e.FromQQ.Id));
-                    e.FromGroup.SendGroupMessage("请在接下来的一条消息内发送需要搜索的图片");
+                    if (!CanCallFunc(e)) return;
+
+                    string keyword = e.Message.Text.Replace(" ", "").Substring(PicHelper.HotSearch.Length);
+                    e.FromGroup.SendGroupMessage($"正在查询关键字为{keyword}的插画信息，请等待……");
+                    IllustInfo illustInfo = PixivAPI.GetHotSearch(keyword);
+                    e.FromGroup.SendGroupMessage(illustInfo.IllustText);
+                    QQMessage message = e.FromGroup.SendGroupMessage(illustInfo.IllustCQCode);
+                    if (!message.IsSuccess && !string.IsNullOrEmpty(illustInfo.IllustUrl))
+                    {
+                        IniConfig ini = new IniConfig(CQSave.AppDirectory + "Config.ini"); ini.Load();
+                        if (ini.Object["Config"]["FailedCompress"].GetValueOrDefault("0") == "0" || !e.FromGroup.SendGroupMessage(CompressImg.CompressImage(illustInfo.IllustCQCode.Items["file"])).IsSuccess)
+                        {
+                            e.FromGroup.SendGroupMessage($"图片发送失败，把链接复制进浏览器看看吧:{illustInfo.IllustUrl}");
+                            PicHelper.SaveErrorMsg(illustInfo.IllustCQCode);
+                        }
+                    }
+                }
+                else if (!string.IsNullOrEmpty(PicHelper.SauceNaoSearch) && e.Message.Text.Trim().StartsWith(PicHelper.SauceNaoSearch))
+                {
+                    if (!CanCallFunc(e)) return;
+                    if (e.Message.CQCodes.Count != 0)
+                    {
+                        foreach (var item in e.Message.CQCodes)
+                        {
+                            if (item.IsImageCQCode)
+                            {
+                                PicHelper.SauceNao_Call(item, e);
+                                Thread.Sleep(1000);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        sauceNao_Saves.Add(new SauceNao_Save(e.FromGroup.Id, e.FromQQ.Id));
+                        e.FromGroup.SendGroupMessage("请在接下来的一条消息内发送需要搜索的图片");
+                    }
                 }
             }
+            catch(Exception exc)
+            {
+                e.CQLog.Info("Error", exc.Message, exc.StackTrace);
+            }
+            
         }
         /// <summary>
         /// 判断是否满足拉取图片的权限

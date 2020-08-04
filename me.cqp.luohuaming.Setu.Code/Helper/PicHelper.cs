@@ -477,6 +477,7 @@ namespace me.cqp.luohuaming.Setu.Code
         public static void LocalPic_Call(List<ItemToSave> ls, CQGroupMessageEventArgs e)
         {
             var result = LocalPic_Image(ls, e);
+            e.CQLog.Debug("Debug", result[1]);
             QQMessage staues = e.FromGroup.SendGroupMessage(result[1]);
             if (!staues.IsSuccess)//图片发送失败
             {
@@ -489,7 +490,7 @@ namespace me.cqp.luohuaming.Setu.Code
                     PicHelper.SaveErrorMsg(result[2]);
                 }
             }
-            File.Delete(Path.Combine(CQSave.ImageDirectory, result[2]));
+            //File.Delete(Path.Combine(CQSave.ImageDirectory, result[2]));
             if (Convert.ToBoolean(result[0]))//自动撤回
             {
                 IniConfig ini = new IniConfig(CQSave.AppDirectory + "Config.ini"); ini.Load();
@@ -525,7 +526,8 @@ namespace me.cqp.luohuaming.Setu.Code
                 if (!Directory.Exists(CQSave.ImageDirectory + "\\LocalPic"))
                     Directory.CreateDirectory(CQSave.ImageDirectory + "\\LocalPic");
                 string picpathFinal = CQSave.ImageDirectory + "\\LocalPic\\" + picinfo.Name;
-                File.Copy(picpathOrigin, picpathFinal);
+                if(!File.Exists(picpathFinal))
+                    File.Copy(picpathOrigin, picpathFinal);
                 e.CQLog.Info("本地图片接口", $"图片获取成功，尝试发送");
                 GetSetu.AntiHX(picpathFinal);
                 string imageCQCodePath = Path.Combine("LocalPic", picinfo.Name);

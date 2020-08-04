@@ -99,6 +99,13 @@ namespace me.cqp.luohuaming.Setu.UI
                     frmMain.Content = pg;
                     pg.parentwindow = this;
                 }
+                else if (tag == "JsonDeserize")
+                {
+                    if (frmMain.Content.GetType().Name == "JsonDeserize") return;
+                    JsonDeserize pg = new JsonDeserize();
+                    frmMain.Content = pg;
+                    pg.parentwindow = this;
+                }
             }
             catch(Exception exc)
             {
