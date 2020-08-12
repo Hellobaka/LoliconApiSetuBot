@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Threading;
+using me.cqp.luohuaming.Setu.Code;
 using Native.Sdk.Cqp.EventArgs;
 using Native.Sdk.Cqp.Interface;
 using Native.Sdk.Cqp.Model;
@@ -14,17 +18,31 @@ namespace me.cqp.luohuaming.Setu.UI
         private MainWindow window = null;
         public void MenuCall(object sender, CQMenuCallEventArgs e)
         {
-
-            if (window == null)
+            try
             {
-                window = new MainWindow();
-                window.Closing += Window_Closing;
-                window.Show();
+                if (window == null)
+                {
+                    Thread thread = new Thread(() =>
+                    {
+                        window = new MainWindow();
+                        window.Closing += Window_Closing;
+                        window.ShowDialog();
+                    });
+                    thread.SetApartmentState(ApartmentState.STA);
+                    thread.Start();                    
+                }
+                else
+                {
+                    window.Activate();
+                }
             }
-            else
+            catch(Exception exc)
             {
-                window.Activate();
+                CQSave.cqlog.Info("Error",exc.Message,exc.StackTrace);
             }
+                    //window = new MainWindow();
+                    //window.Closing += Window_Closing;
+                    //window.Show();           
         }
 
         ///<summary>

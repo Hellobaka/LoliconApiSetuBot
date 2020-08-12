@@ -74,6 +74,7 @@ namespace Native.Sdk.Cqp
 		{
 			this._appInfo = appInfo;
 		}
+		public CQApi() { }
 		#endregion
 
 		#region --CQ码类方法--

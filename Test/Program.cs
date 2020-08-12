@@ -1,4 +1,6 @@
 ﻿using Masuit.Tools;
+using Native.Sdk.Cqp;
+using Native.Sdk.Cqp.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -10,9 +12,9 @@ namespace Test
 {
     class Program
     {
-        static List<string> ls = new List<string>();
         static void Main(string[] args)
         {
+            Console.ReadKey();
         }
     }
 }
