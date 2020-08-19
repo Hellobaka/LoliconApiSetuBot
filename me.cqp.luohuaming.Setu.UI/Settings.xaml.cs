@@ -1,5 +1,4 @@
-﻿#define DEBUG
-using me.cqp.luohuaming.Setu.Code;
+﻿using me.cqp.luohuaming.Setu.Code;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -125,7 +124,7 @@ namespace me.cqp.luohuaming.Setu.UI
                 {
                     BindingGroup temp = new BindingGroup();
                     temp.IsChecked = CheckGroupOpen(item.Group.Id);
-                    temp.GroupName = item.Group.GetGroupInfo().Name;
+                    temp.GroupName = item.Name;
                     temp.GroupId = item.Group.Id;
                     group.Add(temp);
                 }

@@ -24,8 +24,8 @@
         <TextBlock Height="26" FontSize="20">R18开关
             <ToggleButton x:Name="Toggle_R18" Style="{StaticResource MaterialDesignSwitchToggleButton}" HorizontalAlignment="Left" Margin="10,5,0,0"/>
         </TextBlock>
-        <StackPanel  IsEnabled="{Binding IsChecked,ElementName=Toggle_R18}">
-            <TextBlock FontSize="20" Margin="0,10,0,0">R18图定时撤回
+        <StackPanel >
+            <TextBlock FontSize="20" Margin="0,10,0,0">全局定时撤回时长
                 <ToggleButton x:Name="Toggle_Revoke" Margin="8,0,0,0" Style="{StaticResource MaterialDesignSwitchToggleButton}" HorizontalAlignment="Left"/>
             </TextBlock>
             <TextBlock FontSize="16" Margin="10,5,0,0">时间设置，最长120秒（设置过长无法撤回）</TextBlock>

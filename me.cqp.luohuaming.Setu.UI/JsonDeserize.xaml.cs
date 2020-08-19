@@ -213,17 +213,24 @@ namespace me.cqp.luohuaming.Setu.UI
             string path = ((TextBox)VisualTreeHelper.GetChild(parent, 4)).Text;
             try
             {
-                HttpWebClient http = new HttpWebClient();
-                string json=Encoding.UTF8.GetString(HttpWebClient.Get(url)).Replace('﻿',' ');
+                using (HttpWebClient http = new HttpWebClient()
+                {
+                    TimeOut = 10000,
+                    Proxy = CQSave.proxy,
+                    AllowAutoRedirect = true,
+                })
+                {
+                    string json = Encoding.UTF8.GetString(http.DownloadData(url)).Replace('﻿', ' ');
 
-                string picpath = CQSave.ImageDirectory +"\\JsonDeserize\\"+ Guid.NewGuid()+".png";
-                if (!Directory.Exists(CQSave.ImageDirectory + "\\JsonDeserize"))
-                    Directory.CreateDirectory(CQSave.ImageDirectory + "\\JsonDeserize");
-                JObject jObject = JObject.Parse(json);
-                url = jObject.SelectToken(path).ToString();
-                http.DownloadFile(url, picpath);
-                parentwindow.SnackbarMessage_Show($"接口测试通过", 1);
-                Process.Start(picpath);
+                    string picpath = CQSave.ImageDirectory + "\\JsonDeserize\\" + Guid.NewGuid() + ".png";
+                    if (!Directory.Exists(CQSave.ImageDirectory + "\\JsonDeserize"))
+                        Directory.CreateDirectory(CQSave.ImageDirectory + "\\JsonDeserize");
+                    JObject jObject = JObject.Parse(json);
+                    url = jObject.SelectToken(path).ToString();
+                    http.DownloadFile(url, picpath);
+                    parentwindow.SnackbarMessage_Show($"接口测试通过", 1);
+                    Process.Start(picpath);
+                }
             }
             catch(Exception exc)
             {

@@ -44,10 +44,10 @@ namespace me.cqp.luohuaming.Setu.UI
         {
             ini = new IniConfig(CQSave.AppDirectory + "Config.ini");
             ini.Load();
-            Toggle_R18.IsChecked = ini.Object["R18"]["Enabled"].GetValueOrDefault("0") == "1" ? true : false;
-            Toggle_Revoke.IsChecked = ini.Object["R18"]["R18PicRevoke"].GetValueOrDefault("0") == "1" ? true : false;
+            Toggle_R18.IsChecked = ini.Object["R18"]["Enabled"].GetValueOrDefault("0") == "1";
+            Toggle_Revoke.IsChecked = ini.Object["R18"]["R18PicRevoke"].GetValueOrDefault("0") == "1";
             text_Revoke.Text = ini.Object["R18"]["RevokeTime"].GetValueOrDefault("0");
-            Toggle_CompressImg.IsChecked = ini.Object["Config"]["FailedCompress"].GetValueOrDefault("0") == "1" ? true : false;
+            Toggle_CompressImg.IsChecked = ini.Object["Config"]["FailedCompress"].GetValueOrDefault("0") == "1";
 
 
             Toggle_R18.Click += EnabledApplyButton;

@@ -426,13 +426,15 @@ namespace me.cqp.luohuaming.Setu.Code
                 }
                 string imagename = DateTime.Now.ToString("yyyyMMddHHss") + ".jpg";
                 string fullpath = Path.Combine(targetdir, imagename);
-                byte[] temp = HttpWebClient.Get(item.URL);
-
-                //将字节数组转换为图片
-                MemoryStream memStream = new MemoryStream(temp);
-                Image mImage = Image.FromStream(memStream);
-                Bitmap bp = new Bitmap(mImage);
-                bp.Save(fullpath);
+                using (HttpWebClient http = new HttpWebClient()
+                {
+                    TimeOut = 10000,
+                    Proxy = CQSave.proxy,
+                    AllowAutoRedirect = true,
+                })
+                {
+                    http.DownloadFile(item.URL, fullpath);
+                }
 
                 e.CQLog.Info("自定义接口", $"图片下载成功，尝试发送");
 
@@ -526,7 +528,7 @@ namespace me.cqp.luohuaming.Setu.Code
                 if (!Directory.Exists(CQSave.ImageDirectory + "\\LocalPic"))
                     Directory.CreateDirectory(CQSave.ImageDirectory + "\\LocalPic");
                 string picpathFinal = CQSave.ImageDirectory + "\\LocalPic\\" + picinfo.Name;
-                if(!File.Exists(picpathFinal))
+                if (!File.Exists(picpathFinal))
                     File.Copy(picpathOrigin, picpathFinal);
                 e.CQLog.Info("本地图片接口", $"图片获取成功，尝试发送");
                 GetSetu.AntiHX(picpathFinal);
@@ -554,9 +556,13 @@ namespace me.cqp.luohuaming.Setu.Code
         {
             string url = "https://saucenao.com/search.php?output_type=2&api_key=56faa0cddf50860330a295e0c331be7c4b4c021f&db=999&numres=1&url=";
             url += GetImageURL(cqcode.ToSendString());
-            using (HttpWebClient http = new HttpWebClient())
+            using (HttpWebClient http = new HttpWebClient()
             {
-                http.TimeOut = 10000;
+                TimeOut = 10000,
+                Proxy = CQSave.proxy,
+                AllowAutoRedirect = true,
+            })
+            {
                 try
                 {
                     Directory.CreateDirectory(CQSave.ImageDirectory + "SauceNaotemp");
@@ -617,7 +623,7 @@ namespace me.cqp.luohuaming.Setu.Code
                                     }
                                 }
                             }
-                            catch(Exception exc)
+                            catch (Exception exc)
                             {
                                 e.FromGroup.SendGroupMessage($"pid={item}的图片拉取失败,错误信息:{exc.Message}");
                             }
@@ -628,7 +634,7 @@ namespace me.cqp.luohuaming.Setu.Code
                 {
                     e.CQLog.Info("SauceNao搜图", $"搜索失败，错误信息:{exc.Message}在{exc.StackTrace}");
                     e.FromGroup.SendGroupMessage($"拉取失败，错误信息:{exc.Message}");
-                    PlusMemberQuota(e);                    
+                    PlusMemberQuota(e);
                 }
                 finally
                 {

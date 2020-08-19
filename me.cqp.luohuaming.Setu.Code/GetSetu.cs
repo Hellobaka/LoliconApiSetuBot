@@ -119,142 +119,103 @@ namespace me.cqp.luohuaming.Setu.Code
             //401：接口调用次数达到上限
             //402：图片下载失败
             //403：其他错误（超时，404等）详情写入日志
-            try
+            using (HttpWebClient http = new HttpWebClient()
             {
-                WebProxy proxy = null;
-                IniConfig ini = new IniConfig(CQSave.AppDirectory + "Config.ini");
-                ini.Load();
-                if (ini.Object["Proxy"]["IsEnabled"].GetValueOrDefault("0") == "1")
-                {
-                    try
-                    {
-                        //代理设置
-                        string uri, username, pwd;
-                        uri = ini.Object["Proxy"]["ProxyUri"].GetValueOrDefault("0");
-                        username = ini.Object["Proxy"]["ProxyName"].GetValueOrDefault("0");
-                        pwd = ini.Object["Proxy"]["ProxyName"].GetValueOrDefault("0");
+                TimeOut = 10000,
+                Proxy = CQSave.proxy,
+                AllowAutoRedirect = true,
 
-                        proxy = new WebProxy();
-                        proxy.Address = new Uri(uri);
-                        proxy.Credentials = new NetworkCredential(username, pwd);
-                    }
-                    catch (Exception ex)
-                    {
-                        CQSave.cqlog.Info("Proxy错误", $"设置的代理无效，信息:{ex.Message}");
-                    }
-                }
-                Event_GroupMessage.revoke = false;
-                List<string> result = new List<string>();
-                string url = string.Empty;
-                //拼接Url
-                if (ini.Object["Config"]["ApiSwitch"].GetValueOrDefault("0") == "1")
-                {
-                    string apikey = ini.Object["Config"]["ApiKey"].GetValueOrDefault("0");
-                    url = api + $"apikey={apikey}&";
-                }
-                else
-                {
-                    url = api;
-                }
-                url += GetOrderText(ordertext);
-                if (url.Contains("r18=1")&&ini.Object["R18"]["R18PicRevoke"]=="1")
-                {
-                    Event_GroupMessage.revoke = true;//用于后续撤回
-                }
-                string json = "";
-                CQSave.cqlog.Debug("debug", url);
+            })
+            {
                 try
                 {
-                    //访问接口
-                    byte[] by = Get(url, 10000, proxy);
-                    json = Encoding.UTF8.GetString(by);
-                    if (string.IsNullOrEmpty(json))
+                    WebProxy proxy = null;
+                    IniConfig ini = new IniConfig(CQSave.AppDirectory + "Config.ini");
+                    ini.Load();
+                    Event_GroupMessage.revoke = false;
+                    List<string> result = new List<string>();
+                    string url = string.Empty;
+                    //拼接Url
+                    if (ini.Object["Config"]["ApiSwitch"].GetValueOrDefault("0") == "1")
                     {
-                        throw new NullReferenceException();
+                        string apikey = ini.Object["Config"]["ApiKey"].GetValueOrDefault("0");
+                        url = api + $"apikey={apikey}&";
                     }
-                }
-                catch (Exception e)
-                {
-                    CQSave.cqlog.Info("Error", e.Message + " ");
-                    result.Add("403" + e.Message);
-                    result.Add(@"\LoliconPic\error.jpg");
-                    return result;
-                }
-                CQSave.cqlog.Debug("debug", json + " ");
-                //检查路径是否存在
-                if (!Directory.Exists(CQSave.ImageDirectory + @"\LoliconPic\"))
-                {
-                    Directory.CreateDirectory(CQSave.ImageDirectory + @"\LoliconPic\");
-                }
-                //反序列化json
-                Setu deserialize = JsonConvert.DeserializeObject<Setu>(json);
-                if (deserialize.code != 0)//非成功调用
-                {
-                    result.Add(json);
-                    result.Add(@"\LoliconPic\error.jpg");
-                    return result;
-                }
-                //获取Data数组信息
-                List<Data> pic = deserialize.data;
-                foreach (var item in pic)
-                {
+                    else
+                    {
+                        url = api;
+                    }
+                    url += GetOrderText(ordertext);
+                    if (url.Contains("r18=1") && ini.Object["R18"]["R18PicRevoke"] == "1")
+                    {
+                        Event_GroupMessage.revoke = true;//用于后续撤回
+                    }
+                    string json = "";
+                    CQSave.cqlog.Debug("debug", url);
                     try
                     {
-                        HttpWebClient http = new HttpWebClient
-                        {
-                            TimeOut = 10000,//超时时间10s
-                            Proxy = proxy
-                        };
-                        string path = CQSave.ImageDirectory + @"\LoliconPic\" + item.pid + ".jpg";
-                        if (!File.Exists(path))
-                        {
-                            http.DownloadFile(item.url, path);
-                            AntiHX(CQSave.ImageDirectory + @"\LoliconPic\" + item.pid + ".jpg");
-                        }
-                        result.Add(json);
-                        result.Add(@"\LoliconPic\" + item.pid + ".jpg");
-                        http.Dispose();
+                        //访问接口
+                        json = http.DownloadString(url);
                     }
                     catch (Exception e)
                     {
-                        CQSave.cqlog.Info("Error", "在" + e.Source + "上, 发送错误: " + e.Message + " 有" + e.StackTrace);
-                        result.Add("402" + e.Message);
+                        CQSave.cqlog.Info("Error", e.Message + " ");
+                        result.Add("403" + e.Message);
                         result.Add(@"\LoliconPic\error.jpg");
                         return result;
                     }
+                    CQSave.cqlog.Debug("debug", json + " ");
+                    //检查路径是否存在
+                    if (!Directory.Exists(CQSave.ImageDirectory + @"\LoliconPic\"))
+                    {
+                        Directory.CreateDirectory(CQSave.ImageDirectory + @"\LoliconPic\");
+                    }
+                    //反序列化json
+                    Setu deserialize = JsonConvert.DeserializeObject<Setu>(json);
+                    if (deserialize.code != 0)//非成功调用
+                    {
+                        result.Add(json);
+                        result.Add(@"\LoliconPic\error.jpg");
+                        return result;
+                    }
+                    //获取Data数组信息
+                    List<Data> pic = deserialize.data;
+                    foreach (var item in pic)
+                    {
+                        try
+                        {
+                            string path = CQSave.ImageDirectory + @"\LoliconPic\" + item.pid + ".jpg";
+                            if (!File.Exists(path))
+                            {
+                                http.DownloadFile(item.url, path);
+                                AntiHX(CQSave.ImageDirectory + @"\LoliconPic\" + item.pid + ".jpg");
+                            }
+                            result.Add(json);
+                            result.Add(@"\LoliconPic\" + item.pid + ".jpg");
+                            http.Dispose();
+                        }
+                        catch (Exception e)
+                        {
+                            CQSave.cqlog.Info("Error", "在" + e.Source + "上, 发送错误: " + e.Message + " 有" + e.StackTrace);
+                            result.Add("402" + e.Message);
+                            result.Add(@"\LoliconPic\error.jpg");
+                            return result;
+                        }
+                    }
+                    return result;
                 }
-                return result;
-            }
-            catch (Exception e)
-            {
-                CQSave.cqlog.Info("Error", "在" + e.Source + "上, 发送错误: " + e.Message + " 有" + e.StackTrace);
-                List<string> throww = new List<string>
+                catch (Exception e)
+                {
+                    CQSave.cqlog.Info("Error", "在" + e.Source + "上, 发送错误: " + e.Message + " 有" + e.StackTrace);
+                    List<string> throww = new List<string>
                 {
                     "403"+e.Message,
                     @"\LoliconPic\error.jpg"
                 };
-                return throww;
-            }
-        }
+                    return throww;
+                }
 
-        /// <summary>
-        /// 向服务器发送 HTTP GET 请求
-        /// </summary>
-        /// <param name="url">完整的网页地址
-        ///		<para>必须包含 "http://" 或 "https://"</para>
-        /// </param>
-        /// <param name="timeout">超时时间</param>
-        /// <param name="proxy">代理 <see cref="HttpWebClient"/> 的 <see cref="WebProxy"/></param>
-        /// <returns></returns>
-        public static byte[] Get(string url, int timeout, WebProxy proxy)
-        {
-            HttpWebClient httpWebClient = new HttpWebClient();
-            httpWebClient.TimeOut = timeout;
-            httpWebClient.Proxy = proxy;
-            httpWebClient.AllowAutoRedirect = true;
-            httpWebClient.AutoCookieMerge = true;
-            byte[] result = httpWebClient.DownloadData(new Uri(url));
-            return result;
+            }
         }
         /// <summary>
         /// 改变图片的MD5来尝试反和谐

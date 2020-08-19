@@ -204,8 +204,12 @@ namespace me.cqp.luohuaming.Setu.UI
             string url = textURL.Text;
             try
             {
-                //尝试拉取图片
-                byte[] temp = HttpWebClient.Get(url);
+                HttpWebClient http = new HttpWebClient()
+                {
+                    TimeOut = 10000,
+                    Proxy = CQSave.proxy,
+                    AllowAutoRedirect = true,
+                };
                 //以后要用的路径,先生成一个
                 string targetdir = Path.Combine(Environment.CurrentDirectory, "data", "image", "CustomAPIPic");
                 if (!Directory.Exists(targetdir))
@@ -213,13 +217,10 @@ namespace me.cqp.luohuaming.Setu.UI
                     Directory.CreateDirectory(targetdir);
                 }
                 //将字节数组转换为图片
-                MemoryStream memStream = new MemoryStream(temp);
-                Image mImage = Image.FromStream(memStream);
-                Bitmap bp = new Bitmap(mImage);
                 string fullpath = Path.Combine(targetdir, DateTime.Now.ToString("yyyyMMddHHss") + ".jpg");
-                bp.Save(fullpath);
+                http.DownloadFile(url, fullpath);
                 parentwindow.SnackbarMessage_Show($"接口测试通过,图片已成功保存", 1);
-                Process.Start(new ProcessStartInfo(targetdir));
+                Process.Start(fullpath);
             }
             catch
             {

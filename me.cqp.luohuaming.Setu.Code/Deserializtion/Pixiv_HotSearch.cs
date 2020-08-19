@@ -72,7 +72,12 @@ namespace me.cqp.luohuaming.Setu.Code.Deserializtion.HotSearch
         {
             string path = Path.Combine(Environment.CurrentDirectory, "data", "image", "LoliconPic", $"{info.id}.jpg");
             string pathcqcode = Path.Combine("LoliConPic", $"{info.id}.jpg");
-            using (HttpWebClient http = new HttpWebClient())
+            using (HttpWebClient http = new HttpWebClient()
+            {
+                TimeOut = 10000,
+                Proxy = CQSave.proxy,
+                AllowAutoRedirect = true,
+            })
             {
                 http.TimeOut = 5000;
                 try

@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Timers;
-using System.Threading.Tasks;
 using Native.Sdk.Cqp.EventArgs;
 using Native.Sdk.Cqp.Interface;
-using Native.Sdk.Cqp.Model;
 using Native.Tool.IniConfig;
+using System.Net;
 
 namespace me.cqp.luohuaming.Setu.Code
 {
@@ -20,20 +16,33 @@ namespace me.cqp.luohuaming.Setu.Code
             CQSave.ImageDirectory = GetAppImageDirectory(e.CQApi.AppDirectory);
             CQSave.cq = e.CQApi;
             CQSave.cqlog = e.CQLog;
-            IniConfig ini = new IniConfig(e.CQApi.AppDirectory+"Config.ini");
+            IniConfig ini = new IniConfig(e.CQApi.AppDirectory + "Config.ini");
             ini.Load();
             try
             {
+                WebProxy proxy = null;
                 if (ini.Object["Proxy"]["IsEnabled"].GetValueOrDefault("0") == "1")
-                { new Uri(ini.Object["Proxy"]["ProxyUri"].GetValueOrDefault("0")); }
+                {
+                    //代理设置
+                    string uri, username, pwd;
+                    uri = ini.Object["Proxy"]["ProxyUri"].GetValueOrDefault("0");
+                    username = ini.Object["Proxy"]["ProxyName"].GetValueOrDefault("0");
+                    pwd = ini.Object["Proxy"]["ProxyName"].GetValueOrDefault("0");
+                    proxy = new WebProxy
+                    {
+                        Address = new Uri(uri),
+                        Credentials = new NetworkCredential(username, pwd)
+                    };
+                    CQSave.proxy = proxy;
+                }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                e.CQLog.Warning("代理设置无效",$"代理参数有误，错误信息:{ex.Message}");
+                e.CQLog.Warning("代理设置无效", $"代理参数有误，错误信息:{ex.Message}");
             }
             ini = new IniConfig(e.CQApi.AppDirectory + "ConfigLimit.ini");
             ini.Load();
-            if(JudgeifTimestampOverday(ini.Object["Config"]["Timestamp"].GetValueOrDefault(0), GetTimeStamp()))
+            if (JudgeifTimestampOverday(ini.Object["Config"]["Timestamp"].GetValueOrDefault(0), GetTimeStamp()))
             {
                 if (File.Exists(CQSave.AppDirectory + "ConfigLimit.ini"))
                 {
@@ -62,12 +71,12 @@ namespace me.cqp.luohuaming.Setu.Code
 
         public static void TimersTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            if (DateTime.Now.Hour==0 && DateTime.Now.Minute == 0 && DateTime.Now.Second<=1)
+            if (DateTime.Now.Hour == 0 && DateTime.Now.Minute == 0 && DateTime.Now.Second <= 1)
             {
                 if (File.Exists(CQSave.AppDirectory + "ConfigLimit.ini"))
                 {
                     File.Delete(CQSave.AppDirectory + "ConfigLimit.ini");
-                    CQSave.cqlog.Info("涩图机重置","限制已重置");
+                    CQSave.cqlog.Info("涩图机重置", "限制已重置");
                 }
             }
         }
