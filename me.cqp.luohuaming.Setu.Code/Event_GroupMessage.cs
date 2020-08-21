@@ -31,19 +31,17 @@ namespace me.cqp.luohuaming.Setu.Code
                 PicHelper.ReadOrderandAnswer();
                 List<ItemToSave> CustomAPI = new List<ItemToSave>();
                 if (File.Exists(CQSave.AppDirectory + "CustomAPI.json"))
-                {
-                    string temp = File.ReadAllText(CQSave.AppDirectory + "CustomAPI.json");
-                    //反序列化
-                    CustomAPI = JsonConvert.DeserializeObject<List<ItemToSave>>(temp);
-                }
+                    CustomAPI = JsonConvert.DeserializeObject<List<ItemToSave>>(File.ReadAllText(CQSave.AppDirectory + "CustomAPI.json"));
+                
                 List<ItemToSave> LocalPic = new List<ItemToSave>();
                 if (File.Exists(CQSave.AppDirectory + "LocalPic.json"))
-                {
-                    string temp = File.ReadAllText(CQSave.AppDirectory + "LocalPic.json");
-                    //反序列化
-                    LocalPic = JsonConvert.DeserializeObject<List<ItemToSave>>(temp);
-                }
-                List<SauceNao_Save> ls = new List<SauceNao_Save>();
+                    LocalPic = JsonConvert.DeserializeObject<List<ItemToSave>>(File.ReadAllText(CQSave.AppDirectory + "LocalPic.json"));
+                
+                List<ItemToSave> JsonDeserize = new List<ItemToSave>();
+                if (File.Exists(CQSave.AppDirectory + "JsonDeserize.json"))
+                    JsonDeserize = JsonConvert.DeserializeObject<List<ItemToSave>>(File.ReadAllText(CQSave.AppDirectory + "JsonDeserize.json"));
+                //SauceNao调用判断
+                List<SauceNao_Save> ls = new List<SauceNao_Save>();//保存副本,否则foreach会报错
                 sauceNao_Saves.ForEach(x => ls.Add(x));
                 foreach (var item in ls)
                 {
@@ -70,6 +68,7 @@ namespace me.cqp.luohuaming.Setu.Code
                         }
                     }
                 }
+
                 if (!string.IsNullOrEmpty(PicHelper.LoliConPic) && e.Message.Text.Replace("＃", "#").StartsWith(PicHelper.LoliConPic))
                 {
                     if (!CanCallFunc(e)) return;
@@ -142,6 +141,11 @@ namespace me.cqp.luohuaming.Setu.Code
                 {
                     if (!CanCallFunc(e)) return;
                     PicHelper.LocalPic_Call(LocalPic, e);
+                }
+                else if (PicHelper.CheckJsonDeserize(JsonDeserize, e))
+                {
+                    if (!CanCallFunc(e)) return;
+                    PicHelper.JsonDeserize_Call(JsonDeserize, e);
                 }
                 else if (!string.IsNullOrEmpty(PicHelper.PIDSearch) && e.Message.Text.ToLower().StartsWith(PicHelper.PIDSearch))
                 {

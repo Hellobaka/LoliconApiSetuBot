@@ -152,7 +152,7 @@ namespace me.cqp.luohuaming.Setu.UI
 
             ItemControl_Group.DataContext = group;
 
-            dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+            dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += new EventHandler(GetImageFloderInfo);
             dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
             dispatcherTimer.Start();
@@ -177,19 +177,40 @@ namespace me.cqp.luohuaming.Setu.UI
         /// <param name="e"></param>
         public void GetImageFloderInfo(object sender, EventArgs e)
         {
-            if (!Directory.Exists(CQSave.ImageDirectory + "LoliconPic"))
-            {
-                Directory.CreateDirectory(CQSave.ImageDirectory + "LoliconPic");
-            }
-            DirectoryInfo directoryInfo = new DirectoryInfo(CQSave.ImageDirectory + "LoliconPic");
-            FileInfo[] fileInfo = directoryInfo.GetFiles();
             double filesize = 0, count = 0;
-            foreach (var item in fileInfo)
+            DirectoryInfo directoryInfo;
+            FileInfo[] fileInfo;
+            if (Directory.Exists(CQSave.ImageDirectory + "LoliconPic"))
             {
-                count++;
-                filesize += item.Length;
+                directoryInfo = new DirectoryInfo(CQSave.ImageDirectory + "LoliconPic");
+                fileInfo = directoryInfo.GetFiles();
+                foreach (var item in fileInfo)
+                {
+                    count++;
+                    filesize += item.Length;
+                }
             }
-            textblock_Size.Text = $"{(filesize / 1048576).ToString("0.00")} MB";
+            if(Directory.Exists(CQSave.ImageDirectory+ "CustomAPIPic"))
+            {
+                directoryInfo = new DirectoryInfo(CQSave.ImageDirectory + "CustomAPIPic");
+                fileInfo = directoryInfo.GetFiles();
+                foreach (var item in fileInfo)
+                {
+                    count++;
+                    filesize += item.Length;
+                }
+            }
+            if (Directory.Exists(CQSave.ImageDirectory + "JsonDeserizePic"))
+            {
+                directoryInfo = new DirectoryInfo(CQSave.ImageDirectory + "JsonDeserizePic");
+                fileInfo = directoryInfo.GetFiles();
+                foreach (var item in fileInfo)
+                {
+                    count++;
+                    filesize += item.Length;
+                }
+            }
+            textblock_Size.Text = $"{filesize / 1048576:0.00} MB";
             textblock_Count.Text = $"{count} 个";
         }
 
@@ -228,14 +249,11 @@ namespace me.cqp.luohuaming.Setu.UI
         private void ClearCache(object sender, RoutedEventArgs e)
         {
             if (Directory.Exists(CQSave.ImageDirectory + "LoliconPic"))
-            {
-                DirectoryInfo directoryInfo = new DirectoryInfo(CQSave.ImageDirectory + "LoliconPic");
-                FileInfo[] fileInfo = directoryInfo.GetFiles();
-                foreach (var item in fileInfo)
-                {
-                    item.Delete();
-                }
-            }
+                Directory.Delete(CQSave.ImageDirectory + "LoliconPic", true);
+            if (Directory.Exists(CQSave.ImageDirectory + "CustomAPIPic"))
+                Directory.Delete(CQSave.ImageDirectory + "CustomAPIPic", true);
+            if (Directory.Exists(CQSave.ImageDirectory + "JsonDeserizePic"))
+                Directory.Delete(CQSave.ImageDirectory + "JsonDeserizePic", true);
             SnackbarMessage_Show("清理完成", 2);
             dialoghost_Main.IsOpen = false;
         }

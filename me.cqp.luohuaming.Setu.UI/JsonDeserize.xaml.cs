@@ -222,11 +222,13 @@ namespace me.cqp.luohuaming.Setu.UI
                 {
                     string json = Encoding.UTF8.GetString(http.DownloadData(url)).Replace('﻿', ' ');
 
-                    string picpath = CQSave.ImageDirectory + "\\JsonDeserize\\" + Guid.NewGuid() + ".png";
-                    if (!Directory.Exists(CQSave.ImageDirectory + "\\JsonDeserize"))
-                        Directory.CreateDirectory(CQSave.ImageDirectory + "\\JsonDeserize");
+                    string picpath = CQSave.ImageDirectory + "\\JsonDeserizePic\\" + Guid.NewGuid() + ".png";
+                    if (!Directory.Exists(CQSave.ImageDirectory + "\\JsonDeserizePic"))
+                        Directory.CreateDirectory(CQSave.ImageDirectory + "\\JsonDeserizePic");
                     JObject jObject = JObject.Parse(json);
                     url = jObject.SelectToken(path).ToString();
+
+                    http.CookieCollection = new System.Net.CookieCollection();
                     http.DownloadFile(url, picpath);
                     parentwindow.SnackbarMessage_Show($"接口测试通过", 1);
                     Process.Start(picpath);

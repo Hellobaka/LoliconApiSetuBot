@@ -642,6 +642,105 @@ namespace me.cqp.luohuaming.Setu.Code
                 }
             }
         }
+        /// <summary>
+        /// 查看指令是否是自定义接口内的
+        /// </summary>
+        /// <param name="ls"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        public static bool CheckJsonDeserize(List<ItemToSave> ls, CQGroupMessageEventArgs e)
+        {
+            return CheckCustomAPI(ls, e);
+        }
+
+        /// <summary>
+        /// Json解析调用
+        /// </summary>
+        /// <param name="ls"></param>
+        /// <param name="e"></param>
+        public static void JsonDeserize_Call(List<ItemToSave> ls, CQGroupMessageEventArgs e)
+        {
+            var result = JsonDeserize_Image(ls, e);
+            QQMessage staues = e.FromGroup.SendGroupMessage(result[1]);
+            if (!staues.IsSuccess)//图片发送失败
+            {
+                //尝试压缩图片
+                IniConfig ini = new IniConfig(CQSave.AppDirectory + "Config.ini"); ini.Load();
+
+                if (ini.Object["Config"]["FailedCompress"].GetValueOrDefault("0") == "0" || !e.FromGroup.SendGroupMessage(CompressImg.CompressImage(CQCode.Parse(result[1])[0].Items["file"])).IsSuccess)
+                {
+                    e.FromGroup.SendGroupMessage($"图片发送失败");
+                    PlusMemberQuota(e);
+                    PicHelper.SaveErrorMsg(CQCode.Parse(result[1])[0]);
+                }
+            }
+            if (Convert.ToBoolean(result[0]))//自动撤回
+            {
+                IniConfig ini = new IniConfig(CQSave.AppDirectory + "Config.ini"); ini.Load();
+                Task task = new Task(() =>
+                {
+                    Thread.Sleep(ini.Object["R18"]["RevokeTime"] * 1000);
+                    RevokePic(staues.Id);
+                }); task.Start();
+            }
+        }
+
+        /// <summary>
+        /// Json解析拉取
+        /// </summary>
+        /// <param name="ls"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        public static List<string> JsonDeserize_Image(List<ItemToSave> ls, CQGroupMessageEventArgs e)
+        {
+            List<string> result = new List<string>();
+            List<ItemToSave> order = new List<ItemToSave>();
+            foreach (var item in ls)
+            {
+                if (item.Order == e.Message.Text) order.Add(item);
+            }
+            try
+            {
+                //尝试拉取图片，若有多个相同的接口则随机来一个
+                ItemToSave item = order[new Random().Next(0, order.Count)];
+                result.Add(item.AutoRevoke.ToString());
+                //以后要用的路径,先生成一个
+                string targetdir = Path.Combine(Environment.CurrentDirectory, "data", "image", "JsonDeserizePic", item.Order);
+                if (!Directory.Exists(targetdir))
+                {
+                    Directory.CreateDirectory(targetdir);
+                }
+                string imagename = DateTime.Now.ToString("yyyyMMddHHss") + ".jpg";
+                string fullpath = Path.Combine(targetdir, imagename);
+                using (HttpWebClient http = new HttpWebClient()
+                {
+                    TimeOut = 10000,
+                    Proxy = CQSave.proxy,
+                    AllowAutoRedirect = true,
+                })
+                {
+                    string url = item.URL,jsonpath=item.Path;
+                    string json = Encoding.UTF8.GetString(http.DownloadData(url)).Replace('﻿', ' ');
+                    JObject jObject = JObject.Parse(json);
+                    url = jObject.SelectToken(jsonpath).ToString();
+                    http.CookieCollection = new System.Net.CookieCollection();
+                    http.DownloadFile(url, fullpath);
+                }
+
+                e.CQLog.Info("Json解析接口", $"图片下载成功，尝试发送");
+
+                GetSetu.AntiHX(fullpath);
+                string imagepath = Path.Combine("JsonDeserizePic", item.Order, imagename);
+                result.Add(CQApi.CQCode_Image(imagepath).ToSendString());
+                return result;
+            }
+            catch (Exception exc)
+            {
+                result.Add("自定义接口调用失败");
+                e.CQLog.Info("自定义接口", $"调用失败，错误信息：{exc.Message}");
+                return result;
+            }
+        }
 
         /// <summary>
         /// 保存错误日志
