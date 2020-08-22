@@ -75,6 +75,7 @@ namespace me.cqp.luohuaming.Setu.Code.Deserializtion.HotSearch
             using (HttpWebClient http = new HttpWebClient()
             {
                 TimeOut = 10000,
+                Encoding = Encoding.UTF8,
                 Proxy = CQSave.proxy,
                 AllowAutoRedirect = true,
             })

@@ -8,8 +8,6 @@ using System.IO;
 using System.Diagnostics;
 using Newtonsoft.Json;
 using me.cqp.luohuaming.Setu.Code;
-using MaterialDesignThemes.Wpf;
-using System.Linq;
 using Native.Tool.Http;
 using System.Text;
 using Newtonsoft.Json.Linq;
@@ -32,6 +30,7 @@ namespace me.cqp.luohuaming.Setu.UI
             get { return _parentWin; }
             set { _parentWin = value; }
         }
+        public static List<JsonToDeserize> JsonSaves = new List<JsonToDeserize>();
         #endregion
 
         private void btn_Plus_Click(object sender, RoutedEventArgs e)
@@ -54,7 +53,6 @@ namespace me.cqp.luohuaming.Setu.UI
         /// <returns></returns>
         private List<Control> GetTemplateList()
         {
-            //模板依次为 CheckBox,ToggleButton,TextBox,TextBox,TextBox,CheckBox,CheckBoxButton
             List<Control> ls = new List<Control>();
             //统一Margin
             Thickness thickness = new Thickness(10, 0, 0, 0);
@@ -86,27 +84,7 @@ namespace me.cqp.luohuaming.Setu.UI
             };
             text2.GotFocus += TextBox_FocusChanged;
             text2.LostFocus += TextBox_FocusChanged;
-            TextBox text3 = new TextBox
-            {
-                Margin = thickness,
-                MinWidth = 100,
-                Text = "图片所在的Json Path",
-                Tag = "图片所在的Json Path",
-                Opacity = 0.6
-            };
-            text3.GotFocus += TextBox_FocusChanged;
-            text3.LostFocus += TextBox_FocusChanged;
-            TextBox text4 = new TextBox
-            {
-                Margin = thickness,
-                MinWidth = 100,
-                Text = "备注...",
-                Tag = "备注...",
-                Opacity = 0.6
-            };
-            text4.GotFocus += TextBox_FocusChanged;
-            text4.LostFocus += TextBox_FocusChanged;
-            ls.Add(text1); ls.Add(text2); ls.Add(text3); ls.Add(text4);
+            ls.Add(text1); ls.Add(text2);
             //CheckBox
             CheckBox checkBox2 = new CheckBox();
             checkBox2.Margin = thickness;
@@ -121,6 +99,14 @@ namespace me.cqp.luohuaming.Setu.UI
             };
             bt.Click += btn_Test_Click;
             ls.Add(bt);
+            Button bt2 = new Button()
+            {
+                Content = "详细设置",
+                Height = 25,
+                Margin = thickness
+            };
+            bt2.Click += btn_Option_Click;
+            ls.Add(bt2);
             return ls;
         }
         //用于显示类Hint提示
@@ -178,24 +164,22 @@ namespace me.cqp.luohuaming.Setu.UI
             if (!File.Exists(CQSave.AppDirectory + "JsonDeserize.json")) return;
             string temp = File.ReadAllText(CQSave.AppDirectory + "JsonDeserize.json");
             //反序列化
-            List<ItemToSave> ls = JsonConvert.DeserializeObject<List<ItemToSave>>(temp);
+            JsonSaves = JsonConvert.DeserializeObject<List<JsonToDeserize>>(temp);
             //读取到了内容,为了写内容方便,先清空内容
-            if (ls.Count != 0)
+            if (JsonSaves.Count != 0)
             {
                 StackPanel_JsonMain.Children.Clear();
             }
-            for (int i = 0; i < ls.Count; i++)
+            for (int i = 0; i < JsonSaves.Count; i++)
             {
                 //先加模板
                 btn_Plus_Click(sender, e);
                 //再对元素内容进行修改
                 var child = StackPanel_JsonMain.Children[i] as StackPanel;
-                (child.Children[1] as ToggleButton).IsChecked = ls[i].Enabled;
-                (child.Children[2] as TextBox).Text = ls[i].Order;
-                (child.Children[3] as TextBox).Text = ls[i].URL;
-                (child.Children[4] as TextBox).Text = ls[i].Path;
-                (child.Children[5] as TextBox).Text = string.IsNullOrWhiteSpace(ls[i].Remark) ? "备注..." : ls[i].Remark;
-                (child.Children[6] as CheckBox).IsChecked = ls[i].AutoRevoke;
+                (child.Children[1] as ToggleButton).IsChecked = JsonSaves[i].Enabled;
+                (child.Children[2] as TextBox).Text = JsonSaves[i].Order;
+                (child.Children[3] as TextBox).Text = JsonSaves[i].url;
+                (child.Children[4] as CheckBox).IsChecked = JsonSaves[i].AutoRevoke;
             }
         }
         /// <summary>
@@ -207,15 +191,15 @@ namespace me.cqp.luohuaming.Setu.UI
         {
             //获取按钮的父容器以获取Path元素
             var parent = VisualTreeHelper.GetParent((UIElement)sender);
-            //Path元素在父容器中是[3]个
             string url = ((TextBox)VisualTreeHelper.GetChild(parent, 3)).Text;
-            //Path元素在父容器中是[3]个
-            string path = ((TextBox)VisualTreeHelper.GetChild(parent, 4)).Text;
+            //Path元素在父容器中是[4]个
+            string path = JsonSaves.Find(x=>x.url==url).picPath;
             try
             {
                 using (HttpWebClient http = new HttpWebClient()
                 {
                     TimeOut = 10000,
+                    Encoding = Encoding.UTF8,
                     Proxy = CQSave.proxy,
                     AllowAutoRedirect = true,
                 })
@@ -243,7 +227,7 @@ namespace me.cqp.luohuaming.Setu.UI
 
         private void btn_Save_Click(object sender, RoutedEventArgs e)
         {
-            List<ItemToSave> ls = new List<ItemToSave>();
+            List<JsonToDeserize> ls = new List<JsonToDeserize>();
             foreach (UIElement item in StackPanel_JsonMain.Children)
             {
                 //判断是否存在填了链接但是没有填指令的情况
@@ -253,29 +237,23 @@ namespace me.cqp.luohuaming.Setu.UI
                     parentwindow.SnackbarMessage_Show("存在一行路径已设置但指令未设置，请纠正", 1);
                     return;
                 }
-                if (((item as StackPanel).Children[3] as TextBox).Text != "接口网址" &&
-                    ((item as StackPanel).Children[4] as TextBox).Text == "图片所在的Json Path")
-                {
-                    parentwindow.SnackbarMessage_Show("存在一行路径已设置但指令未设置，请纠正", 1);
-                    return;
-                }
-                if (((item as StackPanel).Children[3] as TextBox).Text == "接口网址"&& ((item as StackPanel).Children[4] as TextBox).Text == "图片所在的Json Path" && ((item as StackPanel).Children[2] as TextBox).Text == "指令...")
+                if (((item as StackPanel).Children[3] as TextBox).Text == "接口网址" && ((item as StackPanel).Children[2] as TextBox).Text == "指令...")
                 {
                     continue;
                 }
                 //不是空
-                if (((item as StackPanel).Children[3] as TextBox).Text != "接口网址" && ((item as StackPanel).Children[4] as TextBox).Text != "图片所在的Json Path"
+                if (((item as StackPanel).Children[3] as TextBox).Text != "接口网址"
                     && ((item as StackPanel).Children[2] as TextBox).Text != "指令...")
                 {
-                    ItemToSave save = new ItemToSave
+                    JsonToDeserize save = new JsonToDeserize
                     {
                         Enabled = (bool)((item as StackPanel).Children[1] as ToggleButton).IsChecked,
                         Order = ((item as StackPanel).Children[2] as TextBox).Text,
-                        URL = ((item as StackPanel).Children[3] as TextBox).Text,
-                        Path = ((item as StackPanel).Children[4] as TextBox).Text,
-                        Remark = ((item as StackPanel).Children[5] as TextBox).Text,
-                        AutoRevoke = (bool)((item as StackPanel).Children[6] as CheckBox).IsChecked,
+                        url = ((item as StackPanel).Children[3] as TextBox).Text,
+                        AutoRevoke = (bool)((item as StackPanel).Children[4] as CheckBox).IsChecked,
                     };
+                    save.picPath = JsonSaves.Find(x => x.url == save.url).picPath;
+                    save.Text = JsonSaves.Find(x => x.url == save.url).Text;
                     ls.Add(save);
                 }
             }
@@ -344,5 +322,24 @@ namespace me.cqp.luohuaming.Setu.UI
             }
         }
         #endregion
+
+        private void btn_Option_Click(object sender, RoutedEventArgs e)
+        {
+            JsonSettings pg = new JsonSettings();
+            var parent = VisualTreeHelper.GetParent((UIElement)sender);
+            string url = ((TextBox)VisualTreeHelper.GetChild(parent, 3)).Text;
+            pg.Json_Object = JsonSaves.Find(x => x.url == url);
+            ShowDialogwithPage(pg);
+        }
+        private void ShowDialogwithPage(Page page)
+        {
+            StackPanel panel = new StackPanel();
+            panel.Margin = new Thickness(10);
+            Frame fm = new Frame();
+            fm.Content = page;
+            panel.Children.Add(fm);
+            DialogHost_JsonMain.DialogContent = panel;
+            DialogHost_JsonMain.IsOpen = true;
+        }
     }
 }

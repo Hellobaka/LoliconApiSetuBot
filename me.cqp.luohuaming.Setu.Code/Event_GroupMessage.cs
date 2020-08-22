@@ -37,9 +37,9 @@ namespace me.cqp.luohuaming.Setu.Code
                 if (File.Exists(CQSave.AppDirectory + "LocalPic.json"))
                     LocalPic = JsonConvert.DeserializeObject<List<ItemToSave>>(File.ReadAllText(CQSave.AppDirectory + "LocalPic.json"));
                 
-                List<ItemToSave> JsonDeserize = new List<ItemToSave>();
+                List<JsonToDeserize> JsonDeserize = new List<JsonToDeserize>();
                 if (File.Exists(CQSave.AppDirectory + "JsonDeserize.json"))
-                    JsonDeserize = JsonConvert.DeserializeObject<List<ItemToSave>>(File.ReadAllText(CQSave.AppDirectory + "JsonDeserize.json"));
+                    JsonDeserize = JsonConvert.DeserializeObject<List<JsonToDeserize>>(File.ReadAllText(CQSave.AppDirectory + "JsonDeserize.json"));
                 //SauceNao调用判断
                 List<SauceNao_Save> ls = new List<SauceNao_Save>();//保存副本,否则foreach会报错
                 sauceNao_Saves.ForEach(x => ls.Add(x));
@@ -116,7 +116,7 @@ namespace me.cqp.luohuaming.Setu.Code
                     }
                     catch (Exception exc)
                     {
-                        e.CQApi.SendGroupMessage(e.FromGroup, $"发生未知错误,错误信息:在{exc.Source}上, 发生错误: {exc.Message}  有{exc.StackTrace}");
+                        e.CQApi.SendGroupMessage(e.FromGroup, $"发生未知错误,错误信息:在{exc.Source}上, 发生错误: {exc.Message}");
                     }
                 }
                 else if (!string.IsNullOrEmpty(PicHelper.ClearLimit) && e.Message.Text == PicHelper.ClearLimit)

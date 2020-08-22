@@ -122,6 +122,7 @@ namespace me.cqp.luohuaming.Setu.Code
             using (HttpWebClient http = new HttpWebClient()
             {
                 TimeOut = 10000,
+                Encoding = Encoding.UTF8,
                 Proxy = CQSave.proxy,
                 AllowAutoRedirect = true,
 
@@ -155,7 +156,7 @@ namespace me.cqp.luohuaming.Setu.Code
                     try
                     {
                         //访问接口
-                        json = http.DownloadString(url);
+                        json =Encoding.UTF8.GetString(http.DownloadData(url));
                     }
                     catch (Exception e)
                     {
@@ -187,12 +188,12 @@ namespace me.cqp.luohuaming.Setu.Code
                             string path = CQSave.ImageDirectory + @"\LoliconPic\" + item.pid + ".jpg";
                             if (!File.Exists(path))
                             {
+                                http.CookieCollection = new CookieCollection();
                                 http.DownloadFile(item.url, path);
                                 AntiHX(CQSave.ImageDirectory + @"\LoliconPic\" + item.pid + ".jpg");
                             }
                             result.Add(json);
                             result.Add(@"\LoliconPic\" + item.pid + ".jpg");
-                            http.Dispose();
                         }
                         catch (Exception e)
                         {

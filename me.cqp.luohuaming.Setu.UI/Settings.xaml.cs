@@ -115,42 +115,31 @@ namespace me.cqp.luohuaming.Setu.UI
             {
                 listbox_Admin.Items.Add(ini.Object["Admin"][$"Index{i}"].GetValueOrDefault((long)0));
             }
-
-            var groups = CQSave.cq.GetGroupList();
-            List<BindingGroup> group = new List<BindingGroup>();
-            try
+            if(CQSave.cq!=null)
             {
-                foreach (var item in groups)
+                var groups = CQSave.cq.GetGroupList();
+                List<BindingGroup> group = new List<BindingGroup>();
+                try
+                {
+                    foreach (var item in groups)
+                    {
+                        BindingGroup temp = new BindingGroup();
+                        temp.IsChecked = CheckGroupOpen(item.Group.Id);
+                        temp.GroupName = item.Name;
+                        temp.GroupId = item.Group.Id;
+                        group.Add(temp);
+                    }
+                }
+                catch
                 {
                     BindingGroup temp = new BindingGroup();
-                    temp.IsChecked = CheckGroupOpen(item.Group.Id);
-                    temp.GroupName = item.Name;
-                    temp.GroupId = item.Group.Id;
+                    temp.IsChecked = false;
+                    temp.GroupName = "读取群列表失败...";
+                    temp.GroupId = 0;
                     group.Add(temp);
                 }
-            }
-            catch
-            {
-                BindingGroup temp = new BindingGroup();
-                temp.IsChecked = false;
-                temp.GroupName = "读取群列表失败...";
-                temp.GroupId = 0;
-                group.Add(temp);
-            }
-
-            //List<BindingGroup> group = new List<BindingGroup>();
-            //for (int i = 0; i < 2; i++)
-            //{
-            //    Thread.Sleep(5);
-            //    BindingGroup temp = new BindingGroup();
-            //    Random rd = new Random();
-            //    temp.IsChecked = rd.Next(0, 2) == 1 ? true : false;
-            //    temp.GroupName = rd.Next().ToString();
-            //    temp.GroupId = rd.Next();
-            //    group.Add(temp);
-            //}
-
-            ItemControl_Group.DataContext = group;
+                ItemControl_Group.DataContext = group;
+            }            
 
             dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += new EventHandler(GetImageFloderInfo);

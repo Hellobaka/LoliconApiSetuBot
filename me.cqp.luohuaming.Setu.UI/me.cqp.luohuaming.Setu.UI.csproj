@@ -86,6 +86,9 @@
     <Compile Include="JsonDeserize.xaml.cs">
       <DependentUpon>JsonDeserize.xaml</DependentUpon>
     </Compile>
+    <Compile Include="JsonSettings.xaml.cs">
+      <DependentUpon>JsonSettings.xaml</DependentUpon>
+    </Compile>
     <Compile Include="LocalPic.xaml.cs">
       <DependentUpon>LocalPic.xaml</DependentUpon>
     </Compile>
@@ -111,6 +114,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="JsonDeserize.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="JsonSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

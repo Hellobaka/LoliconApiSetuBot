@@ -7,17 +7,14 @@ using Native.Tool.IniConfig.Linq;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
-using System.Timers;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Security.AccessControl;
 using System.Threading.Tasks;
 using System.Threading;
 using me.cqp.luohuaming.Setu.Code.Deserializtion;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using System.Text.RegularExpressions;
 
 namespace me.cqp.luohuaming.Setu.Code
 {
@@ -84,6 +81,7 @@ namespace me.cqp.luohuaming.Setu.Code
         /// </summary>
         public static string SauceNaoSearch;
         #endregion
+
 
         private static string path, pathUser;
         private static IniConfig ini, iniUser;
@@ -429,6 +427,7 @@ namespace me.cqp.luohuaming.Setu.Code
                 using (HttpWebClient http = new HttpWebClient()
                 {
                     TimeOut = 10000,
+                    Encoding = Encoding.UTF8,
                     Proxy = CQSave.proxy,
                     AllowAutoRedirect = true,
                 })
@@ -559,6 +558,7 @@ namespace me.cqp.luohuaming.Setu.Code
             using (HttpWebClient http = new HttpWebClient()
             {
                 TimeOut = 10000,
+                Encoding = Encoding.UTF8,
                 Proxy = CQSave.proxy,
                 AllowAutoRedirect = true,
             })
@@ -648,9 +648,13 @@ namespace me.cqp.luohuaming.Setu.Code
         /// <param name="ls"></param>
         /// <param name="e"></param>
         /// <returns></returns>
-        public static bool CheckJsonDeserize(List<ItemToSave> ls, CQGroupMessageEventArgs e)
+        public static bool CheckJsonDeserize(List<JsonToDeserize> ls, CQGroupMessageEventArgs e)
         {
-            return CheckCustomAPI(ls, e);
+            if (ls.Count == 0 || string.IsNullOrEmpty(e.Message.Text)) return false;
+            foreach (var item in ls)
+                if (e.Message.Text == item.Order && item.Enabled)
+                    return true;
+            return false;
         }
 
         /// <summary>
@@ -658,9 +662,11 @@ namespace me.cqp.luohuaming.Setu.Code
         /// </summary>
         /// <param name="ls"></param>
         /// <param name="e"></param>
-        public static void JsonDeserize_Call(List<ItemToSave> ls, CQGroupMessageEventArgs e)
+        public static void JsonDeserize_Call(List<JsonToDeserize> ls, CQGroupMessageEventArgs e)
         {
             var result = JsonDeserize_Image(ls, e);
+            if (result[1] == "null")
+                return;
             QQMessage staues = e.FromGroup.SendGroupMessage(result[1]);
             if (!staues.IsSuccess)//图片发送失败
             {
@@ -691,10 +697,10 @@ namespace me.cqp.luohuaming.Setu.Code
         /// <param name="ls"></param>
         /// <param name="e"></param>
         /// <returns></returns>
-        public static List<string> JsonDeserize_Image(List<ItemToSave> ls, CQGroupMessageEventArgs e)
+        public static List<string> JsonDeserize_Image(List<JsonToDeserize> ls, CQGroupMessageEventArgs e)
         {
             List<string> result = new List<string>();
-            List<ItemToSave> order = new List<ItemToSave>();
+            List<JsonToDeserize> order = new List<JsonToDeserize>();
             foreach (var item in ls)
             {
                 if (item.Order == e.Message.Text) order.Add(item);
@@ -702,7 +708,7 @@ namespace me.cqp.luohuaming.Setu.Code
             try
             {
                 //尝试拉取图片，若有多个相同的接口则随机来一个
-                ItemToSave item = order[new Random().Next(0, order.Count)];
+                JsonToDeserize item = order[new Random().Next(0, order.Count)];
                 result.Add(item.AutoRevoke.ToString());
                 //以后要用的路径,先生成一个
                 string targetdir = Path.Combine(Environment.CurrentDirectory, "data", "image", "JsonDeserizePic", item.Order);
@@ -715,13 +721,30 @@ namespace me.cqp.luohuaming.Setu.Code
                 using (HttpWebClient http = new HttpWebClient()
                 {
                     TimeOut = 10000,
+                    Encoding = Encoding.UTF8,
                     Proxy = CQSave.proxy,
                     AllowAutoRedirect = true,
                 })
                 {
-                    string url = item.URL,jsonpath=item.Path;
+                    string url = item.url,jsonpath=item.picPath;
                     string json = Encoding.UTF8.GetString(http.DownloadData(url)).Replace('﻿', ' ');
                     JObject jObject = JObject.Parse(json);
+                    if(!string.IsNullOrEmpty(item.Text))
+                    {
+                        string str = item.Text;
+                        var c = Regex.Matches(item.Text, "<.*?>");
+                        foreach(var item2 in c)
+                        {
+                            string path = item2.ToString().Replace("<", "").Replace(">", "");
+                            str = str.Replace(item2.ToString(), jObject.SelectToken(path).ToString());
+                        }
+                        e.FromGroup.SendGroupMessage(str);
+                    }
+                    if(string.IsNullOrEmpty(jsonpath))
+                    {
+                        result.Add("null");
+                        return result;
+                    }
                     url = jObject.SelectToken(jsonpath).ToString();
                     http.CookieCollection = new System.Net.CookieCollection();
                     http.DownloadFile(url, fullpath);

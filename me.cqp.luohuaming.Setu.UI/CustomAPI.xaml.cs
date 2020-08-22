@@ -12,6 +12,7 @@ using System.Diagnostics;
 using Newtonsoft.Json;
 using MaterialDesignThemes.Wpf.Transitions;
 using me.cqp.luohuaming.Setu.Code;
+using System.Text;
 
 namespace me.cqp.luohuaming.Setu.UI
 {
@@ -207,6 +208,7 @@ namespace me.cqp.luohuaming.Setu.UI
                 HttpWebClient http = new HttpWebClient()
                 {
                     TimeOut = 10000,
+                    Encoding = Encoding.UTF8,
                     Proxy = CQSave.proxy,
                     AllowAutoRedirect = true,
                 };

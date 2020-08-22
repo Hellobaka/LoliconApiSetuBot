@@ -18,62 +18,63 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Page.Resources>
+    <materialDesign:DialogHost Name="DialogHost_JsonMain">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="44*"/>
+                <RowDefinition Height="153*"/>
+                <RowDefinition Height="28*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="733*"/>
+                <ColumnDefinition Width="67*"/>
+            </Grid.ColumnDefinitions>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="44*"/>
-            <RowDefinition Height="153*"/>
-            <RowDefinition Height="28*"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="733*"/>
-            <ColumnDefinition Width="67*"/>
-        </Grid.ColumnDefinitions>
-
-        <StackPanel Grid.Row="0" Grid.ColumnSpan="2">
-            <TextBlock FontSize="26" Margin="15,5,5,5">Json解析</TextBlock>
-            <TextBlock Margin="15,5,5,5" TextWrapping="Wrap">适用于返回是Json格式的接口，指定图片所在的url即可，接口响应速度过慢会导致窗口假死</TextBlock>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
-            <TextBlock Margin="15,0,0,0" FontSize="26" Text="详情设置" Height="33" VerticalAlignment="Top"/>
-            <materialDesign:PopupBox Height="33" DockPanel.Dock="Right" PlacementMode="BottomAndAlignRightEdges" VerticalAlignment="Top">
-                <ListBox>
-                    <ListBoxItem Tag="clearall" Content="清空" MouseLeftButtonUp="ListBoxItem_MouseDown"/>
-                    <ListBoxItem Tag="allcheck" Content="全选" MouseLeftButtonUp="ListBoxItem_MouseDown"/>
-                    <ListBoxItem Tag="noncheck" Content="全不选" MouseLeftButtonUp="ListBoxItem_MouseDown"/>
-                    <ListBoxItem Tag="anticheck" Content="反选" MouseLeftButtonUp="ListBoxItem_MouseDown"/>
-                    <ListBoxItem Tag="allenabled" Content="全部启用" MouseLeftButtonUp="ListBoxItem_MouseDown"/>
-                    <ListBoxItem Tag="alldisabled" Content="全部不启用" MouseLeftButtonUp="ListBoxItem_MouseDown"/>
-                    <ListBoxItem Tag="alltest" Content="全部测试" MouseLeftButtonUp="ListBoxItem_MouseDown"/>
-                </ListBox>
-            </materialDesign:PopupBox>
-        </StackPanel>
-        <ScrollViewer  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="15,35,0,5">
-            <StackPanel x:Name="StackPanel_JsonMain" Margin="0,0,0,5">
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                    <CheckBox></CheckBox>
-                    <ToggleButton x:Name="toggle_1" Margin="10,0,0,0"></ToggleButton>
-                    <TextBox Margin="10,0,0,0" MinWidth="100" x:Name="textOrder_1" materialDesign:HintAssist.Hint="指令..."></TextBox>
-                    <TextBox Margin="10,0,0,0" x:Name="textJson_1" materialDesign:HintAssist.Hint="接口网址" MinWidth="200"/>
-
-                    <TextBox Margin="10,0,0,0" x:Name="textJson_2" materialDesign:HintAssist.Hint="图片所在的Json Path" MinWidth="100"/>
-                    <TextBox Margin="10,0,0,0" x:Name="textRemark_1" materialDesign:HintAssist.Hint="备注..." MinWidth="100"></TextBox>
-                    <CheckBox Margin="10,0,0,0">自动撤回</CheckBox>
-                    <Button x:Name="btn_Test" Click="btn_Test_Click" Height="25" Margin="10,0,0,0">测试</Button>
-                </StackPanel>
+            <StackPanel Grid.Row="0" Grid.ColumnSpan="2">
+                <TextBlock FontSize="26" Margin="15,5,5,5">Json解析</TextBlock>
+                <TextBlock Margin="15,5,5,5" TextWrapping="Wrap">适用于返回是Json格式的接口，指定图片所在的url即可，接口响应速度过慢会导致窗口假死</TextBlock>
             </StackPanel>
-        </ScrollViewer>
-        <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="0">
-            <Button x:Name="btn_Plus" Click="btn_Plus_Click" Margin="10,0,0,10" ToolTip="增加新一个接口" Style="{StaticResource MaterialDesignFloatingActionButton}" Height="40" Width="40">
-                <materialDesign:PackIcon Kind="Plus" Height="36" Width="36" />
-            </Button>
-            <Button x:Name="btn_Minus" Click="btn_Minus_Click" Margin="5,0,0,10" ToolTip="减少选中的接口" Style="{StaticResource MaterialDesignFloatingActionLightButton}" Width="40" Height="40">
-                <materialDesign:PackIcon Kind="Minus" Height="36" Width="36" />
-            </Button>
-        </StackPanel>
-        <Button x:Name="btn_Save" Click="btn_Save_Click" Style="{StaticResource MaterialDesignFloatingActionButton}" ToolTip="保存" Grid.Row="2" Grid.Column="1"  Margin="5,0,6,0" >
-            <materialDesign:PackIcon Kind="CheckBold" Height="24" Width="24" />
-        </Button>
+            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+                <TextBlock Margin="15,0,0,0" FontSize="26" Text="详情设置" Height="33" VerticalAlignment="Top"/>
+                <materialDesign:PopupBox Height="33" DockPanel.Dock="Right" PlacementMode="BottomAndAlignRightEdges" VerticalAlignment="Top">
+                    <ListBox>
+                        <ListBoxItem Tag="clearall" Content="清空" MouseLeftButtonUp="ListBoxItem_MouseDown"/>
+                        <ListBoxItem Tag="allcheck" Content="全选" MouseLeftButtonUp="ListBoxItem_MouseDown"/>
+                        <ListBoxItem Tag="noncheck" Content="全不选" MouseLeftButtonUp="ListBoxItem_MouseDown"/>
+                        <ListBoxItem Tag="anticheck" Content="反选" MouseLeftButtonUp="ListBoxItem_MouseDown"/>
+                        <ListBoxItem Tag="allenabled" Content="全部启用" MouseLeftButtonUp="ListBoxItem_MouseDown"/>
+                        <ListBoxItem Tag="alldisabled" Content="全部不启用" MouseLeftButtonUp="ListBoxItem_MouseDown"/>
+                        <ListBoxItem Tag="alltest" Content="全部测试" MouseLeftButtonUp="ListBoxItem_MouseDown"/>
+                    </ListBox>
+                </materialDesign:PopupBox>
+            </StackPanel>
+            <ScrollViewer  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="15,35,0,5">
+                <StackPanel x:Name="StackPanel_JsonMain" Margin="0,0,0,5">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                        <CheckBox></CheckBox>
+                        <ToggleButton x:Name="toggle_1" Margin="10,0,0,0"></ToggleButton>
+                        <TextBox Margin="10,0,0,0" MinWidth="100" x:Name="textOrder_1" materialDesign:HintAssist.Hint="指令..."></TextBox>
+                        <TextBox Margin="10,0,0,0" x:Name="textJson_1" materialDesign:HintAssist.Hint="接口网址" MinWidth="200"/>
 
-    </Grid>
+                        <CheckBox Margin="10,0,0,0">自动撤回</CheckBox>
+                        <Button x:Name="btn_Test" Click="btn_Test_Click" Height="25" Margin="10,0,0,0">测试</Button>
+                        <Button x:Name="btn_Option" Click="btn_Option_Click" Height="25" Margin="10,0,0,0">详细设置</Button>
+
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+            <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="0">
+                <Button x:Name="btn_Plus" Click="btn_Plus_Click" Margin="10,0,0,10" ToolTip="增加新一个接口" Style="{StaticResource MaterialDesignFloatingActionButton}" Height="40" Width="40">
+                    <materialDesign:PackIcon Kind="Plus" Height="36" Width="36" />
+                </Button>
+                <Button x:Name="btn_Minus" Click="btn_Minus_Click" Margin="5,0,0,10" ToolTip="减少选中的接口" Style="{StaticResource MaterialDesignFloatingActionLightButton}" Width="40" Height="40">
+                    <materialDesign:PackIcon Kind="Minus" Height="36" Width="36" />
+                </Button>
+            </StackPanel>
+            <Button x:Name="btn_Save" Click="btn_Save_Click" Style="{StaticResource MaterialDesignFloatingActionButton}" ToolTip="保存" Grid.Row="2" Grid.Column="1"  Margin="5,0,6,0" >
+                <materialDesign:PackIcon Kind="CheckBold" Height="24" Width="24" />
+            </Button>
+
+        </Grid>
+    </materialDesign:DialogHost>
 </Page>
