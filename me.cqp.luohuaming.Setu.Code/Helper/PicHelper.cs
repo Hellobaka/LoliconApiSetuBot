@@ -593,9 +593,10 @@ namespace me.cqp.luohuaming.Setu.Code
                         {
                             try
                             {
+                                http.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
                                 if (!File.Exists($@"{CQSave.ImageDirectory}\LoliconPic\${item}.jpg"))
                                 {
-                                    dynamic jObject = JObject.Parse(Encoding.UTF8.GetString(HttpWebClient.Post("https://api.pixiv.cat/v1/generate", Encoding.UTF8.GetBytes($"p={item}"))));
+                                    dynamic jObject = JObject.Parse(http.UploadString("https://api.pixiv.cat/v1/generate", $"p={item}"));
                                     string pixiv_url = string.Empty;
                                     try
                                     {
@@ -608,6 +609,8 @@ namespace me.cqp.luohuaming.Setu.Code
                                     {
                                         pixiv_url = jObject.Value<string>("original_url_proxy");
                                     }
+                                    if (!Directory.Exists($@"{CQSave.ImageDirectory}\LoliconPic"))
+                                        Directory.CreateDirectory($@"{CQSave.ImageDirectory}\LoliconPic");
                                     http.DownloadFile(pixiv_url, $@"{CQSave.ImageDirectory}\LoliconPic\{item}.jpg");
                                     e.CQLog.Info("SauceNao识图", $"pid={item}的图片下载成功，尝试发送");
                                 }
