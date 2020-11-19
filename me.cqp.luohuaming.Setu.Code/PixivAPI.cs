@@ -9,6 +9,7 @@ using me.cqp.luohuaming.Setu.Code.Deserializtion.PixivIllust;
 using me.cqp.luohuaming.Setu.Code.Deserializtion.PixivR18Illust;
 using me.cqp.luohuaming.Setu.Code.Deserializtion.PixivRank;
 using Native.Sdk.Cqp;
+using Native.Sdk.Cqp.Enum;
 using Native.Sdk.Cqp.Model;
 using Native.Tool.Http;
 using Native.Tool.IniConfig;
@@ -54,12 +55,21 @@ namespace me.cqp.luohuaming.Setu.Code
             string url = $"https://api.imjad.cn/pixiv/v2/?type=illust&id={id}";
             string returnstr = string.Empty;
             try
-            {            
+            {
                 returnstr = Encoding.UTF8.GetString(HttpWebClient.Get(url));
                 try
                 {
                     Pixiv_Illust infobase = JsonConvert.DeserializeObject<Pixiv_Illust>(returnstr);
                     Deserializtion.PixivIllust.Illust info = infobase.illust;
+                    if (info.tags.Any(x => x.name.Contains("R-18")) && !CQSave.R18)
+                    {
+                        IllustInfo R18Pic = new IllustInfo()
+                        {
+                            IllustText = "设置内限制级图片，不予显示",
+                            IllustCQCode = new CQCode(CQFunction.Image, new KeyValuePair<string, string>("file", "Error.jpg"))
+                        };
+                        return R18Pic;
+                    }
                     IllustInfo illustInfo = new IllustInfo()
                     {
                         IllustText = Pixiv_Illust.GetIllustReturnText(info),
@@ -72,6 +82,15 @@ namespace me.cqp.luohuaming.Setu.Code
                 {
                     Pixiv_R18Illust infobase = JsonConvert.DeserializeObject<Pixiv_R18Illust>(returnstr);
                     Deserializtion.PixivR18Illust.Illust info = infobase.illust;
+                    if (info.tags.Any(x => x.name.Contains("R-18")) && !CQSave.R18)
+                    {
+                        IllustInfo R18Pic = new IllustInfo()
+                        {
+                            IllustText = "设置内限制级图片，不予显示",
+                            IllustCQCode = new CQCode(CQFunction.Image, new KeyValuePair<string, string>("file", "Error.jpg"))
+                        };
+                        return R18Pic;
+                    }
                     IllustInfo illustInfo = new IllustInfo()
                     {
                         IllustText = Pixiv_R18Illust.GetIllustReturnText(info),
@@ -82,11 +101,11 @@ namespace me.cqp.luohuaming.Setu.Code
                     return illustInfo;
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 if (!Directory.Exists(CQSave.AppDirectory + "error\\" + "IllustInfo\\"))
                     Directory.CreateDirectory(CQSave.AppDirectory + "error\\" + "IllustInfo\\");
-                IniConfig ini = new IniConfig(CQSave.AppDirectory +"error\\"+"IllustInfo\\"+ $"{DateTime.Now:yyyyMMddHHss}.log");
+                IniConfig ini = new IniConfig(CQSave.AppDirectory + "error\\" + "IllustInfo\\" + $"{DateTime.Now:yyyyMMddHHss}.log");
                 ini.Object["Error"]["Message"] = e.Message;
                 ini.Object["Error"]["StackTrace"] = e.StackTrace;
                 ini.Object["Error"]["Object"] = returnstr;
@@ -103,34 +122,58 @@ namespace me.cqp.luohuaming.Setu.Code
 
         public static IllustInfo GetHotSearch(string keyword)
         {
-            string url = $"https://api.pixivic.com/illustrations?illustType=illust&searchType=original&maxSanityLevel=6&page={new Random().Next(1,6)}&keyword={HttpTool.UrlEncode(keyword)}&pageSize=10";
+            string url = $"https://api.pixivic.com/illustrations?illustType=illust&searchType=original&maxSanityLevel=6&page={new Random().Next(1, 6)}&keyword={HttpTool.UrlEncode(keyword)}&pageSize=10";
             string returnstr = string.Empty;
             try
             {
-                returnstr = Encoding.UTF8.GetString(HttpWebClient.Get(url));
-                Pixiv_HotSearch hotSearch = JsonConvert.DeserializeObject<Pixiv_HotSearch>(returnstr);
-                IllustInfo illustInfo=new IllustInfo();
-                if (hotSearch.data.Count != 0)
+                IniConfig ini = new IniConfig(CQSave.AppDirectory + "Config.ini");
+                ini.Load();
+                string authCode = ini.Object["Config"]["PixivicAuth"].GetValueOrDefault("");
+                if (string.IsNullOrEmpty(authCode))
                 {
-                    Datum info = hotSearch.data[new Random().Next(hotSearch.data.Count)];
-                    illustInfo = new IllustInfo()
-                    {
-                        IllustText = Pixiv_HotSearch.GetSearchText(info),
-                        IllustCQCode = Pixiv_HotSearch.GetSearchPic(info),
-                        IllustUrl = info.imageUrls[0].original.Replace("pximg.net", "pixiv.cat")
-                    };
+                    CQSave.cqlog.Info("未填写授权码", "搜图需要在数据目录的Config.ini文件内，Config字段的PixivicAuth值内填入获取到的授权码");
+                    throw new Exception();
                 }
-                else
+                using (HttpWebClient http = new HttpWebClient())
                 {
-                    illustInfo = new IllustInfo()
+                    http.Encoding = Encoding.UTF8;
+                    http.Headers.Add("Authorization", authCode);
+
+                    returnstr = http.DownloadString(url);
+                    Pixiv_HotSearch hotSearch = JsonConvert.DeserializeObject<Pixiv_HotSearch>(returnstr);
+                    IllustInfo illustInfo = new IllustInfo();
+                    if (hotSearch.data.Count != 0)
                     {
-                        IllustText = "搜索结果为空",
-                        IllustCQCode = CQApi.CQCode_Image("Error.jpg")
-                    };
+                        Datum info = hotSearch.data[new Random().Next(hotSearch.data.Count)];
+                        if (info.tags.Any(x => x.name.Contains("R-18")) && !CQSave.R18)
+                        {
+                            IllustInfo R18Pic = new IllustInfo()
+                            {
+                                IllustText = "设置内限制级图片，不予显示",
+                                IllustCQCode = new CQCode(CQFunction.Image, new KeyValuePair<string, string>("file", "Error.jpg"))
+                            };
+                            return R18Pic;
+                        }
+
+                        illustInfo = new IllustInfo()
+                        {
+                            IllustText = Pixiv_HotSearch.GetSearchText(info),
+                            IllustCQCode = Pixiv_HotSearch.GetSearchPic(info),
+                            IllustUrl = info.imageUrls[0].original.Replace("pximg.net", "pixiv.cat")
+                        };
+                    }
+                    else
+                    {
+                        illustInfo = new IllustInfo()
+                        {
+                            IllustText = "搜索结果为空",
+                            IllustCQCode = CQApi.CQCode_Image("Error.jpg")
+                        };
+                    }
+                    return illustInfo;
                 }
-                return illustInfo;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 if (!Directory.Exists(CQSave.AppDirectory + "error\\" + "hotsearch\\"))
                     Directory.CreateDirectory(CQSave.AppDirectory + "error\\" + "hotsearch\\");

@@ -553,7 +553,7 @@ namespace me.cqp.luohuaming.Setu.Code
         /// <param name="e"></param>
         public static void SauceNao_Call(CQCode cqcode, CQGroupMessageEventArgs e)
         {
-            string url = "https://saucenao.com/search.php?output_type=2&api_key=56faa0cddf50860330a295e0c331be7c4b4c021f&db=999&numres=1&url=";
+            string url = "https://saucenao.com/search.php?output_type=2&api_key=56faa0cddf50860330a295e0c331be7c4b4c021f&db=999&numres=3&url=";
             url += GetImageURL(cqcode.ToSendString());
             using (HttpWebClient http = new HttpWebClient()
             {
@@ -570,6 +570,7 @@ namespace me.cqp.luohuaming.Setu.Code
                     e.CQLog.Info("SauceNao识图", "结果获取成功，正在拉取缩略图");
                     string str = result.ToString();
                     int count = 1;
+                    result.results = result.results.Take(1).ToList();
                     foreach (var item in result.results)
                     {
                         try

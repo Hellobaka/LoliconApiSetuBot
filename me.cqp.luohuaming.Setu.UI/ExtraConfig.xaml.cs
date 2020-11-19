@@ -21,6 +21,7 @@ namespace me.cqp.luohuaming.Setu.UI
         {
             ini.Load();
             ini.Object["R18"]["Enabled"] = new IValue((bool)Toggle_R18.IsChecked ? "1" : "0");
+            CQSave.R18 = (bool)Toggle_R18.IsChecked;
             ini.Object["R18"]["R18PicRevoke"] = new IValue((bool)Toggle_Revoke.IsChecked ? "1" : "0");
             ini.Object["R18"]["RevokeTime"] = new IValue(text_Revoke.Text);
             ini.Object["Config"]["FailedCompress"] = new IValue((bool)Toggle_CompressImg.IsChecked ? "1" : "0");

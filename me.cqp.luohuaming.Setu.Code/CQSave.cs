@@ -10,5 +10,6 @@ namespace me.cqp.luohuaming.Setu.Code
         public static CQApi cq;
         public static CQLog cqlog;
         public static WebProxy proxy;
+        public static bool R18=false;
     }
 }

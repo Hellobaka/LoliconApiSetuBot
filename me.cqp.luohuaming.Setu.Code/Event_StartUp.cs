@@ -18,6 +18,9 @@ namespace me.cqp.luohuaming.Setu.Code
             CQSave.cqlog = e.CQLog;
             IniConfig ini = new IniConfig(e.CQApi.AppDirectory + "Config.ini");
             ini.Load();
+            if (ini.Object["R18"]["Enabled"].GetValueOrDefault("0") == "1")
+                CQSave.R18 = true;
+
             try
             {
                 WebProxy proxy = null;

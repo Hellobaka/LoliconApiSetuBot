@@ -300,17 +300,14 @@ namespace me.cqp.luohuaming.Setu.Code
             ordertext = ordertext.ToLower().Replace(" ", "");
             if (string.IsNullOrEmpty(ordertext)) return string.Empty;
             int r18 = 0;
-            string keyword = string.Empty;
             if (ordertext.Contains("r18"))
             {
-                IniConfig ini = new IniConfig(CQSave.AppDirectory + "Config.ini");
-                ini.Load();
-                if (ini.Object["R18"]["Enabled"].GetValueOrDefault("0") == "1")
+                if (CQSave.R18)
                     r18 = 1;
                 else
                     CQSave.cqlog.Warning("R18开关", "R18开关处于关闭状态，若想调用，请打开扩展设置中的选项");
             }
-            keyword = ordertext.Replace("r18", "");
+            string keyword = ordertext.Replace("r18", "");
             return $"r18={r18}&keyword={keyword}";
         }
     }

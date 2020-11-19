@@ -192,8 +192,13 @@ namespace me.cqp.luohuaming.Setu.UI
             //获取按钮的父容器以获取Path元素
             var parent = VisualTreeHelper.GetParent((UIElement)sender);
             string url = ((TextBox)VisualTreeHelper.GetChild(parent, 3)).Text;
+            string path;
             //Path元素在父容器中是[4]个
-            string path = JsonSaves.Find(x=>x.url==url).picPath;
+            var c = JsonSaves.Find(x => x.url == url);            
+            if (c == null)
+                path = "";
+            else
+                path = c.picPath;
             try
             {
                 using (HttpWebClient http = new HttpWebClient()
@@ -324,11 +329,14 @@ namespace me.cqp.luohuaming.Setu.UI
         #endregion
 
         private void btn_Option_Click(object sender, RoutedEventArgs e)
-        {
+        {            
             JsonSettings pg = new JsonSettings();
             var parent = VisualTreeHelper.GetParent((UIElement)sender);
             string url = ((TextBox)VisualTreeHelper.GetChild(parent, 3)).Text;
-            pg.Json_Object = JsonSaves.Find(x => x.url == url);
+            JsonToDeserize c = JsonSaves.Find(x => x.url == url);
+            if (c == null)
+                c = new JsonToDeserize();
+            pg.Json_Object = c;
             ShowDialogwithPage(pg);
         }
         private void ShowDialogwithPage(Page page)
