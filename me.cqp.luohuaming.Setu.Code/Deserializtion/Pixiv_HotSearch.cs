@@ -71,6 +71,9 @@ namespace me.cqp.luohuaming.Setu.Code.Deserializtion.HotSearch
         public static CQCode GetSearchPic(Datum info)
         {
             string path = Path.Combine(Environment.CurrentDirectory, "data", "image", "LoliconPic", $"{info.id}.jpg");
+            var b = Path.GetDirectoryName(path);
+            if (!Directory.Exists(b))
+                Directory.CreateDirectory(b);
             string pathcqcode = Path.Combine("LoliConPic", $"{info.id}.jpg");
             using (HttpWebClient http = new HttpWebClient()
             {
@@ -80,7 +83,6 @@ namespace me.cqp.luohuaming.Setu.Code.Deserializtion.HotSearch
                 AllowAutoRedirect = true,
             })
             {
-                http.TimeOut = 5000;
                 try
                 {
                     if (!File.Exists(path))
@@ -94,7 +96,7 @@ namespace me.cqp.luohuaming.Setu.Code.Deserializtion.HotSearch
                 }
                 catch (Exception e)
                 {
-                    CQSave.cqlog.Info("搜索详情", $"图片下载失败，错误信息:{e.Message}");
+                    CQSave.cqlog.Info("搜索详情", $"图片下载失败，错误信息:{e.Message}\n{e.StackTrace}");
                     return CQApi.CQCode_Image("Error.jpg");
                 }
             }
