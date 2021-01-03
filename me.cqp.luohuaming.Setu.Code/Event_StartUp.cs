@@ -5,6 +5,8 @@ using Native.Sdk.Cqp.EventArgs;
 using Native.Sdk.Cqp.Interface;
 using Native.Tool.IniConfig;
 using System.Net;
+using PublicInfos;
+using me.cqp.luohuaming.Setu.Code.OrderFunctions;
 
 namespace me.cqp.luohuaming.Setu.Code
 {
@@ -12,39 +14,56 @@ namespace me.cqp.luohuaming.Setu.Code
     {
         public void CQStartup(object sender, CQStartupEventArgs e)
         {
+            //TODO:Clear the obsolete code
             CQSave.AppDirectory = e.CQApi.AppDirectory;
-            CQSave.ImageDirectory = GetAppImageDirectory(e.CQApi.AppDirectory);
+            CQSave.ImageDirectory = GetAppImageDirectory();
             CQSave.cq = e.CQApi;
             CQSave.cqlog = e.CQLog;
+
+            MainSave.AppDirectroy = e.CQApi.AppDirectory;
+            MainSave.CQApi = e.CQApi;
+            MainSave.CQLog = e.CQLog;
+            MainSave.ImageDirectory = GetAppImageDirectory();
+
             IniConfig ini = new IniConfig(e.CQApi.AppDirectory + "Config.ini");
             ini.Load();
-            if (ini.Object["R18"]["Enabled"].GetValueOrDefault("0") == "1")
-                CQSave.R18 = true;
+            MainSave.ConfigMain = ini;
 
+            //TODO:Clear the redundancy code
+            if (ini.Object["R18"]["Enabled"].GetValueOrDefault("0") == "1")
+            { CQSave.R18 = true; }
+
+            PublicVariables.ReadOrderandAnswer();
             try
             {
                 WebProxy proxy = null;
-                if (ini.Object["Proxy"]["IsEnabled"].GetValueOrDefault("0") == "1")
+                if (ini.Object["Proxy"]["IsEnabled"].GetValueOrDefault(0) == 1)
                 {
                     //代理设置
                     string uri, username, pwd;
-                    uri = ini.Object["Proxy"]["ProxyUri"].GetValueOrDefault("0");
-                    username = ini.Object["Proxy"]["ProxyName"].GetValueOrDefault("0");
-                    pwd = ini.Object["Proxy"]["ProxyName"].GetValueOrDefault("0");
+                    uri = ini.Object["Proxy"]["ProxyUri"].GetValueOrDefault("");
+                    username = ini.Object["Proxy"]["ProxyName"].GetValueOrDefault("");
+                    pwd = ini.Object["Proxy"]["ProxyName"].GetValueOrDefault("");
                     proxy = new WebProxy
                     {
                         Address = new Uri(uri),
                         Credentials = new NetworkCredential(username, pwd)
                     };
+                    //TODO:Clear the obsolete code
                     CQSave.proxy = proxy;
+
+                    MainSave.Proxy = proxy;
                 }
             }
             catch (Exception ex)
             {
+                //TODO:Clear the obsolete code
+                MainSave.CQLog.Info("涩图机重置", "限制已重置");
+
                 e.CQLog.Warning("代理设置无效", $"代理参数有误，错误信息:{ex.Message}");
             }
-            ini = new IniConfig(e.CQApi.AppDirectory + "ConfigLimit.ini");
-            ini.Load();
+
+            ini = MainSave.ConfigLimit;
             if (ini.Object == null || ini.Object.Count == 0)
             {
                 File.WriteAllText(e.CQApi.AppDirectory + "ConfigLimit.ini", "[Config]\nTimestamp=1608773153");
@@ -55,6 +74,10 @@ namespace me.cqp.luohuaming.Setu.Code
                 if (File.Exists(CQSave.AppDirectory + "ConfigLimit.ini"))
                 {
                     File.Delete(CQSave.AppDirectory + "ConfigLimit.ini");
+
+                    //TODO:Clear the obsolete code
+                    MainSave.CQLog.Info("涩图机重置", "限制已重置");
+
                     CQSave.cqlog.Info("涩图机重置", "限制已重置");
                 }
             }
@@ -62,8 +85,20 @@ namespace me.cqp.luohuaming.Setu.Code
             timersTimer.Enabled = true;
             timersTimer.Elapsed += TimersTimer_Elapsed;
             timersTimer.Start();
+
+            MainSave.Instances.Add(new ClearLimit());
+            MainSave.Instances.Add(new CustomAPI());
+            MainSave.Instances.Add(new GetLoliconPic());
+            MainSave.Instances.Add(new HotSearch());
+            MainSave.Instances.Add(new JsonPic());
+            MainSave.Instances.Add(new LocalPic());
+            MainSave.Instances.Add(new PIDSearch());
+            MainSave.Instances.Add(new RankPic());
+            MainSave.Instances.Add(new SauceNao());
+            MainSave.Instances.Add(new TraceMoe());
+            MainSave.Instances.Add(new YandeRePic());
         }
-        public static string GetAppImageDirectory(string dir)
+        public static string GetAppImageDirectory()
         {
             var ImageDirectory = Path.Combine(Environment.CurrentDirectory, "data", "image\\");
             return ImageDirectory;
@@ -84,6 +119,9 @@ namespace me.cqp.luohuaming.Setu.Code
                 if (File.Exists(CQSave.AppDirectory + "ConfigLimit.ini"))
                 {
                     File.Delete(CQSave.AppDirectory + "ConfigLimit.ini");
+                    //TODO:Clear the obsolete code
+                    MainSave.CQLog.Info("涩图机重置", "限制已重置");
+
                     CQSave.cqlog.Info("涩图机重置", "限制已重置");
                 }
             }

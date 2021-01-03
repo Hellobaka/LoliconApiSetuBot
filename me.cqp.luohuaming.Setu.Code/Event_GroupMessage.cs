@@ -10,6 +10,7 @@ using Native.Sdk.Cqp.Interface;
 using Native.Sdk.Cqp.Model;
 using Native.Tool.IniConfig;
 using Newtonsoft.Json;
+using PublicInfos;
 
 namespace me.cqp.luohuaming.Setu.Code
 {
@@ -71,53 +72,7 @@ namespace me.cqp.luohuaming.Setu.Code
 
                 if (!string.IsNullOrEmpty(PicHelper.LoliConPic) && e.Message.Text.Replace("＃", "#").StartsWith(PicHelper.LoliConPic))
                 {
-                    if (!CanCallFunc(e)) return;
-
-                    //拉取图片，处理时间受地区与网速限制
-                    GetSetu setu = new GetSetu();
-                    List<string> pic = setu.GetSetuPic(e.Message.Text.Substring(PicHelper.LoliConPic.Length));
-                    try
-                    {
-                        List<string> save = pic;
-                        // 处理返回文本，替换可配置文本为结果，发送处理结果
-                        string str = PicHelper.ProcessReturns(pic[0], e);
-                        if (!string.IsNullOrEmpty(str))
-                            e.CQApi.SendGroupMessage(e.FromGroup, str);
-                        if (File.Exists(CQSave.ImageDirectory + $"\\{pic[1]}"))//文件是否下载成功
-                        {
-                            QQMessage staues = e.CQApi.SendGroupMessage(e.FromGroup, CQApi.CQCode_Image(pic[1]));
-                            if (!staues.IsSuccess)//图片发送失败
-                            {
-                                IniConfig ini = new IniConfig(CQSave.AppDirectory + "Config.ini"); ini.Load();
-                                if (ini.Object["Config"]["FailedCompress"].GetValueOrDefault("0") == "0" || !e.FromGroup.SendGroupMessage(CompressImg.CompressImage(pic[1])).IsSuccess)
-                                {
-                                    Setu deserialize = JsonConvert.DeserializeObject<Setu>(pic[0]);
-                                    List<Data> msg = deserialize.data;
-                                    if (!string.IsNullOrEmpty(PicHelper.SendPicFailed))
-                                        e.CQApi.SendGroupMessage(e.FromGroup, PicHelper.SendPicFailed.Replace("<url>", msg[0].url));
-                                    PicHelper.SaveErrorMsg(pic[1]);
-                                    return;
-                                }
-                            }
-                            if (revoke)//自动撤回
-                            {
-                                IniConfig ini = new IniConfig(CQSave.AppDirectory + "Config.ini"); ini.Load();
-                                Task task = new Task(() =>
-                                {
-                                    Thread.Sleep(ini.Object["R18"]["RevokeTime"] * 1000);
-                                    PicHelper.RevokePic(staues.Id);
-                                }); task.Start();
-                            }
-                        }
-                        else
-                        {
-                            return;
-                        }
-                    }
-                    catch (Exception exc)
-                    {
-                        e.CQApi.SendGroupMessage(e.FromGroup, $"发生未知错误,错误信息:在{exc.Source}上, 发生错误: {exc.Message}");
-                    }
+                    //fin
                 }
                 else if (!string.IsNullOrEmpty(PicHelper.ClearLimit) && e.Message.Text == PicHelper.ClearLimit)
                 {
@@ -243,6 +198,25 @@ namespace me.cqp.luohuaming.Setu.Code
             if (response[0] != "0") return false;
             return true;
         }
-
+        public static FunctionResult GroupMessage(CQGroupMessageEventArgs e)
+        {
+            FunctionResult result = new FunctionResult()
+            {
+                SendFlag = false
+            };
+            try
+            {
+                foreach (var item in MainSave.Instances.Where(item => item.Judge(e.Message.Text)))
+                {
+                    return item.Progress(e);
+                }
+                return result;
+            }
+            catch (Exception exc)
+            {
+                MainSave.CQLog.Info("异常抛出",exc.Message + exc.StackTrace);
+                return result;
+            }
+        }
     }
 }

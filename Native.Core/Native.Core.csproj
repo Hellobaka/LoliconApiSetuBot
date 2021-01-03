@@ -102,6 +102,7 @@
     <Compile Include="Export\CQStatusExport.cs">
       <DependentUpon>CQExport.tt</DependentUpon>
     </Compile>
+    <Compile Include="MainExport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -134,6 +135,14 @@
     <ProjectReference Include="..\Native.Sdk\Native.Sdk.csproj">
       <Project>{d7a958b3-79d9-49f8-8bb4-9619bab6ecba}</Project>
       <Name>Native.Sdk</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Native.Tool\Native.Tool.csproj">
+      <Project>{0ca93eb9-4e25-46c6-94d2-0f97137a1606}</Project>
+      <Name>Native.Tool</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PublicInfos\PublicInfos.csproj">
+      <Project>{3d0cf563-5be7-4366-ac06-5f9bd519e724}</Project>
+      <Name>PublicInfos</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
