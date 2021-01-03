@@ -45,6 +45,11 @@ namespace me.cqp.luohuaming.Setu.Code
             }
             ini = new IniConfig(e.CQApi.AppDirectory + "ConfigLimit.ini");
             ini.Load();
+            if (ini.Object == null || ini.Object.Count == 0)
+            {
+                File.WriteAllText(e.CQApi.AppDirectory + "ConfigLimit.ini", "[Config]\nTimestamp=1608773153");
+                ini.Load();
+            }
             if (JudgeifTimestampOverday(ini.Object["Config"]["Timestamp"].GetValueOrDefault(0), GetTimeStamp()))
             {
                 if (File.Exists(CQSave.AppDirectory + "ConfigLimit.ini"))

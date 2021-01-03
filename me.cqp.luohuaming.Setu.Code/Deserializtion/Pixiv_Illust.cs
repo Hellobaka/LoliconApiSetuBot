@@ -98,7 +98,17 @@ namespace me.cqp.luohuaming.Setu.Code.Deserializtion.PixivIllust
             CQSave.cqlog.Info("插画详情", "详情获取成功，正在拉取图片");
             return text;
         }
-
+        public static string GetIllustReturnText(Pixiv_PID info)
+        {
+            string text = $"标题:{info.data.title}\n" +
+                $"作者:{info.data.artistPreView.name}\n" +
+                $"pid={info.data.id}\n" +
+                $"创作日期:{info.data.createDate}\n" +
+                $"浏览数:{info.data.totalView}\n" +
+                $"收藏数:{info.data.totalBookmarks}";
+            CQSave.cqlog.Info("插画详情", "详情获取成功，正在拉取图片");
+            return text;
+        }
         /// <summary>
         /// 下载图片，返回CQ码
         /// </summary>
@@ -131,8 +141,32 @@ namespace me.cqp.luohuaming.Setu.Code.Deserializtion.PixivIllust
             }
             return CQApi.CQCode_Image(pathcqcode);
         }
+        public static CQCode GetIllustPic(Pixiv_PID info)
+        {
+            string path = Path.Combine(Environment.CurrentDirectory, "data", "image", "LoliconPic", $"{info.data.id}.jpg");
+            string pathcqcode = Path.Combine("LoliConPic", $"{info.data.id}.jpg");
+            using (HttpWebClient http = new HttpWebClient())
+            {
+                http.TimeOut = 5000;
+                try
+                {
+                    if (!File.Exists(path))
+                    {
+                        string url = string.Empty;
+                        url = info.data.imageUrls[0].original.Replace("pximg.net", "pixiv.cat");
 
+                        http.DownloadFile(url, path);
+                        GetSetu.AntiHX(path);
+                        CQSave.cqlog.Info("插画详情", "图片下载成功，正在尝试发送");
+                    }
+                }
+                catch (Exception e)
+                {
+                    CQSave.cqlog.Info("插画详情", $"图片下载失败，错误信息:{e.Message}");
+                    return CQApi.CQCode_Image("Error.jpg");
+                }
+            }
+            return CQApi.CQCode_Image(pathcqcode);
+        }
     }
-
-
 }

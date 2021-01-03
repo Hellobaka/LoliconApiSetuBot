@@ -115,6 +115,7 @@
     <Compile Include="CQSave.cs" />
     <Compile Include="Deserializtion\ItemToSave.cs" />
     <Compile Include="Deserializtion\JsonToDeserize.cs" />
+    <Compile Include="Deserializtion\Pixiv_PID.cs" />
     <Compile Include="Deserializtion\Pixiv_R18Illust.cs" />
     <Compile Include="Deserializtion\SauceNao_Deserial.cs" />
     <Compile Include="Deserializtion\SendError.cs" />

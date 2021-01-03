@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using me.cqp.luohuaming.Setu.Code.Deserializtion;
 using me.cqp.luohuaming.Setu.Code.Deserializtion.HotSearch;
 using me.cqp.luohuaming.Setu.Code.Deserializtion.PixivIllust;
 using me.cqp.luohuaming.Setu.Code.Deserializtion.PixivR18Illust;
@@ -14,6 +15,7 @@ using Native.Sdk.Cqp.Model;
 using Native.Tool.Http;
 using Native.Tool.IniConfig;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace me.cqp.luohuaming.Setu.Code
 {
@@ -52,54 +54,28 @@ namespace me.cqp.luohuaming.Setu.Code
         /// <returns></returns>
         public static IllustInfo GetIllustInfo(int id)
         {
-            string url = $"https://api.imjad.cn/pixiv/v2/?type=illust&id={id}";
+            string url = $"https://pix.ipv4.host/illusts/{id}";
             string returnstr = string.Empty;
             try
             {
                 returnstr = Encoding.UTF8.GetString(HttpWebClient.Get(url));
-                try
+                Pixiv_PID infobase = JsonConvert.DeserializeObject<Pixiv_PID>(returnstr);
+                if (infobase.data.tags.Any(x => x.name.Contains("R-18")) && !CQSave.R18)
                 {
-                    Pixiv_Illust infobase = JsonConvert.DeserializeObject<Pixiv_Illust>(returnstr);
-                    Deserializtion.PixivIllust.Illust info = infobase.illust;
-                    if (info.tags.Any(x => x.name.Contains("R-18")) && !CQSave.R18)
+                    IllustInfo R18Pic = new IllustInfo()
                     {
-                        IllustInfo R18Pic = new IllustInfo()
-                        {
-                            IllustText = "设置内限制级图片，不予显示",
-                            IllustCQCode = new CQCode(CQFunction.Image, new KeyValuePair<string, string>("file", "Error.jpg"))
-                        };
-                        return R18Pic;
-                    }
-                    IllustInfo illustInfo = new IllustInfo()
-                    {
-                        IllustText = Pixiv_Illust.GetIllustReturnText(info),
-                        IllustCQCode = Pixiv_Illust.GetIllustPic(info),
+                        IllustText = "设置内限制级图片，不予显示",
+                        IllustCQCode = new CQCode(CQFunction.Image, new KeyValuePair<string, string>("file", "Error.jpg"))
                     };
-                    illustInfo.IllustUrl = info.meta_single_page.original_image_url.Replace("pximg.net", "pixiv.cat");
-                    return illustInfo;
+                    return R18Pic;
                 }
-                catch
+                IllustInfo illustInfo = new IllustInfo()
                 {
-                    Pixiv_R18Illust infobase = JsonConvert.DeserializeObject<Pixiv_R18Illust>(returnstr);
-                    Deserializtion.PixivR18Illust.Illust info = infobase.illust;
-                    if (info.tags.Any(x => x.name.Contains("R-18")) && !CQSave.R18)
-                    {
-                        IllustInfo R18Pic = new IllustInfo()
-                        {
-                            IllustText = "设置内限制级图片，不予显示",
-                            IllustCQCode = new CQCode(CQFunction.Image, new KeyValuePair<string, string>("file", "Error.jpg"))
-                        };
-                        return R18Pic;
-                    }
-                    IllustInfo illustInfo = new IllustInfo()
-                    {
-                        IllustText = Pixiv_R18Illust.GetIllustReturnText(info),
-                        IllustCQCode = Pixiv_R18Illust.GetIllustPic(info),
-                    };
-                    if (info.meta_single_page.Count != 0)
-                        illustInfo.IllustUrl = info.meta_single_page[0].original_image_url.Replace("pximg.net", "pixiv.cat");
-                    return illustInfo;
-                }
+                    IllustText = Pixiv_Illust.GetIllustReturnText(infobase),
+                    IllustCQCode = Pixiv_Illust.GetIllustPic(infobase),
+                };
+                illustInfo.IllustUrl = infobase.data.imageUrls[0].original.Replace("pximg.net", "pixiv.cat");
+                return illustInfo;
             }
             catch (Exception e)
             {
@@ -147,10 +123,16 @@ namespace me.cqp.luohuaming.Setu.Code
                     {
                         if (CQSave.R18 is false)
                         {
-                            info = hotSearch.data.Where(x => x.tags.Any(y => !y.name.Contains("R-18")))
-                                .OrderBy(x => Guid.NewGuid().ToString()).First();
+                            var result = hotSearch.data.Where(x => !x.tags.Any(y => y.name.Contains("R-18")))
+                                .OrderBy(x => Guid.NewGuid().ToString());
+                            info = result.FirstOrDefault();
                             if (info != null)
                             {
+                                if (result.Count() != hotSearch.data.Count)
+                                {
+                                    if (hotSearch.data.Count != 0)
+                                        CQSave.cqlog.Info("R18拦截", $"拦截了 {hotSearch.data.Count- result.Count()} 个搜索结果");
+                                }
                                 illustInfo = new IllustInfo()
                                 {
                                     IllustText = Pixiv_HotSearch.GetSearchText(info),
@@ -161,8 +143,7 @@ namespace me.cqp.luohuaming.Setu.Code
                             else
                             {
                                 if (hotSearch.data.Count != 0)
-                                    CQSave.cqlog.Info("R18拦截", $"名称：{hotSearch.data[0].title}" +
-                                        $" Pid：{hotSearch.data[0].id}");
+                                    CQSave.cqlog.Info("R18拦截", $"拦截了 {hotSearch.data.Count} 个搜索结果");
                                 illustInfo = new IllustInfo()
                                 {
                                     IllustText = "设置内限制级图片，不予显示",
