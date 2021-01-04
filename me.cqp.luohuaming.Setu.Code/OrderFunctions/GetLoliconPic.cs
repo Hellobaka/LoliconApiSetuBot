@@ -59,6 +59,8 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                 // 处理返回文本，替换可配置文本为结果，发送处理结果                
                 if (!string.IsNullOrWhiteSpace(objectTostring))
                     text.MsgToSend.Add(objectTostring);
+                result.SendObject.Add(text);
+                result.SendFlag = true;
                 IniConfig ini = MainSave.ConfigMain;
                 if (pic.HandlingFlag)//是否成功处理消息
                 {

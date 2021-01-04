@@ -421,7 +421,7 @@ namespace Native.Tool.IniConfig
 				throw new ArgumentNullException ("textReader");
 			}
 
-			ISection tempSection = new ISection("");
+			ISection tempSection = null;
 			while (textReader.Peek () != -1)
 			{
 				string line = textReader.ReadLine ();
@@ -444,7 +444,7 @@ namespace Native.Tool.IniConfig
 			}
 			string temp=null;
 			IValue value = new IValue(temp);
-			if(tempSection!=null)tempSection.SetDefault(value);
+			if (tempSection != null) tempSection.SetDefault(value);
 		}
 		#endregion
 	}

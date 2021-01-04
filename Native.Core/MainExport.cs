@@ -15,7 +15,7 @@ namespace Native.Core
             bool flag = false;
             for (int i = 0; i < MainSave.ConfigMain.Object["GroupList"]["Count"].GetValueOrDefault(0); i++)
             {
-                if (e.FromGroup.Id == MainSave.ConfigMain.Object["GroupList"][$"Item{i}"].GetValueOrDefault(0))
+                if (e.FromGroup.Id == MainSave.ConfigMain.Object["GroupList"][$"Index{i}"].GetValueOrDefault(0))
                 {
                     flag = true;
                     break;
@@ -33,6 +33,7 @@ namespace Native.Core
             {
                 if (item.GroupID == e.FromGroup.Id && item.QQID == e.FromQQ.Id)
                 {
+                    e.Handler = true;
                     if (e.Message.CQCodes.Where(x => x.IsImageCQCode).ToList().Count == 0)
                     {
                         MainSave.sauceNao_Saves.Remove(item);

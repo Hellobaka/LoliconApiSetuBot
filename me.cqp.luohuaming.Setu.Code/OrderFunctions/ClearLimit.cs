@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Native.Sdk.Cqp.EventArgs;
+using Native.Tool.IniConfig;
 using PublicInfos;
 
 namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
@@ -39,6 +40,8 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
             else
             {
                 File.Delete(MainSave.AppDirectory + "ConfigLimit.ini");
+                MainSave.ConfigLimit = new IniConfig(Path.Combine(MainSave.AppDirectory, "ConfigLimit.ini"));
+                MainSave.ConfigLimit.Load();
                 sendText.MsgToSend.Add("重置成功");
             }
             return result;

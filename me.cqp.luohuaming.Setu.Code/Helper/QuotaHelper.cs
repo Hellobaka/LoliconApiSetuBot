@@ -14,15 +14,15 @@ namespace me.cqp.luohuaming.Setu.Code.Helper
         /// <param name="QQID">操作的QQ号</param>
         public static void PlusMemberQuota(long GroupID, long QQID)
         {
-            int countofPerson = MainSave.ConfigMain
+            int countofPerson = MainSave.ConfigLimit
                 .Object[$"Count{GroupID}"][string.Format("Count{0}", QQID)].GetValueOrDefault(0);
-            int countofGroup = MainSave.ConfigMain
+            int countofGroup = MainSave.ConfigLimit
                 .Object[$"Count{GroupID}"]["CountofGroup"].GetValueOrDefault(0);
-            MainSave.ConfigMain
+            MainSave.ConfigLimit
                 .Object[$"Count{GroupID}"][string.Format("Count{0}", QQID)] = new IValue(--countofPerson);
-            MainSave.ConfigMain
+            MainSave.ConfigLimit
                 .Object[$"Count{GroupID}"]["CountofGroup"] = new IValue(--countofGroup);
-            MainSave.ConfigMain.Save();
+            MainSave.ConfigLimit.Save();
         }
 
         /// <summary>
@@ -32,15 +32,15 @@ namespace me.cqp.luohuaming.Setu.Code.Helper
         /// <param name="QQID">操作的QQ号</param>
         public static void MinusMemberQuota(long GroupID, long QQID)
         {
-            int countofPerson = MainSave.ConfigMain
+            int countofPerson = MainSave.ConfigLimit
                 .Object[$"Count{GroupID}"][string.Format("Count{0}", QQID)].GetValueOrDefault(0);
-            int countofGroup = MainSave.ConfigMain
+            int countofGroup = MainSave.ConfigLimit
                 .Object[$"Count{GroupID}"]["CountofGroup"].GetValueOrDefault(0);
-            MainSave.ConfigMain
+            MainSave.ConfigLimit
                 .Object[$"Count{GroupID}"][string.Format("Count{0}", QQID)] = new IValue(++countofPerson);
-            MainSave.ConfigMain
+            MainSave.ConfigLimit
                 .Object[$"Count{GroupID}"]["CountofGroup"] = new IValue(++countofGroup);
-            MainSave.ConfigMain.Save();
+            MainSave.ConfigLimit.Save();
         }
 
         /// <summary>
@@ -73,9 +73,9 @@ namespace me.cqp.luohuaming.Setu.Code.Helper
             List<string> ls = new List<string>();
 
             int countofPerson, countofGroup, maxofPerson, maxofGroup;
-            countofPerson = MainSave.ConfigMain
+            countofPerson = MainSave.ConfigLimit
                 .Object[$"Count{GroupID}"][string.Format("Count{0}", QQID)].GetValueOrDefault(0);
-            countofGroup = MainSave.ConfigMain
+            countofGroup = MainSave.ConfigLimit
                 .Object[$"Count{GroupID}"]["CountofGroup"].GetValueOrDefault(0);
             maxofGroup = MainSave.ConfigMain
                 .Object["Config"]["MaxofGroup"].GetValueOrDefault(30);
@@ -109,7 +109,8 @@ namespace me.cqp.luohuaming.Setu.Code.Helper
                     countofPerson++;
                 }
             }
-            MainSave.ConfigMain.Save();
+            MainSave.ConfigLimit.Object["Config"]["Timestamp"] = new IValue(CommonHelper.GetTimeStamp());
+            MainSave.ConfigLimit.Save();
             ls.Add("0");
             ls.Add(PublicVariables.StartPullPic.Replace("<count>", (maxofPerson - countofPerson).ToString()));
             return ls;

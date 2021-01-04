@@ -87,10 +87,10 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                 {
                     Directory.CreateDirectory(MainSave.ImageDirectory + "SauceNaotemp");
                     var result = JsonConvert.DeserializeObject<SauceNao_Result.SauceNAO>(http.DownloadString(url));
-                    e.CQLog.Info("SauceNao识图", "结果获取成功，正在拉取缩略图");
-                    string str = result.ToString();
+                    e.CQLog.Info("SauceNao识图", "结果获取成功，正在拉取缩略图");                    
                     int count = 1;
                     result.results = result.results.Take(1).ToList();
+                    string str = result.ToString();
                     foreach (var item in result.results)
                     {
                         try
@@ -149,12 +149,13 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                     e.CQLog.Info("SauceNao搜图", $"搜索失败，错误信息:{exc.Message}在{exc.StackTrace}");
                     e.FromGroup.SendGroupMessage($"拉取失败，错误信息:{exc.Message}");
                 }
-                finally
+                try
                 {
                     string path = $@"{MainSave.ImageDirectory}\SauceNaotemp";
-                    if(Directory.Exists(path))
+                    if (Directory.Exists(path))
                         Directory.Delete(path, true);
                 }
+                catch { }
             }
         }
 

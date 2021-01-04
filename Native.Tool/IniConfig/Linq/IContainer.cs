@@ -35,9 +35,16 @@ namespace Native.Tool.IniConfig.Linq
 					return this._sortedList[key];
 				}
 				catch (KeyNotFoundException)
-				{	
-					this._sortedList.Add(key, tv);
-					return this._sortedList[key];
+				{
+					try
+					{
+						this._sortedList.Add(key, tv);
+						return this._sortedList[key];
+					}
+					catch
+					{
+						return default;
+					}
 				}
 			}
 			set { this._sortedList[key] = value; }

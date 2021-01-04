@@ -317,7 +317,6 @@ namespace Native.Tool.IniConfig.Linq
 		{
 			if (this.Value == null)
 			{
-				this.Value = defaultValue;
 				return defaultValue;
 			}
 
@@ -332,7 +331,6 @@ namespace Native.Tool.IniConfig.Linq
 			{
 				if (objValue == null)
 				{
-					this.Value = defaultValue;
 					return defaultValue;
 				}
 				type = Nullable.GetUnderlyingType (type);

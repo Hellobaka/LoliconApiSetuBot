@@ -41,6 +41,8 @@ namespace PublicInfos
         { 
             get
             {
+                if (configLimit != null)
+                    return configLimit;
                 configLimit = new IniConfig(Path.Combine(AppDirectory, "ConfigLimit.ini"));
                 configLimit.Load();
                 return configLimit;
