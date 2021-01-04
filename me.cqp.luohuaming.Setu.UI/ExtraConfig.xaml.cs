@@ -1,10 +1,8 @@
-﻿using me.cqp.luohuaming.Setu.Code;
-using Native.Tool.IniConfig;
+﻿using Native.Tool.IniConfig;
 using Native.Tool.IniConfig.Linq;
 using PublicInfos;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 
 namespace me.cqp.luohuaming.Setu.UI
 {

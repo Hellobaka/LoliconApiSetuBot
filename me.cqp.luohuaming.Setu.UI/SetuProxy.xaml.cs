@@ -1,5 +1,4 @@
-﻿using me.cqp.luohuaming.Setu.Code;
-using Native.Tool.Http;
+﻿using Native.Tool.Http;
 using Native.Tool.IniConfig;
 using Native.Tool.IniConfig.Linq;
 using Newtonsoft.Json;

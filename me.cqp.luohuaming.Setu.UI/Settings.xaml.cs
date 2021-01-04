@@ -1,5 +1,4 @@
-﻿using me.cqp.luohuaming.Setu.Code;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
@@ -8,10 +7,8 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.IO;
 using System.Windows.Threading;
-using MaterialDesignThemes.Wpf;
 using Native.Tool.IniConfig;
 using Native.Tool.IniConfig.Linq;
-using System.Threading;
 using PublicInfos;
 
 namespace me.cqp.luohuaming.Setu.UI

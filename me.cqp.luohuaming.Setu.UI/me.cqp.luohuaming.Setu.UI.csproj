@@ -179,10 +179,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\me.cqp.luohuaming.Setu.Code\me.cqp.luohuaming.Setu.Code.csproj">
-      <Project>{63e48c25-a258-404d-8768-ad09ffffe94c}</Project>
-      <Name>me.cqp.luohuaming.Setu.Code</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Native.Sdk\Native.Sdk.csproj">
       <Project>{d7a958b3-79d9-49f8-8bb4-9619bab6ecba}</Project>
       <Name>Native.Sdk</Name>
