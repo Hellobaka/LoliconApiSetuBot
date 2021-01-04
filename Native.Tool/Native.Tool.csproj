@@ -79,89 +79,11 @@
     <Compile Include="IniConfig\Utilities\MiscellaneousUtils.cs" />
     <Compile Include="IniConfig\Utilities\ReflectionUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SQLite\AssemblySourceIdAttribute.cs" />
-    <Compile Include="SQLite\AssemblySourceTimeStampAttribute.cs" />
-    <Compile Include="SQLite\ISQLiteNativeModule.cs" />
-    <Compile Include="SQLite\LINQ\SQLiteConnection_Linq.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="SQLite\LINQ\SQLiteFactory_Linq.cs" />
-    <Compile Include="SQLite\Resources\SR.Designer.cs" />
-    <Compile Include="SQLite\SQLite3.cs" />
-    <Compile Include="SQLite\SQLite3_UTF16.cs" />
-    <Compile Include="SQLite\SQLiteBackup.cs" />
-    <Compile Include="SQLite\SQLiteBase.cs" />
-    <Compile Include="SQLite\SQLiteBlob.cs" />
-    <Compile Include="SQLite\SQLiteCommand.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="SQLite\SQLiteCommandBuilder.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="SQLite\SQLiteConnection.cs" />
-    <Compile Include="SQLite\SQLiteConnectionPool.cs" />
-    <Compile Include="SQLite\SQLiteConnectionStringBuilder.cs" />
-    <Compile Include="SQLite\SQLiteConvert.cs" />
-    <Compile Include="SQLite\SQLiteDataAdapter.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="SQLite\SQLiteDataReader.cs" />
-    <Compile Include="SQLite\SQLiteDefineConstants.cs" />
-    <Compile Include="SQLite\SQLiteEnlistment.cs" />
-    <Compile Include="SQLite\SQLiteException.cs" />
-    <Compile Include="SQLite\SQLiteFactory.cs" />
-    <Compile Include="SQLite\SQLiteFunction.cs" />
-    <Compile Include="SQLite\SQLiteFunctionAttribute.cs" />
-    <Compile Include="SQLite\SQLiteKeyReader.cs" />
-    <Compile Include="SQLite\SQLiteLog.cs" />
-    <Compile Include="SQLite\SQLiteMetaDataCollectionNames.cs" />
-    <Compile Include="SQLite\SQLiteModule.cs" />
-    <Compile Include="SQLite\SQLiteModuleCommon.cs" />
-    <Compile Include="SQLite\SQLiteModuleEnumerable.cs" />
-    <Compile Include="SQLite\SQLiteModuleNoop.cs" />
-    <Compile Include="SQLite\SQLiteParameter.cs" />
-    <Compile Include="SQLite\SQLiteParameterCollection.cs" />
-    <Compile Include="SQLite\SQLitePatchLevel.cs" />
-    <Compile Include="SQLite\SQLiteSession.cs" />
-    <Compile Include="SQLite\SQLiteStatement.cs" />
-    <Compile Include="SQLite\SQLiteTransaction.cs" />
-    <Compile Include="SQLite\SQLiteTransaction2.cs" />
-    <Compile Include="SQLite\SQLiteTransactionBase.cs" />
-    <Compile Include="SQLite\UnsafeNativeMethods.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.editorconfig">
       <Link>.editorconfig</Link>
     </None>
-    <None Include="SQLite\Configurations\System.Data.SQLite.dll.config" />
-    <None Include="SQLite\obj\Debug\netstandard2.0\System.Data.SQLite.NetStandard20.assets.cache" />
-    <None Include="SQLite\obj\Debug\netstandard2.0\System.Data.SQLite.NetStandard20.csproj.CoreCompileInputs.cache" />
-    <None Include="SQLite\obj\Debug\netstandard2.0\System.Data.SQLite.NetStandard20.csprojAssemblyReference.cache" />
-    <None Include="SQLite\obj\Debug\netstandard2.1\System.Data.SQLite.NetStandard21.assets.cache" />
-    <None Include="SQLite\obj\Debug\netstandard2.1\System.Data.SQLite.NetStandard21.csproj.CoreCompileInputs.cache" />
-    <None Include="SQLite\obj\project.assets.json" />
-    <None Include="SQLite\obj\Release\netstandard2.1\System.Data.SQLite.NetStandard21.assets.cache" />
-    <None Include="SQLite\obj\Release\netstandard2.1\System.Data.SQLite.NetStandard21.csproj.CoreCompileInputs.cache" />
-    <None Include="SQLite\obj\System.Data.SQLite.NetStandard20.csproj.nuget.cache" />
-    <None Include="SQLite\obj\System.Data.SQLite.NetStandard20.csproj.nuget.g.props" />
-    <None Include="SQLite\obj\System.Data.SQLite.NetStandard20.csproj.nuget.g.targets" />
-    <None Include="SQLite\obj\System.Data.SQLite.NetStandard21.csproj.nuget.cache" />
-    <None Include="SQLite\obj\System.Data.SQLite.NetStandard21.csproj.nuget.g.props" />
-    <None Include="SQLite\obj\System.Data.SQLite.NetStandard21.csproj.nuget.g.targets" />
-    <None Include="SQLite\Targets\System.Data.SQLite.Files.targets" />
-    <None Include="SQLite\Targets\System.Data.SQLite.Properties.targets" />
-    <None Include="SQLite\Targets\System.Data.SQLite.References.targets" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="SQLite\Generated\SR.resources" />
-    <EmbeddedResource Include="SQLite\Resources\SR.resx" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="SQLite\Resources\DataTypes.xml" />
-    <Content Include="SQLite\Resources\MetaDataCollections.xml" />
-    <Content Include="SQLite\Resources\SQLiteCommand.bmp" />
-    <Content Include="SQLite\Resources\SQLiteConnection.bmp" />
-    <Content Include="SQLite\Resources\SQLiteDataAdapter.bmp" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
