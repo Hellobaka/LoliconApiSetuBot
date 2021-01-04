@@ -48,7 +48,7 @@ namespace me.cqp.luohuaming.Setu.UI
                 {
                     TimeOut = 10000,
                     Encoding = Encoding.UTF8,
-                    Proxy = CQSave.proxy,
+                    Proxy = MainSave.Proxy,
                     AllowAutoRedirect = true,
                 })
                 {

@@ -3,6 +3,7 @@ using Native.Tool.Http;
 using Native.Tool.IniConfig;
 using Native.Tool.IniConfig.Linq;
 using Newtonsoft.Json;
+using PublicInfos;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -30,7 +31,7 @@ namespace me.cqp.luohuaming.Setu.UI
             try
             {
                 Uri uri = new Uri(textbox_ProxyUri.Text);
-                string path = $"{CQSave.AppDirectory}Config.ini";
+                string path = $"{MainSave.AppDirectory}Config.ini";
                 ini.Object["Proxy"]["IsEnabled"] = new IValue(togglebutton_IsProxy.IsChecked.GetValueOrDefault() ? "1" : "0");
                 ini.Object["Proxy"]["ProxyUri"] = new IValue(textbox_ProxyUri.Text);
                 ini.Object["Proxy"]["ProxyName"] = new IValue(textbox_ProxyName.Text);
@@ -60,7 +61,7 @@ namespace me.cqp.luohuaming.Setu.UI
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             textblock_ErrorMsg.Visibility = Visibility.Hidden;
-            string path = $"{CQSave.AppDirectory}Config.ini";
+            string path = $"{MainSave.AppDirectory}Config.ini";
             ini = new IniConfig(path);
             ini.Load();
             togglebutton_IsProxy.IsChecked = ini.Object["Proxy"]["IsEnabled"].GetValueOrDefault("0") == "0" ? false : true;
@@ -132,15 +133,15 @@ namespace me.cqp.luohuaming.Setu.UI
         public void CheckProxy()
         {
             string[] url;
-            if (!File.Exists($"{CQSave.AppDirectory}CheckProxy.json"))
+            if (!File.Exists($"{MainSave.AppDirectory}CheckProxy.json"))
             {
                 string[] temp = { "https://www.baidu.com", "https://api.lolicon.app", "https://pixiv.cat", "https://www.google.com", "https://www.pixiv.net" };
                 url = temp;
-                File.WriteAllText($"{CQSave.AppDirectory}CheckProxy.json", JsonConvert.SerializeObject(url));//序列化
+                File.WriteAllText($"{MainSave.AppDirectory}CheckProxy.json", JsonConvert.SerializeObject(url));//序列化
             }
             else
             {
-                string temp = File.ReadAllText($"{CQSave.AppDirectory}CheckProxy.json");
+                string temp = File.ReadAllText($"{MainSave.AppDirectory}CheckProxy.json");
                 url = JsonConvert.DeserializeObject<string[]>(temp);//反序列化
             }
             for (int i = 0; i < url.Length; i++)

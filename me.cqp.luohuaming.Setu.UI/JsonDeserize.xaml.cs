@@ -162,8 +162,8 @@ namespace me.cqp.luohuaming.Setu.UI
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             PicFolderButton = ((Control)(StackPanel_JsonMain.Children[0] as StackPanel).Children[4]);
-            if (!File.Exists(CQSave.AppDirectory + "JsonDeserize.json")) return;
-            string temp = File.ReadAllText(CQSave.AppDirectory + "JsonDeserize.json");
+            if (!File.Exists(MainSave.AppDirectory + "JsonDeserize.json")) return;
+            string temp = File.ReadAllText(MainSave.AppDirectory + "JsonDeserize.json");
             //反序列化
             JsonSaves = JsonConvert.DeserializeObject<List<JsonToDeserize>>(temp);
             //读取到了内容,为了写内容方便,先清空内容
@@ -206,15 +206,15 @@ namespace me.cqp.luohuaming.Setu.UI
                 {
                     TimeOut = 10000,
                     Encoding = Encoding.UTF8,
-                    Proxy = CQSave.proxy,
+                    Proxy = MainSave.Proxy,
                     AllowAutoRedirect = true,
                 })
                 {
                     string json = Encoding.UTF8.GetString(http.DownloadData(url)).Replace('﻿', ' ');
 
-                    string picpath = CQSave.ImageDirectory + "\\JsonDeserizePic\\" + Guid.NewGuid() + ".png";
-                    if (!Directory.Exists(CQSave.ImageDirectory + "\\JsonDeserizePic"))
-                        Directory.CreateDirectory(CQSave.ImageDirectory + "\\JsonDeserizePic");
+                    string picpath = MainSave.ImageDirectory + "\\JsonDeserizePic\\" + Guid.NewGuid() + ".png";
+                    if (!Directory.Exists(MainSave.ImageDirectory + "\\JsonDeserizePic"))
+                        Directory.CreateDirectory(MainSave.ImageDirectory + "\\JsonDeserizePic");
                     JObject jObject = JObject.Parse(json);
                     url = jObject.SelectToken(path).ToString();
 
@@ -226,7 +226,7 @@ namespace me.cqp.luohuaming.Setu.UI
             }
             catch(Exception exc)
             {
-                CQSave.cqlog.Info("Json解析", exc.Message, exc.StackTrace);
+                MainSave.CQLog.Info("Json解析", exc.Message, exc.StackTrace);
                 parentwindow.SnackbarMessage_Show($"接口测试失败,查看日志获取详细信息", 1);
             }
         }
@@ -265,7 +265,7 @@ namespace me.cqp.luohuaming.Setu.UI
             }
             //序列化
             string temp = JsonConvert.SerializeObject(ls);
-            File.WriteAllText(CQSave.AppDirectory + "JsonDeserize.json", temp);
+            File.WriteAllText(MainSave.AppDirectory + "JsonDeserize.json", temp);
             parentwindow.SnackbarMessage_Show("设置已保存", 1);
         }
         //按ListBoxItem事件

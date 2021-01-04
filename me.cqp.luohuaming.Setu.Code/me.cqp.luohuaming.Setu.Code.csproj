@@ -68,7 +68,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CQSave.cs" />
     <Compile Include="Deserializtion\Pixiv_PID.cs" />
     <Compile Include="Event_GroupMessage.cs" />
     <Compile Include="Event_StartUp.cs" />

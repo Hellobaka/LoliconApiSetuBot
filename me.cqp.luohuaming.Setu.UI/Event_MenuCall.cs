@@ -10,6 +10,7 @@ using me.cqp.luohuaming.Setu.Code;
 using Native.Sdk.Cqp.EventArgs;
 using Native.Sdk.Cqp.Interface;
 using Native.Sdk.Cqp.Model;
+using PublicInfos;
 
 namespace me.cqp.luohuaming.Setu.UI
 {
@@ -38,7 +39,7 @@ namespace me.cqp.luohuaming.Setu.UI
             }
             catch(Exception exc)
             {
-                CQSave.cqlog.Info("Error",exc.Message,exc.StackTrace);
+                MainSave.CQLog.Info("Error",exc.Message,exc.StackTrace);
             }
                     //window = new MainWindow();
                     //window.Closing += Window_Closing;

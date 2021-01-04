@@ -88,9 +88,9 @@ namespace me.cqp.luohuaming.Setu.Code
                 }
                 catch (Exception e)
                 {
-                    if (!Directory.Exists(CQSave.AppDirectory + "error\\" + "IllustInfo\\"))
-                        Directory.CreateDirectory(CQSave.AppDirectory + "error\\" + "IllustInfo\\");
-                    IniConfig ini = new IniConfig(CQSave.AppDirectory + "error\\" + "IllustInfo\\" + $"{DateTime.Now:yyyyMMddHHss}.log");
+                    if (!Directory.Exists(MainSave.AppDirectory + "error\\" + "IllustInfo\\"))
+                        Directory.CreateDirectory(MainSave.AppDirectory + "error\\" + "IllustInfo\\");
+                    IniConfig ini = new IniConfig(MainSave.AppDirectory + "error\\" + "IllustInfo\\" + $"{DateTime.Now:yyyyMMddHHss}.log");
                     ini.Object["Error"]["Message"] = e.Message;
                     ini.Object["Error"]["StackTrace"] = e.StackTrace;
                     ini.Object["Error"]["Object"] = returnstr;
@@ -135,7 +135,7 @@ namespace me.cqp.luohuaming.Setu.Code
                     Datum info;
                     if (hotSearch.data.Count != 0)
                     {
-                        if (CQSave.R18 is false)
+                        if (PublicVariables.R18_Flag is false)
                         {
                             var result = hotSearch.data.Where(x => !x.tags.Any(y => y.name.Contains("R-18")))
                                 .OrderBy(x => Guid.NewGuid().ToString());
@@ -190,9 +190,9 @@ namespace me.cqp.luohuaming.Setu.Code
                 }
                 catch (Exception e)
                 {
-                    if (!Directory.Exists(CQSave.AppDirectory + "error\\" + "hotsearch\\"))
-                        Directory.CreateDirectory(CQSave.AppDirectory + "error\\" + "hotsearch\\");
-                    IniConfig ini = new IniConfig(CQSave.AppDirectory + "error\\" + "hotsearch\\" + $"{DateTime.Now:yyyyMMddHHss}.log");
+                    if (!Directory.Exists(MainSave.AppDirectory + "error\\" + "hotsearch\\"))
+                        Directory.CreateDirectory(MainSave.AppDirectory + "error\\" + "hotsearch\\");
+                    IniConfig ini = new IniConfig(MainSave.AppDirectory + "error\\" + "hotsearch\\" + $"{DateTime.Now:yyyyMMddHHss}.log");
                     ini.Object["Error"]["Message"] = e.Message;
                     ini.Object["Error"]["StackTrace"] = e.StackTrace;
                     ini.Object["Error"]["Object"] = returnstr;

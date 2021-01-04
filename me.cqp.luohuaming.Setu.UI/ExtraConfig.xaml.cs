@@ -1,6 +1,7 @@
 ﻿using me.cqp.luohuaming.Setu.Code;
 using Native.Tool.IniConfig;
 using Native.Tool.IniConfig.Linq;
+using PublicInfos;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -21,7 +22,7 @@ namespace me.cqp.luohuaming.Setu.UI
         {
             ini.Load();
             ini.Object["R18"]["Enabled"] = new IValue((bool)Toggle_R18.IsChecked ? "1" : "0");
-            CQSave.R18 = (bool)Toggle_R18.IsChecked;
+            PublicVariables.R18_Flag = (bool)Toggle_R18.IsChecked;
             ini.Object["R18"]["R18PicRevoke"] = new IValue((bool)Toggle_Revoke.IsChecked ? "1" : "0");
             ini.Object["R18"]["RevokeTime"] = new IValue(text_Revoke.Text);
             ini.Object["Config"]["FailedCompress"] = new IValue((bool)Toggle_CompressImg.IsChecked ? "1" : "0");
@@ -43,7 +44,7 @@ namespace me.cqp.luohuaming.Setu.UI
         static IniConfig ini;
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            ini = new IniConfig(CQSave.AppDirectory + "Config.ini");
+            ini = new IniConfig(MainSave.AppDirectory + "Config.ini");
             ini.Load();
             Toggle_R18.IsChecked = ini.Object["R18"]["Enabled"].GetValueOrDefault("0") == "1";
             Toggle_Revoke.IsChecked = ini.Object["R18"]["R18PicRevoke"].GetValueOrDefault("0") == "1";

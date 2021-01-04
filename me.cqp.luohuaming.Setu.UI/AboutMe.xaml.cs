@@ -3,6 +3,7 @@ using MaterialDesignThemes.Wpf;
 using me.cqp.luohuaming.Setu.Code;
 using Native.Tool.Http;
 using Newtonsoft.Json;
+using PublicInfos;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -61,7 +62,7 @@ namespace me.cqp.luohuaming.Setu.UI
         }
         private void ShowUpdateContent(Update updateinfo)
         {
-            bool isnew = updateinfo.SetuVersion != CQSave.cq.AppInfo.Version.ToString();
+            bool isnew = updateinfo.SetuVersion != MainSave.CQApi.AppInfo.Version.ToString();
 
             StackPanel stackPanel = new StackPanel()
             {

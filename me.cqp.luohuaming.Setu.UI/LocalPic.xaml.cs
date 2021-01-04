@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using me.cqp.luohuaming.Setu.Code;
 using MaterialDesignThemes.Wpf;
 using System.Linq;
+using PublicInfos;
 
 namespace me.cqp.luohuaming.Setu.UI
 {
@@ -167,8 +168,8 @@ namespace me.cqp.luohuaming.Setu.UI
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             PicFolderButton = ((Control)(StackPanel_Main.Children[0] as StackPanel).Children[4]);
-            if (!File.Exists(CQSave.AppDirectory + "LocalPic.json")) return;
-            string temp = File.ReadAllText(CQSave.AppDirectory + "LocalPic.json");
+            if (!File.Exists(MainSave.AppDirectory + "LocalPic.json")) return;
+            string temp = File.ReadAllText(MainSave.AppDirectory + "LocalPic.json");
             //反序列化
             List<ItemToSave> ls = JsonConvert.DeserializeObject<List<ItemToSave>>(temp);
             //读取到了内容,为了写内容方便,先清空内容
@@ -295,7 +296,7 @@ namespace me.cqp.luohuaming.Setu.UI
             }
             //序列化
             string temp = JsonConvert.SerializeObject(ls);
-            File.WriteAllText(CQSave.AppDirectory + "LocalPic.json", temp);
+            File.WriteAllText(MainSave.AppDirectory + "LocalPic.json", temp);
             parentwindow.SnackbarMessage_Show("设置已保存", 1);
         }
         //按ListBoxItem事件

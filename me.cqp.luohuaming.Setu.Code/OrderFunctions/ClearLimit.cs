@@ -38,7 +38,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
             }
             else
             {
-                File.Delete(CQSave.AppDirectory + "ConfigLimit.ini");
+                File.Delete(MainSave.AppDirectory + "ConfigLimit.ini");
                 sendText.MsgToSend.Add("重置成功");
             }
             return result;

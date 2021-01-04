@@ -12,6 +12,7 @@ using MaterialDesignThemes.Wpf;
 using Native.Tool.IniConfig;
 using Native.Tool.IniConfig.Linq;
 using System.Threading;
+using PublicInfos;
 
 namespace me.cqp.luohuaming.Setu.UI
 {
@@ -45,7 +46,7 @@ namespace me.cqp.luohuaming.Setu.UI
 
         private void button_SettingsSave_Click(object sender, RoutedEventArgs e)
         {
-            string path = CQSave.AppDirectory + @"\Config.ini";
+            string path = MainSave.AppDirectory + @"\Config.ini";
             ini = new IniConfig(path);ini.Load();
             ini.Object["Config"]["ApiSwitch"]=new IValue(togglebutton_ApiKey.IsChecked.GetValueOrDefault() ? "1" : "0");
             if (togglebutton_ApiKey.IsChecked.GetValueOrDefault())
@@ -102,7 +103,7 @@ namespace me.cqp.luohuaming.Setu.UI
         private DispatcherTimer dispatcherTimer = null;
         private void Page_Settings_Loaded(object sender, RoutedEventArgs e)
         {
-            string path = CQSave.AppDirectory + "Config.ini";
+            string path = MainSave.AppDirectory + "Config.ini";
             ini = new IniConfig(path);
             ini.Load();
             togglebutton_ApiKey.IsChecked = ini.Object["Config"]["ApiSwitch"].GetValueOrDefault("0") == "1" ? true : false;
@@ -115,9 +116,9 @@ namespace me.cqp.luohuaming.Setu.UI
             {
                 listbox_Admin.Items.Add(ini.Object["Admin"][$"Index{i}"].GetValueOrDefault((long)0));
             }
-            if(CQSave.cq!=null)
+            if(MainSave.CQApi!=null)
             {
-                var groups = CQSave.cq.GetGroupList();
+                var groups = MainSave.CQApi.GetGroupList();
                 List<BindingGroup> group = new List<BindingGroup>();
                 try
                 {
@@ -148,7 +149,7 @@ namespace me.cqp.luohuaming.Setu.UI
         }
         public bool CheckGroupOpen(long groupid)
         {
-            string path = CQSave.AppDirectory + @"\Config.ini";
+            string path = MainSave.AppDirectory + @"\Config.ini";
             int count = ini.Object["GroupList"]["Count"].GetValueOrDefault(0);
             for (int i = 0; i < count; i++)
             {
@@ -169,9 +170,9 @@ namespace me.cqp.luohuaming.Setu.UI
             double filesize = 0, count = 0;
             DirectoryInfo directoryInfo;
             FileInfo[] fileInfo;
-            if (Directory.Exists(CQSave.ImageDirectory + "LoliconPic"))
+            if (Directory.Exists(MainSave.ImageDirectory + "LoliconPic"))
             {
-                directoryInfo = new DirectoryInfo(CQSave.ImageDirectory + "LoliconPic");
+                directoryInfo = new DirectoryInfo(MainSave.ImageDirectory + "LoliconPic");
                 fileInfo = directoryInfo.GetFiles();
                 foreach (var item in fileInfo)
                 {
@@ -179,9 +180,9 @@ namespace me.cqp.luohuaming.Setu.UI
                     filesize += item.Length;
                 }
             }
-            if(Directory.Exists(CQSave.ImageDirectory+ "CustomAPIPic"))
+            if(Directory.Exists(MainSave.ImageDirectory+ "CustomAPIPic"))
             {
-                directoryInfo = new DirectoryInfo(CQSave.ImageDirectory + "CustomAPIPic");
+                directoryInfo = new DirectoryInfo(MainSave.ImageDirectory + "CustomAPIPic");
                 fileInfo = directoryInfo.GetFiles();
                 foreach (var item in fileInfo)
                 {
@@ -189,9 +190,9 @@ namespace me.cqp.luohuaming.Setu.UI
                     filesize += item.Length;
                 }
             }
-            if (Directory.Exists(CQSave.ImageDirectory + "JsonDeserizePic"))
+            if (Directory.Exists(MainSave.ImageDirectory + "JsonDeserizePic"))
             {
-                directoryInfo = new DirectoryInfo(CQSave.ImageDirectory + "JsonDeserizePic");
+                directoryInfo = new DirectoryInfo(MainSave.ImageDirectory + "JsonDeserizePic");
                 fileInfo = directoryInfo.GetFiles();
                 foreach (var item in fileInfo)
                 {
@@ -237,19 +238,19 @@ namespace me.cqp.luohuaming.Setu.UI
 
         private void ClearCache(object sender, RoutedEventArgs e)
         {
-            if (Directory.Exists(CQSave.ImageDirectory + "LoliconPic"))
-                Directory.Delete(CQSave.ImageDirectory + "LoliconPic", true);
-            if (Directory.Exists(CQSave.ImageDirectory + "CustomAPIPic"))
-                Directory.Delete(CQSave.ImageDirectory + "CustomAPIPic", true);
-            if (Directory.Exists(CQSave.ImageDirectory + "JsonDeserizePic"))
-                Directory.Delete(CQSave.ImageDirectory + "JsonDeserizePic", true);
+            if (Directory.Exists(MainSave.ImageDirectory + "LoliconPic"))
+                Directory.Delete(MainSave.ImageDirectory + "LoliconPic", true);
+            if (Directory.Exists(MainSave.ImageDirectory + "CustomAPIPic"))
+                Directory.Delete(MainSave.ImageDirectory + "CustomAPIPic", true);
+            if (Directory.Exists(MainSave.ImageDirectory + "JsonDeserizePic"))
+                Directory.Delete(MainSave.ImageDirectory + "JsonDeserizePic", true);
             SnackbarMessage_Show("清理完成", 2);
             dialoghost_Main.IsOpen = false;
         }
 
         private void button_OpenFloder_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(new ProcessStartInfo(CQSave.ImageDirectory + "LoliconPic"));
+            Process.Start(new ProcessStartInfo(MainSave.ImageDirectory + "LoliconPic"));
         }
 
         private void button_AllSelect_Click(object sender, RoutedEventArgs e)

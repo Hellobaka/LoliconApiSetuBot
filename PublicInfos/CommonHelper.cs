@@ -16,10 +16,10 @@ namespace PublicInfos
         /// 获取时间戳
         /// </summary>
         /// <returns></returns>
-        public static string GetTimeStamp()
+        public static long GetTimeStamp()
         {
             TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
-            return Convert.ToInt64(ts.TotalSeconds).ToString();
+            return Convert.ToInt64(ts.TotalSeconds);
         }
         public static bool CheckAdmin(long QQID)
         {
@@ -133,6 +133,11 @@ namespace PublicInfos
             }
             Color result = Color.FromArgb(red, green, blue);
             return result;
+        }
+        public static string GetAppImageDirectory()
+        {
+            var ImageDirectory = Path.Combine(Environment.CurrentDirectory, "data", "image\\");
+            return ImageDirectory;
         }
     }
 }

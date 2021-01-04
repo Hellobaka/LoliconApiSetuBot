@@ -85,7 +85,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
             {
                 try
                 {
-                    Directory.CreateDirectory(CQSave.ImageDirectory + "SauceNaotemp");
+                    Directory.CreateDirectory(MainSave.ImageDirectory + "SauceNaotemp");
                     var result = JsonConvert.DeserializeObject<SauceNao_Result.SauceNAO>(http.DownloadString(url));
                     e.CQLog.Info("SauceNao识图", "结果获取成功，正在拉取缩略图");
                     string str = result.ToString();
@@ -96,7 +96,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                         try
                         {
                             string filename = Guid.NewGuid().ToString().ToString();
-                            http.DownloadFile(item.header.thumbnail, $@"{CQSave.ImageDirectory}\SauceNaotemp\{filename}.jpg");
+                            http.DownloadFile(item.header.thumbnail, $@"{MainSave.ImageDirectory}\SauceNaotemp\{filename}.jpg");
                             str = str.Replace($"{{{count}}}", CQApi.CQCode_Image($@"\SauceNaotemp\{filename}.jpg").ToSendString());
                         }
                         catch
@@ -115,7 +115,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                             try
                             {
                                 http.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
-                                if (!File.Exists($@"{CQSave.ImageDirectory}\LoliconPic\${item}.jpg"))
+                                if (!File.Exists($@"{MainSave.ImageDirectory}\LoliconPic\${item}.jpg"))
                                 {
                                     dynamic jObject = JObject.Parse(http.UploadString("https://api.pixiv.cat/v1/generate", $"p={item}"));
                                     string pixiv_url = string.Empty;
@@ -130,9 +130,9 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                                     {
                                         pixiv_url = jObject.Value<string>("original_url_proxy");
                                     }
-                                    if (!Directory.Exists($@"{CQSave.ImageDirectory}\LoliconPic"))
-                                        Directory.CreateDirectory($@"{CQSave.ImageDirectory}\LoliconPic");
-                                    http.DownloadFile(pixiv_url, $@"{CQSave.ImageDirectory}\LoliconPic\{item}.jpg");
+                                    if (!Directory.Exists($@"{MainSave.ImageDirectory}\LoliconPic"))
+                                        Directory.CreateDirectory($@"{MainSave.ImageDirectory}\LoliconPic");
+                                    http.DownloadFile(pixiv_url, $@"{MainSave.ImageDirectory}\LoliconPic\{item}.jpg");
                                     MainSave.CQLog.Info("SauceNao识图", $"pid={item}的图片下载成功，尝试发送");
                                 }
                                 QQMessage staues = e.FromGroup.SendGroupMessage(CQApi.CQCode_Image($@"\LoliconPic\{item}.jpg"));                                
@@ -151,7 +151,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                 }
                 finally
                 {
-                    string path = $@"{CQSave.ImageDirectory}\SauceNaotemp";
+                    string path = $@"{MainSave.ImageDirectory}\SauceNaotemp";
                     if(Directory.Exists(path))
                         Directory.Delete(path, true);
                 }

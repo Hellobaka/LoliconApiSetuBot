@@ -96,7 +96,7 @@ namespace me.cqp.luohuaming.Setu.Code.Deserializtion.PixivIllust
         public static string GetIllustReturnText(Illust info)
         {
             string text = $"标题:{info.title}\n作者:{info.user.name}\npid={info.id}\n创作日期:{info.create_date}\n浏览数:{info.total_view}\n评论数:{info.total_comments}\n收藏数:{info.total_bookmarks}";
-            CQSave.cqlog.Info("插画详情", "详情获取成功，正在拉取图片");
+            MainSave.CQLog.Info("插画详情", "详情获取成功，正在拉取图片");
             return text;
         }
         public static string GetIllustReturnText(Pixiv_PID info)
@@ -107,7 +107,7 @@ namespace me.cqp.luohuaming.Setu.Code.Deserializtion.PixivIllust
                 $"创作日期:{info.data.createDate}\n" +
                 $"浏览数:{info.data.totalView}\n" +
                 $"收藏数:{info.data.totalBookmarks}";
-            CQSave.cqlog.Info("插画详情", "详情获取成功，正在拉取图片");
+            MainSave.CQLog.Info("插画详情", "详情获取成功，正在拉取图片");
             return text;
         }
         /// <summary>
@@ -131,12 +131,12 @@ namespace me.cqp.luohuaming.Setu.Code.Deserializtion.PixivIllust
 
                         http.DownloadFile(url, path);
                         CommonHelper.AntiHX(path);
-                        CQSave.cqlog.Info("插画详情", "图片下载成功，正在尝试发送");
+                        MainSave.CQLog.Info("插画详情", "图片下载成功，正在尝试发送");
                     }
                 }
                 catch (Exception e)
                 {
-                    CQSave.cqlog.Info("插画详情", $"图片下载失败，错误信息:{e.Message}");
+                    MainSave.CQLog.Info("插画详情", $"图片下载失败，错误信息:{e.Message}");
                     return CQApi.CQCode_Image("Error.jpg");
                 }
             }
@@ -158,12 +158,12 @@ namespace me.cqp.luohuaming.Setu.Code.Deserializtion.PixivIllust
 
                         http.DownloadFile(url, path);
                         CommonHelper.AntiHX(path);
-                        CQSave.cqlog.Info("插画详情", "图片下载成功，正在尝试发送");
+                        MainSave.CQLog.Info("插画详情", "图片下载成功，正在尝试发送");
                     }
                 }
                 catch (Exception e)
                 {
-                    CQSave.cqlog.Info("插画详情", $"图片下载失败，错误信息:{e.Message}");
+                    MainSave.CQLog.Info("插画详情", $"图片下载失败，错误信息:{e.Message}");
                     return CQApi.CQCode_Image("Error.jpg");
                 }
             }

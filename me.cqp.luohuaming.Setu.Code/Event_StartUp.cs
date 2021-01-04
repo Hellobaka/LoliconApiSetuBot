@@ -14,25 +14,14 @@ namespace me.cqp.luohuaming.Setu.Code
     {
         public void CQStartup(object sender, CQStartupEventArgs e)
         {
-            //TODO:Clear the obsolete code
-            CQSave.AppDirectory = e.CQApi.AppDirectory;
-            CQSave.ImageDirectory = GetAppImageDirectory();
-            CQSave.cq = e.CQApi;
-            CQSave.cqlog = e.CQLog;
-
             MainSave.AppDirectory = e.CQApi.AppDirectory;
             MainSave.CQApi = e.CQApi;
             MainSave.CQLog = e.CQLog;
-            MainSave.ImageDirectory = GetAppImageDirectory();
+            MainSave.ImageDirectory = CommonHelper.GetAppImageDirectory();
 
             IniConfig ini = new IniConfig(e.CQApi.AppDirectory + "Config.ini");
             ini.Load();
             MainSave.ConfigMain = ini;
-
-            //TODO:Clear the redundancy code
-            if (ini.Object["R18"]["Enabled"].GetValueOrDefault("0") == "1")
-            { CQSave.R18 = true; }
-
             PublicVariables.ReadOrderandAnswer();
             try
             {
@@ -49,18 +38,12 @@ namespace me.cqp.luohuaming.Setu.Code
                         Address = new Uri(uri),
                         Credentials = new NetworkCredential(username, pwd)
                     };
-                    //TODO:Clear the obsolete code
-                    CQSave.proxy = proxy;
-
                     MainSave.Proxy = proxy;
                 }
             }
             catch (Exception ex)
             {
-                //TODO:Clear the obsolete code
-                MainSave.CQLog.Info("涩图机重置", "限制已重置");
-
-                e.CQLog.Warning("代理设置无效", $"代理参数有误，错误信息:{ex.Message}");
+                MainSave.CQLog.Warning("代理设置无效", $"代理参数有误，错误信息:{ex.Message}");
             }
 
             ini = MainSave.ConfigLimit;
@@ -69,16 +52,12 @@ namespace me.cqp.luohuaming.Setu.Code
                 File.WriteAllText(e.CQApi.AppDirectory + "ConfigLimit.ini", "[Config]\nTimestamp=1608773153");
                 ini.Load();
             }
-            if (JudgeifTimestampOverday(ini.Object["Config"]["Timestamp"].GetValueOrDefault(0), GetTimeStamp()))
+            if (JudgeifTimestampOverday(ini.Object["Config"]["Timestamp"].GetValueOrDefault(0), CommonHelper.GetTimeStamp()))
             {
-                if (File.Exists(CQSave.AppDirectory + "ConfigLimit.ini"))
+                if (File.Exists(MainSave.AppDirectory + "ConfigLimit.ini"))
                 {
-                    File.Delete(CQSave.AppDirectory + "ConfigLimit.ini");
-
-                    //TODO:Clear the obsolete code
+                    File.Delete(MainSave.AppDirectory + "ConfigLimit.ini");
                     MainSave.CQLog.Info("涩图机重置", "限制已重置");
-
-                    CQSave.cqlog.Info("涩图机重置", "限制已重置");
                 }
             }
             timersTimer.Interval = 1000;
@@ -98,31 +77,16 @@ namespace me.cqp.luohuaming.Setu.Code
             MainSave.Instances.Add(new TraceMoe());
             MainSave.Instances.Add(new YandeRePic());
         }
-        public static string GetAppImageDirectory()
-        {
-            var ImageDirectory = Path.Combine(Environment.CurrentDirectory, "data", "image\\");
-            return ImageDirectory;
-        }
-        //获取时间戳
-        public static Int64 GetTimeStamp()
-        {
-            TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
-            return Convert.ToInt64(ts.TotalSeconds);
-        }
-
         private static Timer timersTimer = new Timer();
 
         public static void TimersTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             if (DateTime.Now.Hour == 0 && DateTime.Now.Minute == 0 && DateTime.Now.Second <= 1)
             {
-                if (File.Exists(CQSave.AppDirectory + "ConfigLimit.ini"))
+                if (File.Exists(MainSave.AppDirectory + "ConfigLimit.ini"))
                 {
-                    File.Delete(CQSave.AppDirectory + "ConfigLimit.ini");
-                    //TODO:Clear the obsolete code
+                    File.Delete(MainSave.AppDirectory + "ConfigLimit.ini");
                     MainSave.CQLog.Info("涩图机重置", "限制已重置");
-
-                    CQSave.cqlog.Info("涩图机重置", "限制已重置");
                 }
             }
         }

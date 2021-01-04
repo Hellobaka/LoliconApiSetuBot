@@ -279,9 +279,9 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                         return result;
                     }
                     //检查路径是否存在
-                    if (!Directory.Exists(CQSave.ImageDirectory + @"\LoliconPic\"))
+                    if (!Directory.Exists(MainSave.ImageDirectory + @"\LoliconPic\"))
                     {
-                        Directory.CreateDirectory(CQSave.ImageDirectory + @"\LoliconPic\");
+                        Directory.CreateDirectory(MainSave.ImageDirectory + @"\LoliconPic\");
                     }
                     //反序列化json
                     Setu deserialize = JsonConvert.DeserializeObject<Setu>(json);

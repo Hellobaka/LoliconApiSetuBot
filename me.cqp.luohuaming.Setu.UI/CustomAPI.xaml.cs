@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using MaterialDesignThemes.Wpf.Transitions;
 using me.cqp.luohuaming.Setu.Code;
 using System.Text;
+using PublicInfos;
 
 namespace me.cqp.luohuaming.Setu.UI
 {
@@ -168,8 +169,8 @@ namespace me.cqp.luohuaming.Setu.UI
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!File.Exists(CQSave.AppDirectory + "CustomAPI.json")) return;
-            string temp = File.ReadAllText(CQSave.AppDirectory + "CustomAPI.json");
+            if (!File.Exists(MainSave.AppDirectory + "CustomAPI.json")) return;
+            string temp = File.ReadAllText(MainSave.AppDirectory + "CustomAPI.json");
             //反序列化
             List<ItemToSave> ls = JsonConvert.DeserializeObject<List<ItemToSave>>(temp);
             //读取到了内容,为了写内容方便,先清空内容
@@ -209,7 +210,7 @@ namespace me.cqp.luohuaming.Setu.UI
                 {
                     TimeOut = 10000,
                     Encoding = Encoding.UTF8,
-                    Proxy = CQSave.proxy,
+                    Proxy = MainSave.Proxy,
                     AllowAutoRedirect = true,
                 };
                 //以后要用的路径,先生成一个
@@ -263,7 +264,7 @@ namespace me.cqp.luohuaming.Setu.UI
             }
             //序列化
             string temp = JsonConvert.SerializeObject(ls);
-            File.WriteAllText(CQSave.AppDirectory + "CustomAPI.json", temp);
+            File.WriteAllText(MainSave.AppDirectory + "CustomAPI.json", temp);
             parentwindow.SnackbarMessage_Show("设置已保存", 1);
         }
         //按ListBoxItem事件

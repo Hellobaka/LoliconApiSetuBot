@@ -1,6 +1,7 @@
 ﻿using me.cqp.luohuaming.Setu.Code;
 using Native.Tool.IniConfig;
 using Native.Tool.IniConfig.Linq;
+using PublicInfos;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -40,7 +41,7 @@ namespace me.cqp.luohuaming.Setu.UI
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            string path = $@"{CQSave.AppDirectory}Config.ini";
+            string path = $@"{MainSave.AppDirectory}Config.ini";
             IniConfig ini = new IniConfig(path);
             ini.Load();
             foreach (var uiitem in stackpanel_1.Children)
@@ -69,7 +70,7 @@ namespace me.cqp.luohuaming.Setu.UI
 
         private void button_Save_Click(object sender, RoutedEventArgs e)
         {
-            string path = $@"{CQSave.AppDirectory}Config.ini";
+            string path = $@"{MainSave.AppDirectory}Config.ini";
             IniConfig ini = new IniConfig(path);
             ini.Load();
             ini.Object["OrderDIY"]["LoliConPic"] = new IValue(text_LoliConPic.Text);

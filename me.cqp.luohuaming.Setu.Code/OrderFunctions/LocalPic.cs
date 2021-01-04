@@ -81,9 +81,9 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                 //随机取一个
                 var picinfo = fileInfos.OrderBy(_ => Guid.NewGuid()).First();
                 string picpathOrigin = picinfo.FullName;
-                if (!Directory.Exists(CQSave.ImageDirectory + "\\LocalPic"))
-                    Directory.CreateDirectory(CQSave.ImageDirectory + "\\LocalPic");
-                string picpathFinal = CQSave.ImageDirectory + "\\LocalPic\\" + picinfo.Name;
+                if (!Directory.Exists(MainSave.ImageDirectory + "\\LocalPic"))
+                    Directory.CreateDirectory(MainSave.ImageDirectory + "\\LocalPic");
+                string picpathFinal = MainSave.ImageDirectory + "\\LocalPic\\" + picinfo.Name;
                 if (!File.Exists(picpathFinal))
                     File.Copy(picpathOrigin, picpathFinal);
                 MainSave.CQLog.Info("本地图片接口", $"图片获取成功，尝试发送");
