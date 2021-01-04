@@ -1,6 +1,7 @@
 ﻿using Native.Sdk.Cqp;
 using Native.Sdk.Cqp.Model;
 using Native.Tool.Http;
+using PublicInfos;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -89,7 +90,7 @@ namespace me.cqp.luohuaming.Setu.Code.Deserializtion.HotSearch
                     {
                         string url = info.imageUrls[0].original.Replace("pximg.net", "pixiv.cat");
                         http.DownloadFile(url, path);
-                        GetSetu.AntiHX(path);
+                        CommonHelper.AntiHX(path);
                         CQSave.cqlog.Info("搜索详情", "图片下载成功，正在尝试发送");
 
                     }

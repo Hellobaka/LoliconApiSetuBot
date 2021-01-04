@@ -20,7 +20,7 @@ namespace me.cqp.luohuaming.Setu.Code
             CQSave.cq = e.CQApi;
             CQSave.cqlog = e.CQLog;
 
-            MainSave.AppDirectroy = e.CQApi.AppDirectory;
+            MainSave.AppDirectory = e.CQApi.AppDirectory;
             MainSave.CQApi = e.CQApi;
             MainSave.CQLog = e.CQLog;
             MainSave.ImageDirectory = GetAppImageDirectory();

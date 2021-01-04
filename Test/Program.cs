@@ -1,5 +1,4 @@
-﻿using Masuit.Tools;
-using me.cqp.luohuaming.Setu.Code.Deserializtion.HotSearch;
+﻿using me.cqp.luohuaming.Setu.Code.Deserializtion.HotSearch;
 using Native.Sdk.Cqp;
 using Native.Sdk.Cqp.Model;
 using Newtonsoft.Json;

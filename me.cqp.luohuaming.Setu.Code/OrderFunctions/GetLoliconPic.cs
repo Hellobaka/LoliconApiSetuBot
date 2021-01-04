@@ -38,17 +38,15 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
             {
                 Result = true,
                 SendFlag = false,
-                SendObject = new List<SendText>()
             };
             //检查额度限制
             if (QuotaHelper.QuotaCheck(e.FromGroup, e.FromQQ) is false)
             {
-                result.Result = false;//取消阻塞
                 return result;
             }
             //拉取图片，处理时间受地区与网速限制
             var pic = GetLoliConPicHelper
-                .GetSetuPic(e.Message.Text.Substring(PicHelper.LoliConPic.Length), out string objectTostring);
+                .GetSetuPic(e.Message.Text.Substring(GetOrderStr().Length), out string objectTostring);
             pic.SendID = e.FromGroup.Id;
             try
             {
@@ -249,7 +247,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
             {
                 TimeOut = 10000,
                 Encoding = Encoding.UTF8,
-                Proxy = CQSave.proxy,
+                Proxy = MainSave.Proxy,
                 AllowAutoRedirect = true,
             })
             {
@@ -302,7 +300,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                     {
                         http.CookieCollection = new CookieCollection();
                         http.DownloadFile(pic.url, path);
-                        AntiHX(path);
+                        CommonHelper.AntiHX(path);
                     }
                     result.MsgToSend.Add(CQApi.CQCode_Image(@"\LoliconPic\" + pic.pid + ".jpg").ToSendString());
                     return result;
@@ -315,82 +313,6 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                     return result;
                 }
             }
-        }
-        /// <summary>
-        /// 改变图片的MD5来尝试反和谐
-        /// </summary>
-        /// <param name="img">原图</param>
-        /// <returns></returns>
-        public static void AntiHX(string path)
-        {
-            Image img = Image.FromFile(path);
-            Bitmap bitMap = new Bitmap(img.Width, img.Height);
-            Graphics g1 = Graphics.FromImage(bitMap);
-
-            Color pixelColor = bitMap.GetPixel(0, 0);
-            Color targetcolor = ChangeColor(pixelColor);
-            Pen pen = new Pen(targetcolor);
-            Rectangle rect = new Rectangle(0, 0, 1, 1);
-            g1.DrawRectangle(pen, rect);
-
-            pixelColor = bitMap.GetPixel(img.Width - 1, 0);
-            targetcolor = ChangeColor(pixelColor);
-            pen = new Pen(targetcolor);
-            rect = new Rectangle(img.Width - 1, 0, 1, 1);
-            g1.DrawRectangle(pen, rect);
-
-            pixelColor = bitMap.GetPixel(0, img.Height - 1);
-            targetcolor = ChangeColor(pixelColor);
-            pen = new Pen(targetcolor);
-            rect = new Rectangle(0, img.Height - 1, 1, 1);
-            g1.DrawRectangle(pen, rect);
-
-            pixelColor = bitMap.GetPixel(img.Width - 1, img.Height - 1);
-            targetcolor = ChangeColor(pixelColor);
-            pen = new Pen(targetcolor);
-            rect = new Rectangle(img.Width - 1, img.Height - 1, 1, 1);
-            g1.DrawRectangle(pen, rect);
-
-            g1.Dispose();
-            img.Save(path + ".tmp");
-            img.Dispose();
-            File.Delete(path);
-            File.Move(path + ".tmp", path);
-        }
-        /// <summary>
-        /// 颜色轻微变更
-        /// </summary>
-        /// <param name="col"></param>
-        /// <returns></returns>
-        static Color ChangeColor(Color col)
-        {
-            byte red, blue, green;
-            if (col.R == 0 || col.R == 255)
-            {
-                red = (col.R == 0) ? (byte)1 : Convert.ToByte(244);
-            }
-            else
-            {
-                red = Convert.ToByte(col.R + 1);
-            }
-            if (col.G == 0 || col.G == 255)
-            {
-                green = (col.G == 0) ? (byte)1 : Convert.ToByte(244);
-            }
-            else
-            {
-                green = Convert.ToByte(col.G + 1);
-            }
-            if (col.B == 0 || col.B == 255)
-            {
-                blue = (col.B == 0) ? (byte)1 : Convert.ToByte(244);
-            }
-            else
-            {
-                blue = Convert.ToByte(col.R + 1);
-            }
-            Color result = Color.FromArgb(red, green, blue);
-            return result;
         }
         static string GetOrderText(string ordertext)
         {

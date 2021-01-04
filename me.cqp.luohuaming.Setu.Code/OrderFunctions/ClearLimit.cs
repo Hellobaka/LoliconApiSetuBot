@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using Native.Sdk.Cqp.EventArgs;
 using PublicInfos;
 
@@ -12,17 +9,39 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
     {
         public string GetOrderStr()
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(PublicVariables.ClearLimit))
+            {
+                PublicVariables.ClearLimit = Guid.NewGuid().ToString();
+            }
+            return PublicVariables.ClearLimit;
         }
 
         public bool Judge(string destStr)
         {
-            throw new NotImplementedException();
+            return destStr.Replace(" ", "") == GetOrderStr();
         }
 
         public FunctionResult Progress(CQGroupMessageEventArgs e)
         {
-            throw new NotImplementedException();
+            FunctionResult result = new FunctionResult
+            {
+                Result = true,
+                SendFlag = true,
+            };
+            SendText sendText = new SendText
+            {
+                 SendID=e.FromGroup
+            };
+            if (!CommonHelper.CheckAdmin(e.FromQQ.Id))
+            {
+                sendText.MsgToSend.Add("权限不足，拒绝操作");
+            }
+            else
+            {
+                File.Delete(CQSave.AppDirectory + "ConfigLimit.ini");
+                sendText.MsgToSend.Add("重置成功");
+            }
+            return result;
         }
 
         public FunctionResult Progress(CQPrivateMessageEventArgs e)

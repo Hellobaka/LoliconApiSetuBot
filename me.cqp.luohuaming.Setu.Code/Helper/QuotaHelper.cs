@@ -42,11 +42,12 @@ namespace me.cqp.luohuaming.Setu.Code.Helper
                 .Object[$"Count{GroupID}"]["CountofGroup"] = new IValue(++countofGroup);
             MainSave.ConfigMain.Save();
         }
+
         /// <summary>
-        /// 判断是否满足拉取图片的权限
+        /// 判断是否满足拉取图片的权限, 并发送相关文本 (处理逻辑合理性待评)
         /// </summary>
-        /// <param name="e"></param>
-        /// <returns></returns>
+        /// <param name="GroupID">需要判断的群号</param>
+        /// <param name="QQID">需要判断的QQ号</param>
         public static bool QuotaCheck(long GroupID, long QQID)
         {
             //判断能否拉取图片，须符合：在群、个人调用未达上限、群调用未达上限
@@ -64,7 +65,9 @@ namespace me.cqp.luohuaming.Setu.Code.Helper
         /// <summary>
         /// 判断是否符合取图的条件,若满足,减少1额度
         /// </summary>
-        /// <returns></returns>
+        /// <param name="GroupID">需要判断的群号</param>
+        /// <param name="QQID">需要判断的QQ号</param>
+        /// <returns>string 数组，长度为2，第一个值为判断的结果，第二个值为需要发送的文本</returns>
         private static List<string> JudgeLegality(long GroupID, long QQID)
         {
             List<string> ls = new List<string>();

@@ -18,15 +18,19 @@ namespace PublicInfos
         public static List<IOrderModel> Instances { get; set; } = new List<IOrderModel>();
         public static CQLog CQLog { get; set; }
         public static CQApi CQApi { get; set; }
-        public static string AppDirectroy { get; set; }
+        public static string AppDirectory { get; set; }
         public static string ImageDirectory { get; set; }
         public static WebProxy Proxy { get; set; }
+        public static List<SauceNao_Save> sauceNao_Saves { get; set; } = new List<SauceNao_Save>();
+
         static IniConfig configMain;
         public static IniConfig ConfigMain
         {
             get
             {
-                configMain = new IniConfig(Path.Combine(AppDirectroy, "Config.ini"));
+                if (configMain != null)
+                    return configMain;
+                configMain = new IniConfig(Path.Combine(AppDirectory, "Config.ini"));
                 configMain.Load();
                 return configMain;
             }
@@ -37,7 +41,7 @@ namespace PublicInfos
         { 
             get
             {
-                configLimit = new IniConfig(Path.Combine(AppDirectroy, "ConfigLimit.ini"));
+                configLimit = new IniConfig(Path.Combine(AppDirectory, "ConfigLimit.ini"));
                 configLimit.Load();
                 return configLimit;
             }

@@ -2,6 +2,7 @@
 using Native.Tool.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PublicInfos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
