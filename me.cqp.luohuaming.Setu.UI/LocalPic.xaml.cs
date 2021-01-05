@@ -170,7 +170,7 @@ namespace me.cqp.luohuaming.Setu.UI
             if (!File.Exists(MainSave.AppDirectory + "LocalPic.json")) return;
             string temp = File.ReadAllText(MainSave.AppDirectory + "LocalPic.json");
             //反序列化
-            List<ItemToSave> ls = JsonConvert.DeserializeObject<List<ItemToSave>>(temp);
+            List<CustomObject> ls = JsonConvert.DeserializeObject<List<CustomObject>>(temp);
             //读取到了内容,为了写内容方便,先清空内容
             if (ls.Count != 0)
             {
@@ -264,7 +264,7 @@ namespace me.cqp.luohuaming.Setu.UI
 
         private void btn_Save_Click(object sender, RoutedEventArgs e)
         {
-            List<ItemToSave> ls = new List<ItemToSave>();
+            List<CustomObject> ls = new List<CustomObject>();
             foreach (UIElement item in StackPanel_Main.Children)
             {
                 //判断是否存在填了链接但是没有填指令的情况
@@ -281,7 +281,7 @@ namespace me.cqp.luohuaming.Setu.UI
                 //不是空
                 if (((item as StackPanel).Children[3] as TextBox).Text != "本地图片文件夹路径" && ((item as StackPanel).Children[2] as TextBox).Text != "指令...")
                 {
-                    ItemToSave save = new ItemToSave
+                    CustomObject save = new CustomObject
                     {
                         Enabled = (bool)((item as StackPanel).Children[1] as ToggleButton).IsChecked,
                         Order = ((item as StackPanel).Children[2] as TextBox).Text,
@@ -326,34 +326,6 @@ namespace me.cqp.luohuaming.Setu.UI
                     break;
             }
         }
-        /// <summary>
-        /// 验证指令是否符合文件夹命名规则
-        /// </summary>
-        /// <param name="order">需要判断的字符串</param>
-        /// <returns></returns>
-        private bool OrderValidation(string order)
-        {
-            if (order.Length > 255)
-            {
-                parentwindow.SnackbarMessage_Show("指令长度不可大于255", 1.5);
-                return false;
-            }
-            if (order.Contains("\\") ||
-               order.Contains("/") ||
-               order.Contains(":") ||
-               order.Contains("*") ||
-               order.Contains("?") ||
-               order.Contains("\"") ||
-               order.Contains("<") ||
-               order.Contains(">") ||
-               order.Contains("|"))
-            {
-                parentwindow.SnackbarMessage_Show("指令中不能使用字符/、\\、:、*、?、\"、<、>、| ", 1.5);
-                return false;
-            }
-            return true;
-        }
-
         #region --事件相应方法--
         void ClearAll()
         {

@@ -125,6 +125,11 @@ namespace me.cqp.luohuaming.Setu.UI
             public string text { get; set; }
         }
         List<Treeitem> ItemList = new List<Treeitem>();
+        /// <summary>
+        /// 递归读取叶节点
+        /// </summary>
+        /// <param name="jToken"></param>
+        /// <param name="treeViewItem"></param>
         void Dg(JToken jToken, TreeViewItem treeViewItem)
         {
             if (jToken.Type == JTokenType.Array)

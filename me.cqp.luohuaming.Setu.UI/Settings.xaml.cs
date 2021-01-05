@@ -24,7 +24,7 @@ namespace me.cqp.luohuaming.Setu.UI
             get { return _parentWin; }
             set { _parentWin = value; }
         }
-        static IniConfig ini;
+        static IniConfig ini=MainSave.ConfigMain;
         public Settings()
         {
             InitializeComponent();
@@ -43,9 +43,7 @@ namespace me.cqp.luohuaming.Setu.UI
 
         private void button_SettingsSave_Click(object sender, RoutedEventArgs e)
         {
-            string path = MainSave.AppDirectory + @"\Config.ini";
-            ini = new IniConfig(path);ini.Load();
-            ini.Object["Config"]["ApiSwitch"]=new IValue(togglebutton_ApiKey.IsChecked.GetValueOrDefault() ? "1" : "0");
+            ini.Object["Config"]["ApiSwitch"]=new IValue(togglebutton_ApiKey.IsChecked.GetValueOrDefault() ? 1 : 0);
             if (togglebutton_ApiKey.IsChecked.GetValueOrDefault())
             {
                 ini.Object["Config"]["ApiKey"]=new IValue(textbox_ApiKey.Text);
@@ -100,10 +98,7 @@ namespace me.cqp.luohuaming.Setu.UI
         private DispatcherTimer dispatcherTimer = null;
         private void Page_Settings_Loaded(object sender, RoutedEventArgs e)
         {
-            string path = MainSave.AppDirectory + "Config.ini";
-            ini = new IniConfig(path);
-            ini.Load();
-            togglebutton_ApiKey.IsChecked = ini.Object["Config"]["ApiSwitch"].GetValueOrDefault("0") == "1" ? true : false;
+            togglebutton_ApiKey.IsChecked = ini.Object["Config"]["ApiSwitch"].GetValueOrDefault(0) == 1 ? true : false;
             textbox_ApiKey.Text = ini.Object["Config"]["ApiKey"].GetValueOrDefault("0");
             textbox_PersonLimit.Text = ini.Object["Config"]["MaxofPerson"].GetValueOrDefault("5");
             textbox_GroupLimit.Text = ini.Object["Config"]["MaxofGroup"].GetValueOrDefault("30");
@@ -146,7 +141,6 @@ namespace me.cqp.luohuaming.Setu.UI
         }
         public bool CheckGroupOpen(long groupid)
         {
-            string path = MainSave.AppDirectory + @"\Config.ini";
             int count = ini.Object["GroupList"]["Count"].GetValueOrDefault(0);
             for (int i = 0; i < count; i++)
             {

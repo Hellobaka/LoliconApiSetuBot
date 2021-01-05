@@ -82,7 +82,6 @@
     <Compile Include="ExtraConfig.xaml.cs">
       <DependentUpon>ExtraConfig.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ItemToSave.cs" />
     <Compile Include="JsonDeserize.xaml.cs">
       <DependentUpon>JsonDeserize.xaml</DependentUpon>
     </Compile>

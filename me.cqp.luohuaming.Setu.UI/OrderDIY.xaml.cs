@@ -69,9 +69,7 @@ namespace me.cqp.luohuaming.Setu.UI
 
         private void button_Save_Click(object sender, RoutedEventArgs e)
         {
-            string path = $@"{MainSave.AppDirectory}Config.ini";
-            IniConfig ini = new IniConfig(path);
-            ini.Load();
+            IniConfig ini = MainSave.ConfigMain;
             ini.Object["OrderDIY"]["LoliConPic"] = new IValue(text_LoliConPic.Text);
             ini.Object["OrderDIY"]["ClearLimit"] = new IValue(text_ClearLimit.Text);
             ini.Object["OrderDIY"]["PIDSearch"] = new IValue(text_PIDSearch.Text);

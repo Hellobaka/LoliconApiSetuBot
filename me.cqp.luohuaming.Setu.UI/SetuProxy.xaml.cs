@@ -30,7 +30,6 @@ namespace me.cqp.luohuaming.Setu.UI
             try
             {
                 Uri uri = new Uri(textbox_ProxyUri.Text);
-                string path = $"{MainSave.AppDirectory}Config.ini";
                 ini.Object["Proxy"]["IsEnabled"] = new IValue(togglebutton_IsProxy.IsChecked.GetValueOrDefault() ? "1" : "0");
                 ini.Object["Proxy"]["ProxyUri"] = new IValue(textbox_ProxyUri.Text);
                 ini.Object["Proxy"]["ProxyName"] = new IValue(textbox_ProxyName.Text);
@@ -56,13 +55,10 @@ namespace me.cqp.luohuaming.Setu.UI
             textbox_ProxyName.Text = "";
             textbox_ProxyPwd.Text = "";
         }
-        static IniConfig ini;
+        static IniConfig ini=MainSave.ConfigMain;
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             textblock_ErrorMsg.Visibility = Visibility.Hidden;
-            string path = $"{MainSave.AppDirectory}Config.ini";
-            ini = new IniConfig(path);
-            ini.Load();
             togglebutton_IsProxy.IsChecked = ini.Object["Proxy"]["IsEnabled"].GetValueOrDefault("0") == "0" ? false : true;
             textbox_ProxyUri.Text = ini.Object["Proxy"]["ProxyUri"].GetValueOrDefault("http://127.0.0.1:1080");
             textbox_ProxyName.Text = ini.Object["Proxy"]["ProxyName"].GetValueOrDefault("");

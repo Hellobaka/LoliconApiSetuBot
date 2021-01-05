@@ -18,36 +18,34 @@ namespace me.cqp.luohuaming.Setu.UI
 
         private void btn_Save_Click(object sender, RoutedEventArgs e)
         {
-            ini.Load();
-            ini.Object["R18"]["Enabled"] = new IValue((bool)Toggle_R18.IsChecked ? "1" : "0");
+            ini.Object["R18"]["Enabled"] = new IValue((bool)Toggle_R18.IsChecked ? 1 : 0);
             PublicVariables.R18_Flag = (bool)Toggle_R18.IsChecked;
-            ini.Object["R18"]["R18PicRevoke"] = new IValue((bool)Toggle_Revoke.IsChecked ? "1" : "0");
+            ini.Object["R18"]["R18PicRevoke"] = new IValue((bool)Toggle_Revoke.IsChecked ? 1 : 0);
             ini.Object["R18"]["RevokeTime"] = new IValue(text_Revoke.Text);
-            ini.Object["Config"]["FailedCompress"] = new IValue((bool)Toggle_CompressImg.IsChecked ? "1" : "0");
+            ini.Object["Config"]["FailedCompress"] = new IValue((bool)Toggle_CompressImg.IsChecked ? 1 : 0);
 
             ini.Save();
         }
 
         private void btn_Apply_Click(object sender, RoutedEventArgs e)
         {
-            ini.Load();
-            ini.Object["R18"]["Enabled"] = new IValue((bool)Toggle_R18.IsChecked ? "1" : "0");
-            ini.Object["R18"]["R18PicRevoke"] = new IValue((bool)Toggle_Revoke.IsChecked ? "1" : "0");
+            ini.Object["R18"]["Enabled"] = new IValue((bool)Toggle_R18.IsChecked ? 1 : 0);
+            ini.Object["R18"]["R18PicRevoke"] = new IValue((bool)Toggle_Revoke.IsChecked ? 1 : 0);
             ini.Object["R18"]["RevokeTime"] = new IValue(text_Revoke.Text);
-            ini.Object["Config"]["FailedCompress"] = new IValue((bool)Toggle_CompressImg.IsChecked ? "1" : "0");
+            ini.Object["Config"]["FailedCompress"] = new IValue((bool)Toggle_CompressImg.IsChecked ? 1 : 0);
 
             ini.Save();
             btn_Apply.IsEnabled = false;
         }
-        static IniConfig ini;
+        static IniConfig ini = MainSave.ConfigMain;
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             ini = new IniConfig(MainSave.AppDirectory + "Config.ini");
-            ini.Load();
-            Toggle_R18.IsChecked = ini.Object["R18"]["Enabled"].GetValueOrDefault("0") == "1";
-            Toggle_Revoke.IsChecked = ini.Object["R18"]["R18PicRevoke"].GetValueOrDefault("0") == "1";
+
+            Toggle_R18.IsChecked = ini.Object["R18"]["Enabled"].GetValueOrDefault(0) == 1;
+            Toggle_Revoke.IsChecked = ini.Object["R18"]["R18PicRevoke"].GetValueOrDefault(0) == 1;
             text_Revoke.Text = ini.Object["R18"]["RevokeTime"].GetValueOrDefault("0");
-            Toggle_CompressImg.IsChecked = ini.Object["Config"]["FailedCompress"].GetValueOrDefault("0") == "1";
+            Toggle_CompressImg.IsChecked = ini.Object["Config"]["FailedCompress"].GetValueOrDefault(0) == 1;
 
 
             Toggle_R18.Click += EnabledApplyButton;
