@@ -18,19 +18,5 @@
 - [x] 用户自定义接口，仅可用于直接访问就是图片的接口
 - [x] 接入[Pixiv Api](https://api.imjad.cn/pixiv_v2.md)用于实现搜图与获取日榜周榜
 - [x] 接入[pixivic.com](https://pixivic.com/)用于实现热度搜索
-- [ ] 接入[SauceNAO](https://saucenao.com)实现以图搜图
-- [ ] 接入[trace moe](https://trace.moe/)实现以图搜番
-
-## 其他的话
-在我瞎逛论坛的时候发现了和这个项目使用同一接口的[应用](https://cqp.cc/t/48770)，瞬间就失去了将插件发布到社区的欲望，或许以后功能写完了会发布吧……权当自己瞎写着玩了<br>
-最近差不多热情消磨的差不多了，真就龟速开发了，如果有大佬想赞助支持我的话，在崩坏三抽卡机项目的关于里有赞助码，拜谢
-## 项目代码如何使用
-酷Q开启开发模式，参考[酷Q文库](https://docs.cqp.im/dev/v9/devmode/)的方法开启<br>
-Visual Studio的最低版本为2019<br>
-clone下载之后，设置Native.Core项目的生成目录为 ...\CQP-xiaoi\酷Q Pro\dev<br>
-### 具体方法为:
->1.右击Native.Core项目，点击属性<br>
-![说明图片3](https://i.loli.net/2020/03/21/PlNBCAHV1JWmLsO.png)<br>
-2.左侧点击生成一栏，设置输出路径<br>
-![说明图片4](https://i.loli.net/2020/03/21/mtCeRTWDHAh2Irg.png)<br>
-点击生成-重新生成解决方案，之后酷Q重载应用即可
+- [x] 接入[SauceNAO](https://saucenao.com)实现以图搜图
+- [x] 接入[trace moe](https://trace.moe/)实现以图搜番
