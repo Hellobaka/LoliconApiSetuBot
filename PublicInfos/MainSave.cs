@@ -21,7 +21,8 @@ namespace PublicInfos
         public static string AppDirectory { get; set; }
         public static string ImageDirectory { get; set; }
         public static WebProxy Proxy { get; set; }
-        public static List<SauceNao_Save> sauceNao_Saves { get; set; } = new List<SauceNao_Save>();
+        public static List<DelayAPI_Save> SauceNao_Saves { get; set; } = new List<DelayAPI_Save>();
+        public static List<DelayAPI_Save> TraceMoe_Saves { get; set; } = new List<DelayAPI_Save>();
 
         static IniConfig configMain;
         public static IniConfig ConfigMain

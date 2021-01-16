@@ -139,9 +139,9 @@ namespace PublicInfos
             }
         }
     }
-    public class SauceNao_Save
+    public class DelayAPI_Save
     {
-        public SauceNao_Save(long groupID, long qQID)
+        public DelayAPI_Save(long groupID, long qQID)
         {
             GroupID = groupID;
             QQID = qQID;
@@ -150,5 +150,67 @@ namespace PublicInfos
         public long GroupID { get; set; }
         public long QQID { get; set; }
     }
+    public class TraceMoe_Result
+    {
+        public class Data
+        {
+            public long RawDocsCount { get; set; }
+            public long RawDocsSearchTime { get; set; }
+            public long ReRankSearchTime { get; set; }
+            public bool CacheHit { get; set; }
+            public int trial { get; set; }
+            public Doc[] docs { get; set; }
+            public int limit { get; set; }
+            public int limit_ttl { get; set; }
+            public int quota { get; set; }
+            public int quota_ttl { get; set; }
+            public override string ToString()
+            {
+                StringBuilder sb = new StringBuilder();
+                if (docs.Length > 0)
+                {
+                    sb.AppendLine("相似度第一的是：");
+                    if (!string.IsNullOrWhiteSpace(docs[0].anime))
+                        sb.AppendLine($"名称：{docs[0].anime}");
+                    if (!string.IsNullOrWhiteSpace(docs[0].title_native))
+                        sb.AppendLine($"日文名称：{docs[0].title_native}");
+                    if (!string.IsNullOrWhiteSpace(docs[0].title_romaji))
+                        sb.AppendLine($"罗马音名称：{docs[0].title_romaji}");
+                    sb.AppendLine($"相似度：{docs[0].similarity * 100:f2}%");
+                    sb.AppendLine($"集数：{docs[0].episode}");
+                    sb.AppendLine($"大约出现在：{(int)docs[0].from / 60}:{(int)docs[0].from % 60}" +
+                        $" - {(int)docs[0].to / 60}:{(int)docs[0].to % 60}");
+                    sb.Append($"每日搜索额度有限，请勿倒垃圾");
+                }
+                else
+                {
+                    sb.AppendLine($"未找到相似的动漫");
+                }
+                return sb.ToString();
+            }
+        }
 
+        public class Doc
+        {
+            public float from { get; set; }
+            public float to { get; set; }
+            public int anilist_id { get; set; }
+            public float at { get; set; }
+            public string season { get; set; }
+            public string anime { get; set; }
+            public string filename { get; set; }
+            public object episode { get; set; }
+            public string tokenthumb { get; set; }
+            public float similarity { get; set; }
+            public string title { get; set; }
+            public string title_native { get; set; }
+            public string title_chinese { get; set; }
+            public string title_english { get; set; }
+            public string title_romaji { get; set; }
+            public int mal_id { get; set; }
+            public string[] synonyms { get; set; }
+            public object[] synonyms_chinese { get; set; }
+            public bool is_adult { get; set; }
+        }
+    }
 }

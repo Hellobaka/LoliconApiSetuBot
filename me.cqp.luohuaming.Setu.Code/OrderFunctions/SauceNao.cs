@@ -61,7 +61,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
             else
             {
                 result.SendFlag = true;
-                MainSave.sauceNao_Saves.Add(new SauceNao_Save(e.FromGroup.Id, e.FromQQ.Id));
+                MainSave.SauceNao_Saves.Add(new DelayAPI_Save(e.FromGroup.Id, e.FromQQ.Id));
                 sendText.MsgToSend.Add("请在接下来的一条消息内发送需要搜索的图片");
             }
             return result;

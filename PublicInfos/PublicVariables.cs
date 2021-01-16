@@ -64,6 +64,7 @@ namespace PublicInfos
         /// SauceNAO相似度搜索
         /// </summary>
         public static string SauceNaoSearch { get; set; }
+        public static string TraceMoeSearch { get; set; }
         #endregion
 
         public static string Lolicon_ApiKey { get; set; }
@@ -111,6 +112,8 @@ namespace PublicInfos
             HotSearch = ini.Object["OrderDIY"]["HotSearch"].GetValueOrDefault("#搜图")
                 .Replace(@"\n", "\n");
             SauceNaoSearch = ini.Object["OrderDIY"]["SauceNao"].GetValueOrDefault("#nao")
+                .Replace(@"\n", "\n");
+            TraceMoeSearch = ini.Object["OrderDIY"]["TraceMoeSearch"].GetValueOrDefault("#trace")
                 .Replace(@"\n", "\n");
 
             Lolicon_ApiKey = ini.Object["Config"]["ApiKey"].GetValueOrDefault("");

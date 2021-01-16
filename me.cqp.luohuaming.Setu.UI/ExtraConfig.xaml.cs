@@ -40,8 +40,6 @@ namespace me.cqp.luohuaming.Setu.UI
         static IniConfig ini = MainSave.ConfigMain;
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            ini = new IniConfig(MainSave.AppDirectory + "Config.ini");
-
             Toggle_R18.IsChecked = ini.Object["R18"]["Enabled"].GetValueOrDefault(0) == 1;
             Toggle_Revoke.IsChecked = ini.Object["R18"]["R18PicRevoke"].GetValueOrDefault(0) == 1;
             text_Revoke.Text = ini.Object["R18"]["RevokeTime"].GetValueOrDefault("0");
