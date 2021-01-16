@@ -87,7 +87,13 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                 {
                     Directory.CreateDirectory(MainSave.ImageDirectory + "SauceNaotemp");
                     var result = JsonConvert.DeserializeObject<SauceNao_Result.SauceNAO>(http.DownloadString(url));
-                    e.CQLog.Info("SauceNao识图", "结果获取成功，正在拉取缩略图");                    
+                    if (result == null || result.results == null || result.results.Count == 0)
+                    {
+                        e.CQLog.Info("SauceNao识图", "拉取结果失败，建议重试");
+                        e.FromGroup.SendGroupMessage("诶嘿，网络出了点小差~");
+                        return;
+                    }
+                    e.CQLog.Info("SauceNao识图", "结果获取成功，正在拉取缩略图");
                     int count = 1;
                     result.results = result.results.Take(1).ToList();
                     string str = result.ToString();
@@ -135,7 +141,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                                     http.DownloadFile(pixiv_url, $@"{MainSave.ImageDirectory}\LoliconPic\{item}.jpg");
                                     MainSave.CQLog.Info("SauceNao识图", $"pid={item}的图片下载成功，尝试发送");
                                 }
-                                QQMessage staues = e.FromGroup.SendGroupMessage(CQApi.CQCode_Image($@"\LoliconPic\{item}.jpg"));                                
+                                QQMessage staues = e.FromGroup.SendGroupMessage(CQApi.CQCode_Image($@"\LoliconPic\{item}.jpg"));
                             }
                             catch (Exception exc)
                             {
