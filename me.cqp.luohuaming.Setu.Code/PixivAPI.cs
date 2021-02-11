@@ -65,6 +65,15 @@ namespace me.cqp.luohuaming.Setu.Code
                 string returnstr = string.Empty;
                 try
                 {
+                    string authCode = PublicVariables.PixivicAuth;
+                    if (string.IsNullOrEmpty(authCode))
+                    {
+                        MainSave.CQLog.Info("未填写授权码", "搜图需要在数据目录的Config.ini文件内，Config字段的PixivicAuth值内填入获取到的授权码");
+                        throw new Exception();
+                    }
+                    http.Encoding = Encoding.UTF8;
+                    http.Headers.Add("authorization", authCode);
+
                     returnstr = http.DownloadString(url);
                     Pixiv_PID infobase = JsonConvert.DeserializeObject<Pixiv_PID>(returnstr);
                     bool r18_Flag = infobase.data.tags.Any(x => x.name.Contains("R-18"));
@@ -114,9 +123,10 @@ namespace me.cqp.luohuaming.Setu.Code
                 Encoding = Encoding.UTF8,
                 Proxy = MainSave.Proxy,
                 AllowAutoRedirect = true,
+                Referer= "https://pixivic.net/"
             })
             {
-                string url = $"https://api.pixivic.com/illustrations?illustType=illust&searchType=original&maxSanityLevel=6&page={new Random().Next(1, 6)}&keyword={HttpTool.UrlEncode(keyword)}&pageSize=10";
+                string url = $"https://pix.ipv4.host/illustrations?illustType=illust&searchType=original&maxSanityLevel=6&page={new Random().Next(1, 6)}&keyword={HttpTool.UrlEncode(keyword)}&pageSize=10";
                 string returnstr = string.Empty;
                 try
                 {
@@ -127,7 +137,7 @@ namespace me.cqp.luohuaming.Setu.Code
                         throw new Exception();
                     }
                     http.Encoding = Encoding.UTF8;
-                    http.Headers.Add("Authorization", authCode);
+                    http.Headers.Add("authorization", authCode);
 
                     returnstr = http.DownloadString(url);
                     Pixiv_HotSearch hotSearch = JsonConvert.DeserializeObject<Pixiv_HotSearch>(returnstr);

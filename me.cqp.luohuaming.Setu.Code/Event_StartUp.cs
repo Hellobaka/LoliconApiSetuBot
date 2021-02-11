@@ -7,6 +7,7 @@ using Native.Tool.IniConfig;
 using System.Net;
 using PublicInfos;
 using me.cqp.luohuaming.Setu.Code.OrderFunctions;
+using Native.Tool.IniConfig.Linq;
 
 namespace me.cqp.luohuaming.Setu.Code
 {
@@ -56,7 +57,8 @@ namespace me.cqp.luohuaming.Setu.Code
             {
                 if (File.Exists(MainSave.AppDirectory + "ConfigLimit.ini"))
                 {
-                    File.Delete(MainSave.AppDirectory + "ConfigLimit.ini");
+                    MainSave.ConfigLimit.Object["Config"]["Timestamp"] = new IValue(0);
+                    MainSave.ConfigLimit.Save();
                     MainSave.CQLog.Info("涩图机重置", "限制已重置");
                 }
             }
@@ -85,7 +87,8 @@ namespace me.cqp.luohuaming.Setu.Code
             {
                 if (File.Exists(MainSave.AppDirectory + "ConfigLimit.ini"))
                 {
-                    File.Delete(MainSave.AppDirectory + "ConfigLimit.ini");
+                    MainSave.ConfigLimit.Object["Config"]["Timestamp"] = new IValue(0);
+                    MainSave.ConfigLimit.Save();
                     MainSave.CQLog.Info("涩图机重置", "限制已重置");
                 }
             }
