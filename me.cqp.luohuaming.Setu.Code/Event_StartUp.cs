@@ -57,8 +57,7 @@ namespace me.cqp.luohuaming.Setu.Code
             {
                 if (File.Exists(MainSave.AppDirectory + "ConfigLimit.ini"))
                 {
-                    MainSave.ConfigLimit.Object["Config"]["Timestamp"] = new IValue(0);
-                    MainSave.ConfigLimit.Save();
+                    File.WriteAllText(MainSave.AppDirectory + "ConfigLimit.ini", "[Config]\nTimestamp=1608773153");
                     MainSave.CQLog.Info("涩图机重置", "限制已重置");
                 }
             }
@@ -87,8 +86,7 @@ namespace me.cqp.luohuaming.Setu.Code
             {
                 if (File.Exists(MainSave.AppDirectory + "ConfigLimit.ini"))
                 {
-                    MainSave.ConfigLimit.Object["Config"]["Timestamp"] = new IValue(0);
-                    MainSave.ConfigLimit.Save();
+                    File.WriteAllText(MainSave.AppDirectory + "ConfigLimit.ini", "[Config]\nTimestamp=1608773153");
                     MainSave.CQLog.Info("涩图机重置", "限制已重置");
                 }
             }

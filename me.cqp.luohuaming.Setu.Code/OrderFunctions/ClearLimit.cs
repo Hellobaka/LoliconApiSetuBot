@@ -39,9 +39,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
             }
             else
             {
-                File.Delete(MainSave.AppDirectory + "ConfigLimit.ini");
-                MainSave.ConfigLimit = new IniConfig(Path.Combine(MainSave.AppDirectory, "ConfigLimit.ini"));
-                MainSave.ConfigLimit.Load();
+                File.WriteAllText(MainSave.AppDirectory + "ConfigLimit.ini", "[Config]\nTimestamp=1608773153");
                 sendText.MsgToSend.Add("重置成功");
             }
             return result;

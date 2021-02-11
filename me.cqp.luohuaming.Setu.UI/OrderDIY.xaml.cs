@@ -27,6 +27,8 @@ namespace me.cqp.luohuaming.Setu.UI
             { "LoliConPic","#setu" },
             { "PIDSearch","#pid" },
             { "HotSearch","#搜图" },
+            { "SauceNao","#nao" },
+            { "TraceMoeSearch","#trace" },
             {"DownloadFailed" ,"下载错误，次数已归还" },
             { "ExtraError","发生错误，请尝试重新调用，错误信息:<wrong_msg>" },
             { "OutofQuota","超出额度，次数已归还\n下次额度恢复的时间是:<quota_time>" },
@@ -74,6 +76,8 @@ namespace me.cqp.luohuaming.Setu.UI
             ini.Object["OrderDIY"]["ClearLimit"] = new IValue(text_ClearLimit.Text);
             ini.Object["OrderDIY"]["PIDSearch"] = new IValue(text_PIDSearch.Text);
             ini.Object["OrderDIY"]["HotSearch"] = new IValue(text_HotSearch.Text);
+            ini.Object["OrderDIY"]["SauceNao"] = new IValue(text_SauceNao.Text);
+            ini.Object["OrderDIY"]["TraceMoeSearch"] = new IValue(text_TraceMoeSearch.Text);
 
             foreach (var uiitem in stackpanel_AnwDIY.Children)
             {
