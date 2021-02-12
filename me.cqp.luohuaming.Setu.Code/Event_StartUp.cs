@@ -77,6 +77,7 @@ namespace me.cqp.luohuaming.Setu.Code
             MainSave.Instances.Add(new SauceNao());
             MainSave.Instances.Add(new TraceMoe());
             MainSave.Instances.Add(new YandeRePic());
+            MainSave.Instances.Add(new YandeReTagSearch());
         }
         private static Timer timersTimer = new Timer();
 

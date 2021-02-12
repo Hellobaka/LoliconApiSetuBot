@@ -67,6 +67,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OrderFunctions\YandeReTagSearchTests.cs" />
     <Compile Include="YandereTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using HtmlAgilityPack;
 using me.cqp.luohuaming.Setu.Code.Helper;
 using Native.Sdk.Cqp;
@@ -15,7 +12,14 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
 {
     public class YandeRePic : IOrderModel
     {
-        public string GetOrderStr() => "#yande";
+        public string GetOrderStr()
+        {
+            if (string.IsNullOrWhiteSpace(PublicVariables.YandereIDSearch))
+            {
+                PublicVariables.YandereIDSearch = Guid.NewGuid().ToString();
+            }
+            return PublicVariables.YandereIDSearch;
+        }
 
         public bool Judge(string destStr)
         {
@@ -64,7 +68,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
             }
             catch (Exception exc)
             {
-                e.CQLog.Info("YandeRe解析出错",$"错误信息: {exc.Message} 错误位置: {exc.StackTrace}");
+                e.CQLog.Info("YandeReID解析出错",$"错误信息: {exc.Message} 错误位置: {exc.StackTrace}");
                 sendText.MsgToSend.Add("解析出错，查看日志获取详细信息");
             }
             result.SendObject.Add(sendText);
@@ -121,7 +125,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                 AllowAutoRedirect = true,
             })
             {
-                http.Proxy = new System.Net.WebProxy { Address=new Uri("http://127.0.0.1:1080") };
+                //http.Proxy = new System.Net.WebProxy { Address=new Uri("http://127.0.0.1:1080") };
                 string rawHtml = http.DownloadString(url);
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(rawHtml);

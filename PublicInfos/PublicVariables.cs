@@ -65,6 +65,8 @@ namespace PublicInfos
         /// </summary>
         public static string SauceNaoSearch { get; set; }
         public static string TraceMoeSearch { get; set; }
+        public static string YandereIDSearch { get; set; }
+        public static string YandereTagSearch { get; set; }
         #endregion
 
         public static string Lolicon_ApiKey { get; set; }
@@ -114,6 +116,10 @@ namespace PublicInfos
             SauceNaoSearch = ini.Object["OrderDIY"]["SauceNao"].GetValueOrDefault("#nao")
                 .Replace(@"\n", "\n");
             TraceMoeSearch = ini.Object["OrderDIY"]["TraceMoeSearch"].GetValueOrDefault("#trace")
+                .Replace(@"\n", "\n");
+            YandereIDSearch = ini.Object["OrderDIY"]["YandereIDSearch"].GetValueOrDefault("#yid")
+                .Replace(@"\n", "\n");
+            YandereTagSearch = ini.Object["OrderDIY"]["YandereTagSearch"].GetValueOrDefault("#ytag")
                 .Replace(@"\n", "\n");
 
             Lolicon_ApiKey = ini.Object["Config"]["ApiKey"].GetValueOrDefault("");
