@@ -42,6 +42,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                 File.WriteAllText(MainSave.AppDirectory + "ConfigLimit.ini", "[Config]\nTimestamp=1608773153");
                 sendText.MsgToSend.Add("重置成功");
             }
+            result.SendObject.Add(sendText);
             return result;
         }
 

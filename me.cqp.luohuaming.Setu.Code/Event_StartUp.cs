@@ -33,7 +33,7 @@ namespace me.cqp.luohuaming.Setu.Code
                     string uri, username, pwd;
                     uri = ini.Object["Proxy"]["ProxyUri"].GetValueOrDefault("");
                     username = ini.Object["Proxy"]["ProxyName"].GetValueOrDefault("");
-                    pwd = ini.Object["Proxy"]["ProxyName"].GetValueOrDefault("");
+                    pwd = ini.Object["Proxy"]["ProxyPwd"].GetValueOrDefault("");
                     proxy = new WebProxy
                     {
                         Address = new Uri(uri),

@@ -25,8 +25,8 @@ namespace PublicInfos
         {
             get
             {
-                //if (configMain != null)
-                //    return configMain;
+                if (configMain != null)
+                    return configMain;
                 configMain = new IniConfig(Path.Combine(AppDirectory, "Config.ini"));
                 configMain.Load();
                 return configMain;
@@ -38,8 +38,8 @@ namespace PublicInfos
         { 
             get
             {
-                //if (configLimit != null)
-                //    return configLimit;
+                if (configLimit != null)
+                    return configLimit;
                 configLimit = new IniConfig(Path.Combine(AppDirectory, "ConfigLimit.ini"));
                 configLimit.Load();
                 return configLimit;
