@@ -93,7 +93,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                 AllowAutoRedirect = true,
             })
             {
-                http.Proxy = new System.Net.WebProxy { Address = new Uri("http://127.0.0.1:1080") };
+                //http.Proxy = new System.Net.WebProxy { Address = new Uri("http://127.0.0.1:1080") };
                 string rawHtml = http.DownloadString(url);
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(rawHtml);
