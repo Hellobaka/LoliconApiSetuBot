@@ -36,6 +36,8 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
             {
                 return result;
             }
+            PublicVariables.ReadOrderandAnswer();
+
             SendText sendText = new SendText();
             sendText.SendID = e.FromGroup;
             result.SendObject.Add(sendText);
