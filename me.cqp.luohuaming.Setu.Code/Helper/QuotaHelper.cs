@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Native.Sdk.Cqp;
 using Native.Tool.IniConfig.Linq;
-using PublicInfos;
+using me.cqp.luohuaming.Setu.PublicInfos;
 
 namespace me.cqp.luohuaming.Setu.Code.Helper
 {

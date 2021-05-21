@@ -5,7 +5,7 @@ using Native.Sdk.Cqp.EventArgs;
 using Native.Sdk.Cqp.Interface;
 using Native.Tool.IniConfig;
 using System.Net;
-using PublicInfos;
+using me.cqp.luohuaming.Setu.PublicInfos;
 using me.cqp.luohuaming.Setu.Code.OrderFunctions;
 using Native.Tool.IniConfig.Linq;
 

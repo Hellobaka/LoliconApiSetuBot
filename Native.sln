@@ -18,7 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PublicInfos", "PublicInfos\PublicInfos.csproj", "{3D0CF563-5BE7-4366-AC06-5F9BD519E724}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "me.cqp.luohuaming.Setu.PublicInfos", "PublicInfos\me.cqp.luohuaming.Setu.PublicInfos.csproj", "{3D0CF563-5BE7-4366-AC06-5F9BD519E724}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionTest", "FunctionTest\FunctionTest.csproj", "{3EFF0401-28D0-45EE-8423-26E5C90F3990}"
 EndProject

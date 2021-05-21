@@ -13,7 +13,7 @@ using Native.Tool.Http;
 using Native.Tool.IniConfig;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PublicInfos;
+using me.cqp.luohuaming.Setu.PublicInfos;
 
 namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
 {

@@ -5,7 +5,7 @@ using Native.Sdk.Cqp.EventArgs;
 using Native.Sdk.Cqp.Model;
 using Native.Tool.Http;
 using Newtonsoft.Json;
-using PublicInfos;
+using me.cqp.luohuaming.Setu.PublicInfos;
 
 namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
 {

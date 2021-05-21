@@ -4,7 +4,7 @@ using System.Net;
 using Native.Sdk.Cqp;
 using Native.Tool.IniConfig;
 
-namespace PublicInfos
+namespace me.cqp.luohuaming.Setu.PublicInfos
 {
     public static class MainSave
     {

@@ -1,6 +1,6 @@
 ﻿using Native.Tool.IniConfig;
 using Native.Tool.IniConfig.Linq;
-using PublicInfos;
+using me.cqp.luohuaming.Setu.PublicInfos;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;

@@ -9,7 +9,7 @@ using System.Diagnostics;
 using Newtonsoft.Json;
 using MaterialDesignThemes.Wpf;
 using System.Linq;
-using PublicInfos;
+using me.cqp.luohuaming.Setu.PublicInfos;
 
 namespace me.cqp.luohuaming.Setu.UI
 {

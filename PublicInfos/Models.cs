@@ -2,7 +2,7 @@
 using System.Text;
 using Native.Sdk.Cqp.EventArgs;
 
-namespace PublicInfos
+namespace me.cqp.luohuaming.Setu.PublicInfos
 {
     public interface IOrderModel
     {

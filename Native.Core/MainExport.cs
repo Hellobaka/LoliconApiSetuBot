@@ -4,7 +4,7 @@ using System.Threading;
 using me.cqp.luohuaming.Setu.Code;
 using Native.Sdk.Cqp.EventArgs;
 using Native.Sdk.Cqp.Interface;
-using PublicInfos;
+using me.cqp.luohuaming.Setu.PublicInfos;
 
 namespace Native.Core
 {

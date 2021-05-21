@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Native.Sdk.Cqp.Model;
 using Native.Tool.IniConfig;
 
-namespace PublicInfos
+namespace me.cqp.luohuaming.Setu.PublicInfos
 {
     public static class CommonHelper
     {

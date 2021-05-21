@@ -9,7 +9,7 @@ using System.IO;
 using System.Windows.Threading;
 using Native.Tool.IniConfig;
 using Native.Tool.IniConfig.Linq;
-using PublicInfos;
+using me.cqp.luohuaming.Setu.PublicInfos;
 
 namespace me.cqp.luohuaming.Setu.UI
 {

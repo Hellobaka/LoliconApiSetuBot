@@ -10,7 +10,7 @@ using Native.Sdk.Cqp.Interface;
 using Native.Sdk.Cqp.Model;
 using Native.Tool.IniConfig;
 using Newtonsoft.Json;
-using PublicInfos;
+using me.cqp.luohuaming.Setu.PublicInfos;
 
 namespace me.cqp.luohuaming.Setu.Code
 {

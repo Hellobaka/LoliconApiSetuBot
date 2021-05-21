@@ -2,7 +2,7 @@
 using Native.Tool.IniConfig;
 using Native.Tool.IniConfig.Linq;
 using Newtonsoft.Json;
-using PublicInfos;
+using me.cqp.luohuaming.Setu.PublicInfos;
 using System;
 using System.Diagnostics;
 using System.IO;

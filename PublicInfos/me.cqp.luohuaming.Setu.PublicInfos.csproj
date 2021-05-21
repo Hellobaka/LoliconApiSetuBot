@@ -7,8 +7,8 @@
     <ProjectGuid>{3D0CF563-5BE7-4366-AC06-5F9BD519E724}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PublicInfos</RootNamespace>
-    <AssemblyName>PublicInfos</AssemblyName>
+    <RootNamespace>me.cqp.luohuaming.Setu.PublicInfos</RootNamespace>
+    <AssemblyName>me.cqp.luohuaming.Setu.PublicInfos</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>

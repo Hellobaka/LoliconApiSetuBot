@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 using Native.Tool.Http;
 using System.Text;
 using Newtonsoft.Json.Linq;
-using PublicInfos;
+using me.cqp.luohuaming.Setu.PublicInfos;
 
 namespace me.cqp.luohuaming.Setu.UI
 {

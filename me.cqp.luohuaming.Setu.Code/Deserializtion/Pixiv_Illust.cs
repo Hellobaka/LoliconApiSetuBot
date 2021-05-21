@@ -1,7 +1,7 @@
 ﻿using Native.Sdk.Cqp;
 using Native.Sdk.Cqp.Model;
 using Native.Tool.Http;
-using PublicInfos;
+using me.cqp.luohuaming.Setu.PublicInfos;
 using System;
 using System.Collections.Generic;
 using System.IO;

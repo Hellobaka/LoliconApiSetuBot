@@ -1,6 +1,6 @@
 ﻿using Native.Tool.Http;
 using Newtonsoft.Json;
-using PublicInfos;
+using me.cqp.luohuaming.Setu.PublicInfos;
 using System.Diagnostics;
 using System.Text;
 using System.Windows;

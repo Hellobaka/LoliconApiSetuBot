@@ -12,7 +12,7 @@ using Native.Sdk.Cqp.EventArgs;
 using Native.Tool.Http;
 using Native.Tool.IniConfig;
 using Newtonsoft.Json;
-using PublicInfos;
+using me.cqp.luohuaming.Setu.PublicInfos;
 
 namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
 {
