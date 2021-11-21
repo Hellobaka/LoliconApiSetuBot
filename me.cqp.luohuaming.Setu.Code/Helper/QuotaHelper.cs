@@ -14,6 +14,7 @@ namespace me.cqp.luohuaming.Setu.Code.Helper
         /// <param name="QQID">操作的QQ号</param>
         public static void PlusMemberQuota(long GroupID, long QQID)
         {
+            MainSave.changeFlag = true;
             int countofPerson = MainSave.ConfigLimit
                 .Object[$"Count{GroupID}"][string.Format("Count{0}", QQID)].GetValueOrDefault(0);
             int countofGroup = MainSave.ConfigLimit
@@ -23,6 +24,7 @@ namespace me.cqp.luohuaming.Setu.Code.Helper
             MainSave.ConfigLimit
                 .Object[$"Count{GroupID}"]["CountofGroup"] = new IValue(--countofGroup);
             MainSave.ConfigLimit.Save();
+            MainSave.changeFlag = false;
         }
 
         /// <summary>
@@ -32,6 +34,7 @@ namespace me.cqp.luohuaming.Setu.Code.Helper
         /// <param name="QQID">操作的QQ号</param>
         public static void MinusMemberQuota(long GroupID, long QQID)
         {
+            MainSave.changeFlag = true;
             int countofPerson = MainSave.ConfigLimit
                 .Object[$"Count{GroupID}"][string.Format("Count{0}", QQID)].GetValueOrDefault(0);
             int countofGroup = MainSave.ConfigLimit
@@ -41,6 +44,7 @@ namespace me.cqp.luohuaming.Setu.Code.Helper
             MainSave.ConfigLimit
                 .Object[$"Count{GroupID}"]["CountofGroup"] = new IValue(++countofGroup);
             MainSave.ConfigLimit.Save();
+            MainSave.changeFlag = false;
         }
 
         /// <summary>

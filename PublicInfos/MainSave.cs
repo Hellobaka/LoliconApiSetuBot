@@ -33,11 +33,14 @@ namespace me.cqp.luohuaming.Setu.PublicInfos
             }
             set { configMain = value; }
         }
+        public static bool changeFlag { get; set; } = false;
         static IniConfig configLimit;
         public static IniConfig ConfigLimit
         { 
             get
             {
+                if (changeFlag)
+                    return configLimit;
                 configLimit = new IniConfig(Path.Combine(AppDirectory, "ConfigLimit.ini"));
                 configLimit.Load();
                 return configLimit;
