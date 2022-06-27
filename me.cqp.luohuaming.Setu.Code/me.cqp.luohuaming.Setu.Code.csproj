@@ -96,11 +96,9 @@
     <Compile Include="OrderFunctions\ClearLimit.cs" />
     <Compile Include="OrderFunctions\CustomAPI.cs" />
     <Compile Include="OrderFunctions\GetLoliconPic.cs" />
-    <Compile Include="OrderFunctions\HotSearch.cs" />
     <Compile Include="OrderFunctions\JsonPic.cs" />
     <Compile Include="OrderFunctions\LocalPic.cs" />
     <Compile Include="OrderFunctions\PIDSearch.cs" />
-    <Compile Include="OrderFunctions\RankPic.cs" />
     <Compile Include="OrderFunctions\SauceNao.cs" />
     <Compile Include="OrderFunctions\TraceMoe.cs" />
     <Compile Include="OrderFunctions\YandeRePic.cs" />

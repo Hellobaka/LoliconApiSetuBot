@@ -33,7 +33,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
         }
         public static bool RevokeState { get; set; } = false;
         public FunctionResult Progress(CQGroupMessageEventArgs e)
-        {            
+        {
             FunctionResult result = new FunctionResult()
             {
                 Result = true,
@@ -231,11 +231,55 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
     //403	由于不规范的操作而被拒绝调用
     //404	找不到符合关键字的色图
     //429	达到调用额度限制
+
+    public class SetuV2
+    {
+        public string error { get; set; }
+        public Datum[] data { get; set; }
+        public override string ToString()
+        {
+            string result = PublicVariables.Sucess.Replace("<msg>", error);
+            Datum picinfo = data[0];
+            result = result.Replace("<pid>", picinfo.pid.ToString());
+            result = result.Replace("<p>", picinfo.p.ToString());
+            result = result.Replace("<uid>", picinfo.uid.ToString());
+            result = result.Replace("<title>", picinfo.title);
+            result = result.Replace("<author>", picinfo.author);
+            result = result.Replace("<url>", picinfo.urls.original);
+            result = result.Replace("<r18>", picinfo.r18.ToString());
+            result = result.Replace("<width> ", picinfo.width.ToString());
+            result = result.Replace("<height>", picinfo.height.ToString());
+            return result;
+        }
+    }
+
+    public class Datum
+    {
+        public int pid { get; set; }
+        public int p { get; set; }
+        public int uid { get; set; }
+        public string title { get; set; }
+        public string author { get; set; }
+        public bool r18 { get; set; }
+        public int width { get; set; }
+        public int height { get; set; }
+        public string[] tags { get; set; }
+        public string ext { get; set; }
+        public long uploadDate { get; set; }
+        public Urls urls { get; set; }
+    }
+
+    public class Urls
+    {
+        public string original { get; set; }
+    }
+
     #endregion
 
     public static class GetLoliConPicHelper
     {
         private static readonly string api = "https://api.lolicon.app/setu?";
+        private static readonly string apiV2 = "https://api.lolicon.app/setu/v2?";
         /// <summary>
         /// 获取图片
         /// </summary>
@@ -244,7 +288,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
         public static SendText GetSetuPic(string ordertext, out string objectTostring)
         {
             SendText result = new SendText();
-            objectTostring = String.Empty;
+            objectTostring = string.Empty;
             using (HttpWebClient http = new HttpWebClient()
             {
                 TimeOut = 10000,
@@ -256,11 +300,11 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                 try
                 {
                     IniConfig ini = MainSave.ConfigMain;
-                    string url = api;
+                    string url = apiV2;
                     //拼接Url
                     if (PublicVariables.Lolicon_ApiSwitch)
                     {
-                        url = api + $"apikey={PublicVariables.Lolicon_ApiKey}";
+                        url = apiV2 + $"apikey={PublicVariables.Lolicon_ApiKey}";
                     }
                     url += GetOrderText(ordertext);
 
@@ -286,12 +330,11 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                         Directory.CreateDirectory(MainSave.ImageDirectory + @"\LoliconPic\");
                     }
                     //反序列化json
-                    Setu deserialize = JsonConvert.DeserializeObject<Setu>(json);
+                    SetuV2 deserialize = JsonConvert.DeserializeObject<SetuV2>(json);
                     objectTostring = deserialize.ToString();
-                    if (deserialize.code != 0)//非成功调用
+                    if (deserialize.data.Length == 0)//非成功调用
                     {
                         MainSave.CQLog.Info("非正常返回", json);
-                        result.MsgToSend.Add("非正常返回");
                         result.HandlingFlag = false;
                         return result;
                     }
@@ -301,7 +344,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                     if (!File.Exists(path))
                     {
                         http.CookieCollection = new CookieCollection();
-                        http.DownloadFile(pic.url, path);
+                        http.DownloadFile(pic.urls.original, path);
                         CommonHelper.AntiHX(path);
                     }
                     result.MsgToSend.Add(CQApi.CQCode_Image(@"\LoliconPic\" + pic.pid + ".jpg").ToSendString());

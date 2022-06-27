@@ -69,11 +69,9 @@ namespace me.cqp.luohuaming.Setu.Code
             MainSave.Instances.Add(new ClearLimit());
             MainSave.Instances.Add(new CustomAPI());
             MainSave.Instances.Add(new GetLoliconPic());
-            MainSave.Instances.Add(new HotSearch());
             MainSave.Instances.Add(new JsonPic());
             MainSave.Instances.Add(new LocalPic());
             MainSave.Instances.Add(new PIDSearch());
-            MainSave.Instances.Add(new RankPic());
             MainSave.Instances.Add(new SauceNao());
             MainSave.Instances.Add(new TraceMoe());
             MainSave.Instances.Add(new YandeRePic());
