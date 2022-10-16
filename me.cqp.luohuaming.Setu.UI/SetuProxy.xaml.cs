@@ -12,6 +12,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace me.cqp.luohuaming.Setu.UI
 {
@@ -37,6 +38,14 @@ namespace me.cqp.luohuaming.Setu.UI
                 textblock_ErrorMsg.Visibility = Visibility.Visible;
                 textblock_ErrorMsg.Foreground = Brushes.Black;
                 ini.Save();
+                if((bool)togglebutton_IsProxy.IsChecked)
+                {
+                    MainSave.Proxy = new WebProxy
+                    {
+                        Address = new Uri(textbox_ProxyUri.Text),
+                        Credentials = new NetworkCredential(textbox_ProxyName.Text, textbox_ProxyPwd.Text)
+                    };
+                }
                 textblock_ErrorMsg.Text = $"保存成功，可点击退出返回";
 
             }

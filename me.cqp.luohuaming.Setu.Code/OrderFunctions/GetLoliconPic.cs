@@ -331,20 +331,19 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                     }
                     //反序列化json
                     SetuV2 deserialize = JsonConvert.DeserializeObject<SetuV2>(json);
-                    objectTostring = deserialize.ToString();
                     if (deserialize.data.Length == 0)//非成功调用
                     {
-                        MainSave.CQLog.Info("非正常返回", json);
+                        MainSave.CQLog.Info("哦淦 老兄你的xp好机八小众啊 找不到啊", json);
                         result.HandlingFlag = false;
                         return result;
                     }
-                    //获取Data数组信息
+                    objectTostring = deserialize.ToString();
                     var pic = deserialize.data[0];
                     string path = Path.Combine(MainSave.ImageDirectory, "LoliconPic", $"{pic.pid}.jpg");
                     if (!File.Exists(path))
                     {
                         http.CookieCollection = new CookieCollection();
-                        http.DownloadFile(pic.urls.original, path);
+                        http.DownloadFile($"https://pixiv.re/{pic.pid}.jpg", path);
                         CommonHelper.AntiHX(path);
                     }
                     result.MsgToSend.Add(CQApi.CQCode_Image(@"\LoliconPic\" + pic.pid + ".jpg").ToSendString());
