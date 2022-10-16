@@ -333,8 +333,8 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                     SetuV2 deserialize = JsonConvert.DeserializeObject<SetuV2>(json);
                     if (deserialize.data.Length == 0)//非成功调用
                     {
-                        MainSave.CQLog.Info("哦淦 老兄你的xp好机八小众啊 找不到啊", json);
-                        result.HandlingFlag = false;
+                        result.MsgToSend.Add("哦淦 老兄你的xp好机八小众啊 找不到啊");
+                        result.HandlingFlag = true;
                         return result;
                     }
                     objectTostring = deserialize.ToString();
