@@ -7,7 +7,7 @@ namespace me.cqp.luohuaming.Setu.PublicInfos.Config
 {
     public class QuotaHistory
     {
-        public static Dictionary<long, int> GroupQuotaDict = new();
+        public static Dictionary<long, int> GroupQuotaDict { get; set; } = new();
         public static int QueryQuota(long group, long qq)
         {
             string date = DateTime.Now.ToString("d");

@@ -12,6 +12,7 @@ using Native.Tool.Http;
 using Native.Tool.IniConfig;
 using Newtonsoft.Json;
 using me.cqp.luohuaming.Setu.PublicInfos;
+using me.cqp.luohuaming.Setu.PublicInfos.Config;
 
 namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
 {
@@ -39,12 +40,17 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                 Result = true,
                 SendFlag = false,
             };
-            //检查额度限制
-            if (QuotaHelper.QuotaCheck(e.FromGroup, e.FromQQ) is false)
+            if (QuotaHistory.GroupQuotaDict[e.FromGroup] >= AppConfig.MaxGroupQuota)
             {
+                sendText.MsgToSend.Add(AppConfig.MaxGroupResponse);
                 return result;
             }
-            
+
+            if (QuotaHistory.QueryQuota(e.FromGroup, e.FromQQ) <= 0)
+            {
+                sendText.MsgToSend.Add(AppConfig.NoQuotaResponse);
+                return result;
+            }
             var functionResult = CustomAPI_Image(e.Message.Text);
             functionResult.SendID = e.FromGroup;
             result.SendObject.Add(functionResult);

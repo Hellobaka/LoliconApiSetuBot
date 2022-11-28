@@ -54,6 +54,7 @@ namespace me.cqp.luohuaming.Setu.Code
             {
                 MainSave.CQLog.Warning("初始化失败", $"{ex.Message}\r\n{ex.StackTrace}");
             }
+            QuotaHistory.CreateGroupQuotaDict();
         }
 
         private void InitConfig()
