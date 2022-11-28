@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using Native.Sdk.Cqp;
 using Native.Tool.IniConfig;
+using Scighost.PixivApi;
 
 namespace me.cqp.luohuaming.Setu.PublicInfos
 {
@@ -19,6 +20,7 @@ namespace me.cqp.luohuaming.Setu.PublicInfos
         public static WebProxy Proxy { get; set; }
         public static List<DelayAPI_Save> SauceNao_Saves { get; set; } = new List<DelayAPI_Save>();
         public static List<DelayAPI_Save> TraceMoe_Saves { get; set; } = new List<DelayAPI_Save>();
+        public static PixivClient PixivClient { get; set; }
 
         static IniConfig configMain;
         public static IniConfig ConfigMain
