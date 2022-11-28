@@ -10,6 +10,7 @@
     <RootNamespace>me.cqp.luohuaming.Setu.PublicInfos</RootNamespace>
     <AssemblyName>me.cqp.luohuaming.Setu.PublicInfos</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <LangVersion>10</LangVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -50,6 +51,12 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Scighost.PixivApi">
+      <HintPath>..\..\PixivApi\PixivApi\bin\Debug\netstandard2.1\Scighost.PixivApi.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -61,7 +68,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\PixivAPI.cs" />
     <Compile Include="CommonHelper.cs" />
+    <Compile Include="ConfigHelper.cs" />
+    <Compile Include="Config\AppConfig.cs" />
+    <Compile Include="Config\OrderConfig.cs" />
+    <Compile Include="Config\QuotaHistory.cs" />
     <Compile Include="FunctionResult.cs" />
     <Compile Include="MainSave.cs" />
     <Compile Include="Models.cs" />
@@ -77,6 +89,9 @@
       <Project>{0ca93eb9-4e25-46c6-94d2-0f97137a1606}</Project>
       <Name>Native.Tool</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
