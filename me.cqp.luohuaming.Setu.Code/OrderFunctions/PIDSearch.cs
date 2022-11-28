@@ -1,10 +1,14 @@
-﻿using System;
+﻿using me.cqp.luohuaming.Setu.Code.Helper;
+using me.cqp.luohuaming.Setu.PublicInfos;
+using me.cqp.luohuaming.Setu.PublicInfos.API;
+using me.cqp.luohuaming.Setu.PublicInfos.Config;
+using Native.Sdk.Cqp.EventArgs;
+using Scighost.PixivApi.Illust;
+using System;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using me.cqp.luohuaming.Setu.Code.Helper;
-using Native.Sdk.Cqp.EventArgs;
-using Native.Tool.IniConfig;
-using me.cqp.luohuaming.Setu.PublicInfos;
 
 namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
 {
@@ -38,7 +42,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
             }
             PublicVariables.ReadOrderandAnswer();
 
-            SendText sendText = new SendText();
+            SendText sendText = new();
             sendText.SendID = e.FromGroup;
             result.SendObject.Add(sendText);
             if (e.Message.Text.Trim().Length == GetOrderStr().Length)
@@ -53,15 +57,21 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
             }
             result.SendFlag = false;
             e.FromGroup.SendGroupMessage($"正在查询pid={pid}的插画信息，请等待……");
-            IllustInfo illustInfo = PixivAPI.GetIllustInfo(pid);
-            e.FromGroup.SendGroupMessage(illustInfo.IllustText);
-            var message = e.FromGroup.SendGroupMessage(illustInfo.IllustCQCode);
-            if (illustInfo.R18_Flag)
+            IllustInfo illustInfo = PixivAPI.GetPicInfo(pid);
+            e.FromGroup.SendGroupMessage($"");
+            if (illustInfo.Tags.Any(x=>x.Name.Contains("R-18")))
             {
-                IniConfig ini = MainSave.ConfigMain;
-                Task task = new Task(() =>
+                if (AppConfig.R18 is false)
                 {
-                    Thread.Sleep(ini.Object["R18"]["RevokeTime"] * 1000);
+                    sendText.MsgToSend.Add("限制图片。");
+                    return result;
+                }
+
+                var message = e.FromGroup.SendGroupMessage(PixivAPI.DownloadPic(pid, Path.Combine(MainSave.ImageDirectory, "PIDSearch")));
+                if (AppConfig.R18_PicRevoke is false) return result;
+                Task task = new(() =>
+                {
+                    Thread.Sleep(AppConfig.R18_RevokeTime);
                     e.CQApi.RemoveMessage(message.Id);
                 }); task.Start();
             }

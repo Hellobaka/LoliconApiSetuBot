@@ -1,8 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using me.cqp.luohuaming.Setu.PublicInfos;
+using me.cqp.luohuaming.Setu.PublicInfos.Config;
 using Native.Sdk.Cqp.EventArgs;
-using Native.Tool.IniConfig;
-using me.cqp.luohuaming.Setu.PublicInfos;
+using System;
+using System.IO;
 
 namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
 {
@@ -31,9 +31,9 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
             };
             SendText sendText = new SendText
             {
-                 SendID=e.FromGroup
+                SendID = e.FromGroup
             };
-            if (!CommonHelper.CheckAdmin(e.FromQQ.Id))
+            if (!AppConfig.Admin.Contains(e.FromQQ.Id))
             {
                 sendText.MsgToSend.Add("权限不足，拒绝操作");
             }

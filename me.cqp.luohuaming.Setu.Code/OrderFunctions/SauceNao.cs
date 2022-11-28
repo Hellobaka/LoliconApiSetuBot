@@ -12,6 +12,7 @@ using Native.Tool.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using me.cqp.luohuaming.Setu.PublicInfos;
+using me.cqp.luohuaming.Setu.PublicInfos.API;
 
 namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
 {
@@ -75,94 +76,67 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
         {
             string url = "https://saucenao.com/search.php?output_type=2&api_key=56faa0cddf50860330a295e0c331be7c4b4c021f&db=999&numres=3&url=";
             url += CommonHelper.GetImageURL(cqcode.ToSendString());
-            using (HttpWebClient http = new HttpWebClient()
+            Directory.CreateDirectory(Path.Combine(MainSave.ImageDirectory, "SauceNao"));
+            Directory.CreateDirectory(Path.Combine(MainSave.ImageDirectory, "SauceNaoTemp"));
+            using HttpWebClient http = new()
             {
                 TimeOut = 10000,
                 Encoding = Encoding.UTF8,
                 Proxy = MainSave.Proxy,
                 AllowAutoRedirect = true,
-            })
+            };
+            try
             {
-                try
+                Directory.CreateDirectory(MainSave.ImageDirectory + "SauceNaotemp");
+                var result = JsonConvert.DeserializeObject<SauceNao_Result.SauceNAO>(http.DownloadString(url));
+                if (result == null || result.results == null || result.results.Count == 0)
                 {
-                    Directory.CreateDirectory(MainSave.ImageDirectory + "SauceNaotemp");
-                    var result = JsonConvert.DeserializeObject<SauceNao_Result.SauceNAO>(http.DownloadString(url));
-                    if (result == null || result.results == null || result.results.Count == 0)
-                    {
-                        e.CQLog.Info("SauceNao识图", "拉取结果失败，建议重试");
-                        e.FromGroup.SendGroupMessage("诶嘿，网络出了点小差~");
-                        return;
-                    }
-                    e.CQLog.Info("SauceNao识图", "结果获取成功，正在拉取缩略图");
-                    int count = 1;
-                    result.results = result.results.Take(1).ToList();
-                    string str = result.ToString();
-                    foreach (var item in result.results)
-                    {
-                        try
-                        {
-                            string filename = Guid.NewGuid().ToString().ToString();
-                            http.DownloadFile(item.header.thumbnail, $@"{MainSave.ImageDirectory}\SauceNaotemp\{filename}.jpg");
-                            str = str.Replace($"{{{count}}}", CQApi.CQCode_Image($@"\SauceNaotemp\{filename}.jpg").ToSendString());
-                        }
-                        catch
-                        {
-                            str = str.Replace($"{{{count}}}", item.header.thumbnail);
-                        }
-                        finally { count++; }
-                    }
-                    e.FromGroup.SendGroupMessage(str);
-                    List<int> ls = result.results.Where(x => x.data.pixiv_id.HasValue).Select(x => x.data.pixiv_id.Value).ToList();
-                    if (ls.Count != 0)
-                    {
-                        e.FromGroup.SendGroupMessage("有Pixiv图片信息，尝试拉取原图...");
-                        foreach (var item in ls)
-                        {
-                            try
-                            {
-                                http.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
-                                if (!File.Exists($@"{MainSave.ImageDirectory}\LoliconPic\${item}.jpg"))
-                                {
-                                    dynamic jObject = JObject.Parse(http.UploadString("https://api.pixiv.cat/v1/generate", $"p={item}"));
-                                    string pixiv_url = string.Empty;
-                                    try
-                                    {
-                                        var urllist = jObject.original_urls_proxy;
-                                        pixiv_url = urllist[0];
-                                        e.FromGroup.SendGroupMessage("此图为多P图片，选择第一P下载");
-                                        MainSave.CQLog.Info("SauceNao识图", "此图为多P图片，选择第一P下载");
-                                    }
-                                    catch
-                                    {
-                                        pixiv_url = jObject.Value<string>("original_url_proxy");
-                                    }
-                                    if (!Directory.Exists($@"{MainSave.ImageDirectory}\LoliconPic"))
-                                        Directory.CreateDirectory($@"{MainSave.ImageDirectory}\LoliconPic");
-                                    http.DownloadFile(pixiv_url, $@"{MainSave.ImageDirectory}\LoliconPic\{item}.jpg");
-                                    MainSave.CQLog.Info("SauceNao识图", $"pid={item}的图片下载成功，尝试发送");
-                                }
-                                QQMessage staues = e.FromGroup.SendGroupMessage(CQApi.CQCode_Image($@"\LoliconPic\{item}.jpg"));
-                            }
-                            catch (Exception exc)
-                            {
-                                e.FromGroup.SendGroupMessage($"pid={item}的图片拉取失败,错误信息:{exc.Message}");
-                            }
-                        }
-                    }
+                    e.CQLog.Info("SauceNao识图", "拉取结果失败，建议重试");
+                    e.FromGroup.SendGroupMessage("诶嘿，网络出了点小差~");
+                    return;
                 }
-                catch (Exception exc)
+                e.CQLog.Info("SauceNao识图", "结果获取成功");
+                result.results = result.results.Take(1).ToList();
+                string str = result.ToString();
+                e.CQLog.Info("SauceNao识图", "正在拉取缩略图");
+                var naoResult = result.results.OrderByDescending(x => x.header.similarity).First();
+                if ((double.TryParse(naoResult.header.similarity, out double value) ? value : -1) < 60)
                 {
-                    e.CQLog.Info("SauceNao搜图", $"搜索失败，错误信息:{exc.Message}在{exc.StackTrace}");
-                    e.FromGroup.SendGroupMessage($"拉取失败，错误信息:{exc.Message}");
+                    e.CQLog.Info("SauceNao识图", "相似度过低");
+                    e.FromGroup.SendGroupMessage("相似度过低，没有找到对应图片");
+                    return;
                 }
                 try
                 {
-                    string path = $@"{MainSave.ImageDirectory}\SauceNaotemp";
-                    if (Directory.Exists(path))
-                        Directory.Delete(path, true);
+                    string filename = Guid.NewGuid().ToString().ToString();
+                    http.DownloadFile(naoResult.header.thumbnail, $@"{MainSave.ImageDirectory}\SauceNaotemp\{filename}.jpg");
+                    str = str.Replace("{1}", CQApi.CQCode_Image($@"\SauceNaotemp\{filename}.jpg").ToSendString());
                 }
-                catch { }
+                catch
+                {
+                    str = str.Replace("{1}", naoResult.header.thumbnail);
+                }
+                e.FromGroup.SendGroupMessage(str);
+                if (!naoResult.data.pixiv_id.HasValue) return;
+                int pid = naoResult.data.pixiv_id.Value;
+                e.FromGroup.SendGroupMessage("有Pixiv图片信息，尝试拉取原图...");
+                if (!File.Exists($@"{MainSave.ImageDirectory}\SauceNao\${pid}.jpg"))
+                {
+                    e.FromGroup.SendGroupMessage(PixivAPI.DownloadPic(pid, Path.Combine(MainSave.ImageDirectory, "SauceNao")));
+                }
             }
+            catch (Exception exc)
+            {
+                e.CQLog.Info("SauceNao搜图", $"搜索失败，错误信息:{exc.Message}在{exc.StackTrace}");
+                e.FromGroup.SendGroupMessage($"拉取失败，错误信息:{exc.Message}");
+            }
+            try
+            {
+                string path = $@"{MainSave.ImageDirectory}\SauceNaotemp";
+                if (Directory.Exists(path))
+                    Directory.Delete(path, true);
+            }
+            catch { }
         }
 
         public FunctionResult Progress(CQPrivateMessageEventArgs e)
