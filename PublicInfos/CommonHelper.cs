@@ -41,14 +41,15 @@ namespace me.cqp.luohuaming.Setu.PublicInfos
             return ImageDirectory;
         }
 
-        public static int ToInt(this string str) => int.TryParse(str, out int value) ? -1 : value;
+        public static int ToInt(this string str) => int.TryParse(str, out int value) ? value : -1;
 
         public static string Join<T>(this IEnumerable<T> ls, string pattern)
         {
             string str = "";
             foreach (var item in ls)
                 str += item.ToString() + pattern;
-            return str.Substring(0, str.Length - pattern.Length);
+            if(str.Length > 0) str = str.Substring(0, str.Length - pattern.Length);
+            return str;
         }
     }
 }
