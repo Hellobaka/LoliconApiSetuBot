@@ -1,15 +1,16 @@
-﻿using System;
+﻿using me.cqp.luohuaming.Setu.PublicInfos;
+using me.cqp.luohuaming.Setu.PublicInfos.Config;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
-using System.IO;
 using System.Windows.Threading;
-using Native.Tool.IniConfig;
-using Native.Tool.IniConfig.Linq;
-using me.cqp.luohuaming.Setu.PublicInfos;
 
 namespace me.cqp.luohuaming.Setu.UI
 {
@@ -18,22 +19,16 @@ namespace me.cqp.luohuaming.Setu.UI
     /// </summary>
     public partial class Settings : Page
     {
-        MainWindow _parentWin;
-        public MainWindow parentwindow
-        {
-            get { return _parentWin; }
-            set { _parentWin = value; }
-        }
-        static IniConfig ini=MainSave.ConfigMain;
-        public Settings()
-        {
-            InitializeComponent();
-        }
-        class BindingGroup
+        public MainWindow ParentWindow { get; set; }
+        public class BindingGroup
         {
             public bool IsChecked { get; set; }
             public long GroupId { get; set; }
             public string GroupName { get; set; }
+        }
+        public Settings()
+        {
+            InitializeComponent();
         }
         private void Hyperlink_Click(object sender, RoutedEventArgs e)
         {
@@ -43,34 +38,28 @@ namespace me.cqp.luohuaming.Setu.UI
 
         private void button_SettingsSave_Click(object sender, RoutedEventArgs e)
         {
-            ini.Object["Config"]["ApiSwitch"]=new IValue(togglebutton_ApiKey.IsChecked.GetValueOrDefault() ? 1 : 0);
-            if (togglebutton_ApiKey.IsChecked.GetValueOrDefault())
+            if (textbox_GroupLimit.Text.ToInt() < 0 || textbox_PersonLimit.Text.ToInt() < 0)
             {
-                ini.Object["Config"]["ApiKey"]=new IValue(textbox_ApiKey.Text);
+                SnackbarMessage_Show("配置项存在非纯数字", 5);
+                return;
             }
-            ini.Object["Config"]["MaxofPerson"]=new IValue((IsPureInteger(textbox_PersonLimit.Text)) ? textbox_PersonLimit.Text : "5");
-            ini.Object["Config"]["MaxofGroup"]=new IValue((IsPureInteger(textbox_GroupLimit.Text)) ? textbox_GroupLimit.Text : "30");
-            int count = 0;
+            ConfigHelper.SetConfig("MaxGroupQuota", textbox_GroupLimit.Text.ToInt());
+            ConfigHelper.SetConfig("MaxPersonQuota", textbox_PersonLimit.Text.ToInt());
+
             List<BindingGroup> group = (List<BindingGroup>)ItemControl_Group.DataContext;
-            foreach (var item in group)
-            {
-                if (item.IsChecked)
-                {
-                    ini.Object["GroupList"][$"Index{count}"]=new IValue(item.GroupId.ToString());
-                    count++;
-                }
-            }
-            ini.Object["GroupList"]["Count"]=new IValue(count.ToString());
-            count = 0;
+            ConfigHelper.SetConfig("GroupList", group.Where(x => x.IsChecked).Select(x => x.GroupId).ToList().Join("|"));
+
+            string str = "";
             foreach (var item in listbox_Admin.Items)
             {
-                ini.Object["Admin"][$"Index{count}"]=new IValue(item.ToString());
-                count++;
+                str += item.ToString() + "|";
             }
-            ini.Object["Admin"]["Count"]=new IValue(count.ToString());
-            ini.Save();
+            ConfigHelper.SetConfig("AdminList", str.Substring(0, str.Length - 1));
+
+            ConfigHelper.InitConfig();
             SnackbarMessage_Show("更改已保存", 2);
         }
+
         /// <summary>
         /// 底部提示条消息显示
         /// </summary>
@@ -78,121 +67,88 @@ namespace me.cqp.luohuaming.Setu.UI
         /// <param name="seconds">存留的秒数</param>
         public void SnackbarMessage_Show(string message, double seconds)
         {
-            parentwindow.Snackbar_Message.Visibility = Visibility.Visible;
-            parentwindow.Snackbar_Message.MessageQueue.Enqueue(message, null, null, null, false, true, TimeSpan.FromSeconds(seconds));
-            //Xamldisplay_Snackbar.Visibility = Visibility.Collapsed;
+            ParentWindow.Snackbar_Message.Visibility = Visibility.Visible;
+            ParentWindow.Snackbar_Message.MessageQueue.Enqueue(message, null, null, null, false, true, TimeSpan.FromSeconds(seconds));
         }
 
-        private bool IsPureInteger(string str)
-        {
-            try
-            {
-                Convert.ToInt64(str);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-        private DispatcherTimer dispatcherTimer = null;
         private void Page_Settings_Loaded(object sender, RoutedEventArgs e)
         {
-            togglebutton_ApiKey.IsChecked = ini.Object["Config"]["ApiSwitch"].GetValueOrDefault(0) == 1 ? true : false;
-            textbox_ApiKey.Text = ini.Object["Config"]["ApiKey"].GetValueOrDefault("0");
-            textbox_PersonLimit.Text = ini.Object["Config"]["MaxofPerson"].GetValueOrDefault("5");
-            textbox_GroupLimit.Text = ini.Object["Config"]["MaxofGroup"].GetValueOrDefault("30");
+            textbox_PersonLimit.Text = AppConfig.MaxPersonQuota.ToString();
+            textbox_GroupLimit.Text = AppConfig.MaxGroupQuota.ToString();
 
-            int count = ini.Object["Admin"]["Count"].GetValueOrDefault(0);
-            for (int i = 0; i < count; i++)
+            foreach (var item in AppConfig.AdminList)
             {
-                listbox_Admin.Items.Add(ini.Object["Admin"][$"Index{i}"].GetValueOrDefault((long)0));
+                listbox_Admin.Items.Add(item);
             }
-            if(MainSave.CQApi!=null)
+            new Thread(() =>
             {
-                var groups = MainSave.CQApi.GetGroupList();
-                List<BindingGroup> group = new List<BindingGroup>();
-                try
+                if (MainSave.CQApi != null)
                 {
-                    foreach (var item in groups)
+                    var groups = MainSave.CQApi.GetGroupList();
+                    List<BindingGroup> group = new List<BindingGroup>();
+                    try
+                    {
+                        foreach (var item in groups)
+                        {
+                            BindingGroup temp = new BindingGroup
+                            {
+                                IsChecked = AppConfig.GroupList.Contains(item.Group.Id),
+                                GroupName = item.Name,
+                                GroupId = item.Group.Id
+                            };
+                            group.Add(temp);
+                        }
+                    }
+                    catch
                     {
                         BindingGroup temp = new BindingGroup();
-                        temp.IsChecked = CheckGroupOpen(item.Group.Id);
-                        temp.GroupName = item.Name;
-                        temp.GroupId = item.Group.Id;
+                        temp.IsChecked = false;
+                        temp.GroupName = "读取群列表失败...";
+                        temp.GroupId = 0;
                         group.Add(temp);
                     }
+                    Dispatcher.Invoke(() => ItemControl_Group.DataContext = group);
                 }
-                catch
-                {
-                    BindingGroup temp = new BindingGroup();
-                    temp.IsChecked = false;
-                    temp.GroupName = "读取群列表失败...";
-                    temp.GroupId = 0;
-                    group.Add(temp);
-                }
-                ItemControl_Group.DataContext = group;
-            }            
 
-            dispatcherTimer = new DispatcherTimer();
-            dispatcherTimer.Tick += new EventHandler(GetImageFloderInfo);
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
-            dispatcherTimer.Start();
-        }
-        public bool CheckGroupOpen(long groupid)
-        {
-            int count = ini.Object["GroupList"]["Count"].GetValueOrDefault(0);
-            for (int i = 0; i < count; i++)
-            {
-                if (groupid == ini.Object["GroupList"][$"Index{i}"].GetValueOrDefault((long)0))
+                double filesize = 0, count = 0;
+                DirectoryInfo directoryInfo;
+                FileInfo[] fileInfo;
+                if (Directory.Exists(MainSave.ImageDirectory + "LoliconPic"))
                 {
-                    return true;
+                    directoryInfo = new DirectoryInfo(MainSave.ImageDirectory + "LoliconPic");
+                    fileInfo = directoryInfo.GetFiles();
+                    foreach (var item in fileInfo)
+                    {
+                        count++;
+                        filesize += item.Length;
+                    }
                 }
-            }
-            return false;
-        }
-        /// <summary>
-        /// 更新图片文件夹信息
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void GetImageFloderInfo(object sender, EventArgs e)
-        {
-            double filesize = 0, count = 0;
-            DirectoryInfo directoryInfo;
-            FileInfo[] fileInfo;
-            if (Directory.Exists(MainSave.ImageDirectory + "LoliconPic"))
-            {
-                directoryInfo = new DirectoryInfo(MainSave.ImageDirectory + "LoliconPic");
-                fileInfo = directoryInfo.GetFiles();
-                foreach (var item in fileInfo)
+                if (Directory.Exists(MainSave.ImageDirectory + "CustomAPIPic"))
                 {
-                    count++;
-                    filesize += item.Length;
+                    directoryInfo = new DirectoryInfo(MainSave.ImageDirectory + "CustomAPIPic");
+                    fileInfo = directoryInfo.GetFiles();
+                    foreach (var item in fileInfo)
+                    {
+                        count++;
+                        filesize += item.Length;
+                    }
                 }
-            }
-            if(Directory.Exists(MainSave.ImageDirectory+ "CustomAPIPic"))
-            {
-                directoryInfo = new DirectoryInfo(MainSave.ImageDirectory + "CustomAPIPic");
-                fileInfo = directoryInfo.GetFiles();
-                foreach (var item in fileInfo)
+                if (Directory.Exists(MainSave.ImageDirectory + "JsonDeserizePic"))
                 {
-                    count++;
-                    filesize += item.Length;
+                    directoryInfo = new DirectoryInfo(MainSave.ImageDirectory + "JsonDeserizePic");
+                    fileInfo = directoryInfo.GetFiles();
+                    foreach (var item in fileInfo)
+                    {
+                        count++;
+                        filesize += item.Length;
+                    }
                 }
-            }
-            if (Directory.Exists(MainSave.ImageDirectory + "JsonDeserizePic"))
-            {
-                directoryInfo = new DirectoryInfo(MainSave.ImageDirectory + "JsonDeserizePic");
-                fileInfo = directoryInfo.GetFiles();
-                foreach (var item in fileInfo)
+                Dispatcher.Invoke(() =>
                 {
-                    count++;
-                    filesize += item.Length;
-                }
-            }
-            textblock_Size.Text = $"{filesize / 1048576:0.00} MB";
-            textblock_Count.Text = $"{count} 个";
+                    textblock_Size.Text = $"{filesize / 1048576:0.00} MB";
+                    textblock_Count.Text = $"{count} 个";
+                });
+            }).Start();
         }
 
         private void button_ClearCache_Click(object sender, RoutedEventArgs e)
@@ -208,7 +164,7 @@ namespace me.cqp.luohuaming.Setu.UI
             Button bt_No = new Button();
             bt_No.Content = "GCK!";
             bt_No.Margin = new Thickness(5, 10, 0, 0);
-            bt_No.Click += (object sender2, RoutedEventArgs e2) => { dialoghost_Main.IsOpen = false; };
+            bt_No.Click += (_, _) => { dialoghost_Main.IsOpen = false; };
 
             StackPanel panelHorizontal = new StackPanel
             {
@@ -241,7 +197,7 @@ namespace me.cqp.luohuaming.Setu.UI
 
         private void button_OpenFloder_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(new ProcessStartInfo(MainSave.ImageDirectory + "LoliconPic"));
+            Process.Start(MainSave.ImageDirectory + "LoliconPic");
         }
 
         private void button_AllSelect_Click(object sender, RoutedEventArgs e)
@@ -280,8 +236,7 @@ namespace me.cqp.luohuaming.Setu.UI
         private void button_Plus_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(textbox_Admin.Text)) return;
-            long temp;
-            if (!long.TryParse(textbox_Admin.Text, out temp))
+            if (!long.TryParse(textbox_Admin.Text, out _))
             {
                 SnackbarMessage_Show("格式错误", 2);
                 textbox_Admin.Text = "";
@@ -319,7 +274,7 @@ namespace me.cqp.luohuaming.Setu.UI
         private void ShowDialogwithPage(object sender, RoutedEventArgs e)
         {
             StackPanel panel = new StackPanel();
-            panel.Margin = new Thickness(16,16,16,16);
+            panel.Margin = new Thickness(16, 16, 16, 16);
             Frame fm = new Frame();
             fm.Content = GetPage((sender as MenuItem).Tag.ToString());
             panel.Children.Add(fm);

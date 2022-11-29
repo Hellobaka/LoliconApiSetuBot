@@ -66,7 +66,7 @@ namespace me.cqp.luohuaming.Setu.UI
                     if (frmMain.Content.GetType().Name == "Settings") return;
                     Settings pg = new Settings();
                     frmMain.Content = pg;
-                    pg.parentwindow = this;
+                    pg.ParentWindow = this;
                 }
                 else if (tag == "AboutMe")
                 {
@@ -135,7 +135,7 @@ namespace me.cqp.luohuaming.Setu.UI
         {
             Settings pg = new Settings();
             frmMain.Content = pg;
-            pg.parentwindow = this;
+            pg.ParentWindow = this;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using me.cqp.luohuaming.Setu.PublicInfos.Config;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -82,6 +83,56 @@ namespace me.cqp.luohuaming.Setu.PublicInfos
                 File.WriteAllText(ConfigFileName, "{}");
             var o = JObject.Parse(File.ReadAllText(ConfigFileName));
             return o.ContainsKey(sectionName);
+        }
+
+        public static void InitConfig()
+        {
+            AppConfig.MaxGroupQuota = GetConfig("MaxGroupQuota", 50);
+            AppConfig.MaxPersonQuota = GetConfig("MaxPersonQuota", 10);
+            AppConfig.R18 = GetConfig("R18", false);
+            AppConfig.R18_PicRevoke = GetConfig("R18_PicRevoke", true);
+            AppConfig.R18_RevokeTime = GetConfig("R18_RevokeTime", 60 * 1000);
+            AppConfig.ProxyEnabled = GetConfig("ProxyEnabled", false);
+            AppConfig.ProxyURL = GetConfig("ProxyURL", "");
+            AppConfig.ProxyUserName = GetConfig("ProxyUserName", "");
+            AppConfig.ProxyPassword = GetConfig("ProxyPassword", "");
+            AppConfig.PassSNI = GetConfig("PassSNI", true);
+            AppConfig.SNI_IPAddress = GetConfig("SNI_IPAddress", "");
+            AppConfig.PixivCookie = GetConfig("PixivCookie", "");
+            AppConfig.PixivUA = GetConfig("PixivUA", "");
+            AppConfig.AdminList = ParseConfigList(GetConfig("AdminList", ""));
+            AppConfig.GroupList = ParseConfigList(GetConfig("WhiteList", ""));
+
+            AppConfig.StartResponse = GetConfig("StartResponse", "拉取图片中~至少需要15s……\n你今日剩余调用次数为<count>次(￣▽￣)");
+            AppConfig.MaxMemberResoponse = GetConfig("MaxMemberResoponse", "你当日所能调用的次数已达上限(￣▽￣)");
+            AppConfig.MaxGroupResoponse = GetConfig("MaxGroupResoponse", "本群当日所能调用的次数已达上限(￣▽￣)");
+            AppConfig.PicNotFoundResoponse = GetConfig("PicNotFoundResoponse", "哦淦 老兄你的xp好机八小众啊 找不到啊");
+            AppConfig.SuccessResponse = GetConfig("SuccessResponse", "机器人当日剩余调用次数:<quota>\n下次额度恢复时间为:<quota_time>\ntitle: <title>\nauthor: <author>\np: <p>\npid: <pid>");
+
+            OrderConfig.LoliconPicOrder = GetConfig("LoliconPicOrder", "");
+            OrderConfig.ClearLimitOrder = GetConfig("ClearLimitOrder", "");
+            OrderConfig.PIDSearchOrder = GetConfig("PIDSearchOrder", "");
+            OrderConfig.HotSearchOrder = GetConfig("HotSearchOrder", "");
+            OrderConfig.SauceNaoSearchOrder = GetConfig("SauceNaoSearchOrder", "");
+            OrderConfig.TraceMoeSearchOrder = GetConfig("TraceMoeSearchOrder", "");
+            OrderConfig.YandereIDSearchOrder = GetConfig("YandereIDSearchOrder", "");
+            OrderConfig.YandereTagSearchOrder = GetConfig("YandereTagSearchOrder", "");
+
+            QuotaHistory.CreateGroupQuotaDict();
+        }
+
+        public static List<long> ParseConfigList(string s)
+        {
+            List<long> result = new();
+            foreach (string item in s.Split('|'))
+            {
+                if (long.TryParse(item, out long admin))
+                {
+                    result.Add(admin);
+                }
+            }
+
+            return result;
         }
     }
 }

@@ -40,5 +40,15 @@ namespace me.cqp.luohuaming.Setu.PublicInfos
             var ImageDirectory = Path.Combine(Environment.CurrentDirectory, "data", "image\\");
             return ImageDirectory;
         }
+
+        public static int ToInt(this string str) => int.TryParse(str, out int value) ? -1 : value;
+
+        public static string Join<T>(this IEnumerable<T> ls, string pattern)
+        {
+            string str = "";
+            foreach (var item in ls)
+                str += item.ToString() + pattern;
+            return str.Substring(0, str.Length - pattern.Length);
+        }
     }
 }

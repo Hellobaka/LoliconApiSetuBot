@@ -19,11 +19,11 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
     {
         public string GetOrderStr()
         {
-            if (string.IsNullOrWhiteSpace(PublicVariables.LoliConPic))
+            if (string.IsNullOrWhiteSpace(OrderConfig.LoliconPicOrder))
             {
-                PublicVariables.LoliConPic = Guid.NewGuid().ToString();
+                return Guid.NewGuid().ToString();
             }
-            return PublicVariables.LoliConPic;
+            return OrderConfig.LoliconPicOrder;
         }
 
         public bool Judge(string destStr)
@@ -81,7 +81,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                 SetuV2 deserialize = JsonConvert.DeserializeObject<SetuV2>(json);
                 if (deserialize.data.Length == 0)
                 {
-                    sendText.MsgToSend.Add("哦淦 老兄你的xp好机八小众啊 找不到啊");
+                    sendText.MsgToSend.Add(AppConfig.PicNotFoundResoponse);
                     return result;
                 }
                 var pic = deserialize.data.First();
@@ -138,7 +138,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
         public Datum[] data { get; set; }
         public override string ToString()
         {
-            string result = AppConfig.Sucess.Replace("<msg>", error);
+            string result = AppConfig.SuccessResponse.Replace("<msg>", error);
             Datum picinfo = data[0];
             result = result.Replace("<pid>", picinfo.pid.ToString());
             result = result.Replace("<p>", picinfo.p.ToString());

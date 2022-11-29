@@ -20,19 +20,9 @@ namespace me.cqp.luohuaming.Setu.Code
             };
             try
             {
-                if (AppConfig.WhiteMode)
+                if (!AppConfig.GroupList.Contains(e.FromGroup))
                 {
-                    if (!AppConfig.WhiteList.Contains(e.FromGroup))
-                    {
-                        return result;
-                    }
-                }
-                else
-                {
-                    if (AppConfig.BlackList.Contains(e.FromGroup))
-                    {
-                        return result;
-                    }
+                    return result;
                 }
                 DelaySauceNao(e);
                 DelayTraceMoe(e);

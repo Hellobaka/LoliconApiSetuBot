@@ -10,11 +10,11 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
     {
         public string GetOrderStr()
         {
-            if (string.IsNullOrWhiteSpace(PublicVariables.ClearLimit))
+            if (string.IsNullOrWhiteSpace(OrderConfig.ClearLimitOrder))
             {
-                PublicVariables.ClearLimit = Guid.NewGuid().ToString();
+                return Guid.NewGuid().ToString();
             }
-            return PublicVariables.ClearLimit;
+            return OrderConfig.ClearLimitOrder;
         }
 
         public bool Judge(string destStr)
@@ -33,7 +33,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
             {
                 SendID = e.FromGroup
             };
-            if (!AppConfig.Admin.Contains(e.FromQQ.Id))
+            if (!AppConfig.AdminList.Contains(e.FromQQ.Id))
             {
                 sendText.MsgToSend.Add("权限不足，拒绝操作");
             }

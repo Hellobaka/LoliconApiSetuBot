@@ -14,11 +14,11 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
     {
         public string GetOrderStr()
         {
-            if (string.IsNullOrWhiteSpace(PublicVariables.TraceMoeSearch))
+            if (string.IsNullOrWhiteSpace(OrderConfig.TraceMoeSearchOrder))
             {
-                PublicVariables.TraceMoeSearch = Guid.NewGuid().ToString();
+                return Guid.NewGuid().ToString();
             }
-            return PublicVariables.TraceMoeSearch;
+            return OrderConfig.TraceMoeSearchOrder;
         }
 
         public bool Judge(string destStr)

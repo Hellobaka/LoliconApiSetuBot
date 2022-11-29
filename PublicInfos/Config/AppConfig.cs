@@ -27,10 +27,6 @@ namespace me.cqp.luohuaming.Setu.PublicInfos.Config
         /// </summary>
         public static string OutofQuota { get; set; }
         /// <summary>
-        /// 下载图片失败
-        /// </summary>
-        public static string DownloadFailedResoponse { get; set; }
-        /// <summary>
         /// 个人调用达到上限
         /// </summary>
         public static string MaxMemberResoponse { get; set; }
@@ -41,7 +37,7 @@ namespace me.cqp.luohuaming.Setu.PublicInfos.Config
         /// <summary>
         /// 成功拉取图片
         /// </summary>
-        public static string Sucess { get; set; }
+        public static string SuccessResponse { get; set; }
         /// <summary>
         /// 其他错误
         /// </summary>
@@ -54,9 +50,7 @@ namespace me.cqp.luohuaming.Setu.PublicInfos.Config
         /// 未找到满足关键字的图片
         /// </summary>
         public static string PicNotFoundResoponse { get; set; }
-        public static bool WhiteMode { get; set; }
-        public static List<long> WhiteList { get; set; }
-        public static List<long> BlackList { get; set; }
-        public static List<long> Admin { get; set; }
+        public static List<long> GroupList { get; set; }
+        public static List<long> AdminList { get; set; }
     }
 }
