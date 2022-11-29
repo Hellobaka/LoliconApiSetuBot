@@ -36,7 +36,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
             FunctionResult result = new FunctionResult()
             {
                 Result = true,
-                SendFlag = false,
+                SendFlag = true,
             };
             SendText sendText = new SendText
             {
@@ -69,7 +69,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                 }
 
                 order = order.Replace("r18", "");
-                string url = $"https://api.lolicon.app/setu/v2{(string.IsNullOrEmpty(order) ? "" : "?keyword=" + order)}{(r18 ? "&r18=1" : "")}";
+                string url = $"https://api.lolicon.app/setu/v2?keyword={order}&r18={(r18 ? "1" : "0")}";
                 using HttpWebClient http = new()
                 {
                     TimeOut = 10000,
@@ -85,15 +85,15 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                     return result;
                 }
                 var pic = deserialize.data.First();
-                string filename = new DirectoryInfo(basePath).GetFiles().FirstOrDefault(x => x.Name.Contains(pic.pid.ToString())).Name;
+                string filename = new DirectoryInfo(basePath).GetFiles().FirstOrDefault(x => x.Name.Contains(pic.pid.ToString()))?.Name;
                 e.FromGroup.SendGroupMessage(deserialize.ToString().Replace("<@>", e.FromQQ.CQCode_At().ToString()));
                 if (string.IsNullOrEmpty(filename))
                 {
                     var fileinfo = new FileInfo(PixivAPI.DownloadPic(pic.pid, basePath));
                     filename = fileinfo.Name;
                 }
-                var msgItem = e.FromGroup.SendGroupMessage(CQApi.CQCode_Image(@"\LoliconPic\" + filename));
-                if (AppConfig.R18_PicRevoke)
+                var msgItem = e.FromGroup.SendGroupMessage(CQApi.CQCode_Image(@"LoliconPic\" + filename));
+                if (AppConfig.R18_PicRevoke && r18)
                 {
                     new Thread(() =>
                     {
