@@ -1,5 +1,4 @@
-﻿using me.cqp.luohuaming.Setu.Code.Helper;
-using me.cqp.luohuaming.Setu.PublicInfos;
+﻿using me.cqp.luohuaming.Setu.PublicInfos;
 using me.cqp.luohuaming.Setu.PublicInfos.API;
 using me.cqp.luohuaming.Setu.PublicInfos.Config;
 using Native.Sdk.Cqp.EventArgs;
@@ -7,6 +6,7 @@ using Scighost.PixivApi.Illust;
 using System;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,11 +16,11 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
     {
         public string GetOrderStr()
         {
-            if (string.IsNullOrWhiteSpace(PublicVariables.PIDSearch))
+            if (string.IsNullOrWhiteSpace(OrderConfig.PIDSearchOrder))
             {
-                PublicVariables.PIDSearch = Guid.NewGuid().ToString();
+                return Guid.NewGuid().ToString();
             }
-            return PublicVariables.PIDSearch;
+            return OrderConfig.PIDSearchOrder;
         }
 
         public bool Judge(string destStr)
@@ -35,16 +35,23 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                 Result = true,
                 SendFlag = true,
             };
-            //检查额度限制
-            if (QuotaHelper.QuotaCheck(e.FromGroup, e.FromQQ) is false)
+            SendText sendText = new SendText
             {
+                SendID = e.FromGroup
+            };
+            result.SendObject.Add(sendText);
+            if (QuotaHistory.GroupQuotaDict[e.FromGroup] >= AppConfig.MaxGroupQuota)
+            {
+                sendText.MsgToSend.Add(AppConfig.MaxGroupResoponse);
                 return result;
             }
-            PublicVariables.ReadOrderandAnswer();
 
-            SendText sendText = new();
-            sendText.SendID = e.FromGroup;
-            result.SendObject.Add(sendText);
+            if (QuotaHistory.QueryQuota(e.FromGroup, e.FromQQ) <= 0)
+            {
+                sendText.MsgToSend.Add(AppConfig.MaxMemberResoponse);
+                return result;
+            }
+
             if (e.Message.Text.Trim().Length == GetOrderStr().Length)
             {
                 sendText.MsgToSend.Add("指令无效，请在指令后添加pid");
@@ -55,25 +62,42 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                 sendText.MsgToSend.Add("指令无效，检查是否为纯数字");
                 return result;
             }
-            result.SendFlag = false;
-            e.FromGroup.SendGroupMessage($"正在查询pid={pid}的插画信息，请等待……");
-            IllustInfo illustInfo = PixivAPI.GetPicInfo(pid);
-            e.FromGroup.SendGroupMessage($"");
-            if (illustInfo.Tags.Any(x=>x.Name.Contains("R-18")))
+            try
             {
-                if (AppConfig.R18 is false)
-                {
-                    sendText.MsgToSend.Add("限制图片。");
-                    return result;
-                }
+                int quota = AppConfig.MaxPersonQuota - QuotaHistory.HandleQuota(e.FromGroup, e.FromQQ, -1);
+                e.FromGroup.SendGroupMessage(AppConfig.StartResponse.Replace("<count>", quota.ToString()));
 
-                var message = e.FromGroup.SendGroupMessage(PixivAPI.DownloadPic(pid, Path.Combine(MainSave.ImageDirectory, "PIDSearch")));
-                if (AppConfig.R18_PicRevoke is false) return result;
-                Task task = new(() =>
+                e.FromGroup.SendGroupMessage($"正在查询pid={pid}的插画信息，请等待……");
+                IllustInfo illustInfo = PixivAPI.GetPicInfo(pid);
+                e.FromGroup.SendGroupMessage($"");
+                if (illustInfo.Tags.Any(x => x.Name.Contains("R-18")))
                 {
-                    Thread.Sleep(AppConfig.R18_RevokeTime);
-                    e.CQApi.RemoveMessage(message.Id);
-                }); task.Start();
+                    if (AppConfig.R18 is false)
+                    {
+                        sendText.MsgToSend.Add("限制图片。");
+                        return result;
+                    }
+
+                    var message = e.FromGroup.SendGroupMessage(PixivAPI.DownloadPic(pid, Path.Combine(MainSave.ImageDirectory, "PIDSearch")));
+                    if (AppConfig.R18_PicRevoke is false) return result;
+                    Task task = new(() =>
+                    {
+                        Thread.Sleep(AppConfig.R18_RevokeTime);
+                        e.CQApi.RemoveMessage(message.Id);
+                    }); task.Start();
+                }
+            }
+            catch(WebException exc)
+            {
+                e.CQLog.Info("PIDSearch", exc.Message + exc.StackTrace);
+                sendText.MsgToSend.Add($"网络错误，请重试");
+                QuotaHistory.HandleQuota(e.FromGroup, e.FromQQ, 1);
+            }
+            catch (Exception exc)
+            {
+                e.CQLog.Info("PIDSearch", exc.Message + exc.StackTrace);
+                sendText.MsgToSend.Add($"发生错误: {exc.Message}");
+                QuotaHistory.HandleQuota(e.FromGroup, e.FromQQ, 1);
             }
             return result;
         }

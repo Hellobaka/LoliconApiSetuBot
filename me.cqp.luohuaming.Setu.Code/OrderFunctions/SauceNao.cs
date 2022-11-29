@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using me.cqp.luohuaming.Setu.Code.Helper;
+﻿using me.cqp.luohuaming.Setu.PublicInfos;
+using me.cqp.luohuaming.Setu.PublicInfos.API;
+using me.cqp.luohuaming.Setu.PublicInfos.Config;
 using Native.Sdk.Cqp;
 using Native.Sdk.Cqp.EventArgs;
 using Native.Sdk.Cqp.Model;
 using Native.Tool.Http;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using me.cqp.luohuaming.Setu.PublicInfos;
-using me.cqp.luohuaming.Setu.PublicInfos.API;
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
 {
@@ -20,11 +17,11 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
     {
         public string GetOrderStr()
         {
-            if (string.IsNullOrWhiteSpace(PublicVariables.SauceNaoSearch))
+            if (string.IsNullOrWhiteSpace(OrderConfig.SauceNaoSearchOrder))
             {
-                PublicVariables.SauceNaoSearch = Guid.NewGuid().ToString();
+                return Guid.NewGuid().ToString();
             }
-            return PublicVariables.SauceNaoSearch;
+            return OrderConfig.SauceNaoSearchOrder;
         }
 
         public bool Judge(string destStr)
@@ -39,28 +36,35 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                 Result = true,
                 SendFlag = false,
             };
-            //检查额度限制
-            if (QuotaHelper.QuotaCheck(e.FromGroup, e.FromQQ) is false)
+            SendText sendText = new SendText
             {
+                SendID = e.FromGroup
+            };
+            result.SendObject.Add(sendText);
+            if (QuotaHistory.GroupQuotaDict[e.FromGroup] >= AppConfig.MaxGroupQuota)
+            {
+                sendText.MsgToSend.Add(AppConfig.MaxGroupResoponse);
                 return result;
             }
-            SendText sendText = new SendText();
-            sendText.SendID = e.FromGroup;
-            result.SendObject.Add(sendText);
 
-            if (e.Message.CQCodes.Count != 0)
+            if (QuotaHistory.QueryQuota(e.FromGroup, e.FromQQ) <= 0)
             {
-                foreach (var item in e.Message.CQCodes)
-                {
-                    if (item.IsImageCQCode)
-                    {
-                        SauceNao_Call(item, e);
-                        Thread.Sleep(1000);
-                    }
-                }
+                sendText.MsgToSend.Add(AppConfig.MaxMemberResoponse);
+                return result;
+            }
+
+
+            if (!MainSave.SauceNao_Saves.Any(x => x.GroupID == e.FromGroup && x.QQID == e.FromQQ))
+            {
+                CQCode img = e.Message.CQCodes.FirstOrDefault(x => x.IsImageCQCode);
+                if (img == null) return result;
+                SauceNao_Call(img, e);
             }
             else
             {
+                int quota = AppConfig.MaxPersonQuota - QuotaHistory.HandleQuota(e.FromGroup, e.FromQQ, -1);
+                e.FromGroup.SendGroupMessage(AppConfig.StartResponse.Replace("<count>", quota.ToString()));
+
                 result.SendFlag = true;
                 MainSave.SauceNao_Saves.Add(new DelayAPI_Save(e.FromGroup.Id, e.FromQQ.Id));
                 sendText.MsgToSend.Add("请在接下来的一条消息内发送需要搜索的图片");
@@ -120,9 +124,10 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                 if (!naoResult.data.pixiv_id.HasValue) return;
                 int pid = naoResult.data.pixiv_id.Value;
                 e.FromGroup.SendGroupMessage("有Pixiv图片信息，尝试拉取原图...");
-                if (!File.Exists($@"{MainSave.ImageDirectory}\SauceNao\${pid}.jpg"))
+                if (!new DirectoryInfo(Path.Combine(MainSave.ImageDirectory, "SauceNao")).GetFiles().Any(x => x.Name.Contains(pid.ToString())))
                 {
-                    e.FromGroup.SendGroupMessage(PixivAPI.DownloadPic(pid, Path.Combine(MainSave.ImageDirectory, "SauceNao")));
+                    var fileInfo = new FileInfo(PixivAPI.DownloadPic(pid, Path.Combine(MainSave.ImageDirectory, "SauceNao")));
+                    e.FromGroup.SendGroupMessage(CQApi.CQCode_Image(@"SauceNao\" + fileInfo.Name));
                 }
             }
             catch (Exception exc)

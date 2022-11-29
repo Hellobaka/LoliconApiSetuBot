@@ -39,7 +39,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
             }
             else
             {
-                File.WriteAllText(MainSave.AppDirectory + "ConfigLimit.ini", "[Config]\nTimestamp=1608773153");
+                QuotaHistory.ClearGroupHistory(e.FromGroup, DateTime.Now);
                 sendText.MsgToSend.Add("重置成功");
             }
             result.SendObject.Add(sendText);

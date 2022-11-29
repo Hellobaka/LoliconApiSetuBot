@@ -1,18 +1,15 @@
-﻿using System;
+﻿using me.cqp.luohuaming.Setu.PublicInfos;
+using me.cqp.luohuaming.Setu.PublicInfos.Config;
+using Native.Sdk.Cqp;
+using Native.Sdk.Cqp.EventArgs;
+using Native.Tool.Http;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using me.cqp.luohuaming.Setu.Code.Helper;
-using Native.Sdk.Cqp;
-using Native.Sdk.Cqp.EventArgs;
-using Native.Tool.Http;
-using Native.Tool.IniConfig;
-using Newtonsoft.Json;
-using me.cqp.luohuaming.Setu.PublicInfos;
-using me.cqp.luohuaming.Setu.PublicInfos.Config;
 
 namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
 {
@@ -25,12 +22,12 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
         /// <summary>
         /// 自定义接口指令数组
         /// </summary>
-        List<CustomObject> CustomAPIOrderList = new List<CustomObject>();
+        List<CustomObject> CustomAPIOrderList { get; set; } = new();
         public bool Judge(string destStr)
-        {            
+        {
             if (File.Exists(MainSave.AppDirectory + "CustomAPI.json"))
                 CustomAPIOrderList = JsonConvert.DeserializeObject<List<CustomObject>>(File.ReadAllText(MainSave.AppDirectory + "CustomAPI.json"));
-            return CommonHelper.CheckCustomObject(CustomAPIOrderList, destStr);
+            return CustomAPIOrderList.Any(x => destStr == x.Order && x.Enabled);
         }
 
         public FunctionResult Progress(CQGroupMessageEventArgs e)
@@ -40,75 +37,60 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                 Result = true,
                 SendFlag = false,
             };
+            SendText sendText = new SendText
+            {
+                SendID = e.FromGroup
+            };
+            result.SendObject.Add(sendText);
             if (QuotaHistory.GroupQuotaDict[e.FromGroup] >= AppConfig.MaxGroupQuota)
             {
-                sendText.MsgToSend.Add(AppConfig.MaxGroupResponse);
+                sendText.MsgToSend.Add(AppConfig.MaxGroupResoponse);
                 return result;
             }
-
             if (QuotaHistory.QueryQuota(e.FromGroup, e.FromQQ) <= 0)
             {
-                sendText.MsgToSend.Add(AppConfig.NoQuotaResponse);
+                sendText.MsgToSend.Add(AppConfig.MaxMemberResoponse);
                 return result;
             }
-            var functionResult = CustomAPI_Image(e.Message.Text);
-            functionResult.SendID = e.FromGroup;
-            result.SendObject.Add(functionResult);
-
-            var states = e.FromGroup.SendGroupMessage(functionResult.MsgToSend[0]);
-            if (functionResult.HandlingFlag)//自动撤回
-            {
-                IniConfig ini = MainSave.ConfigMain;
-                Task task = new Task(() =>
-                {
-                    Thread.Sleep(ini.Object["R18"]["RevokeTime"] * 1000);
-                    e.CQApi.RemoveMessage(states.Id);
-                }); task.Start();
-            }
-            return result;
-        }
-
-        private SendText CustomAPI_Image(string orderText)
-        {
-            SendText sendText = new SendText();
             try
             {
-                //尝试拉取图片，若有多个相同的接口则随机来一个
-                CustomObject item = CustomAPIOrderList.Where(x => x.Order == orderText)
+                int quota = AppConfig.MaxPersonQuota - QuotaHistory.HandleQuota(e.FromGroup, e.FromQQ, -1);
+                e.FromGroup.SendGroupMessage(AppConfig.StartResponse.Replace("<count>", quota.ToString()));
+                CustomObject apiItem = CustomAPIOrderList.Where(x => x.Order == e.Message.Text)
                                                                             .OrderBy(x => Guid.NewGuid().ToString()).FirstOrDefault();
-                sendText.HandlingFlag = item.AutoRevoke;
-                //以后要用的路径,先生成一个
-                string targetdir = Path.Combine(Environment.CurrentDirectory, "data", "image", "CustomAPIPic", item.Order);
-                if (!Directory.Exists(targetdir))
-                {
-                    Directory.CreateDirectory(targetdir);
-                }
+                string targetdir = Path.Combine(Environment.CurrentDirectory, "data", "image", "CustomAPIPic", apiItem.Order);
+                Directory.CreateDirectory(targetdir);
                 string imagename = DateTime.Now.ToString("yyyyMMddHHss") + ".jpg";
                 string fullpath = Path.Combine(targetdir, imagename);
-                using (HttpWebClient http = new HttpWebClient()
+                using HttpWebClient http = new()
                 {
                     TimeOut = 10000,
                     Encoding = Encoding.UTF8,
                     Proxy = MainSave.Proxy,
                     AllowAutoRedirect = true,
-                })
-                {
-                    http.DownloadFile(item.URL, fullpath);
-                }
+                };
+                http.DownloadFile(apiItem.URL, fullpath);
                 MainSave.CQLog.Info("自定义接口", $"图片下载成功，尝试发送");
 
-                //GetSetu.AntiHX(fullpath);
-
-                string imagepath = Path.Combine("CustomAPIPic", item.Order, imagename);
-                sendText.MsgToSend.Add(CQApi.CQCode_Image(imagepath).ToSendString());
-                return sendText;
+                string imagepath = Path.Combine("CustomAPIPic", apiItem.Order, imagename);
+                var msgItem = e.FromGroup.SendGroupMessage(CQApi.CQCode_Image(imagepath).ToSendString());
+                if (apiItem.AutoRevoke)
+                {
+                    new Thread(() =>
+                    {
+                        Thread.Sleep(AppConfig.R18_RevokeTime);
+                        e.CQApi.RemoveMessage(msgItem.Id);
+                    }).Start();
+                }
             }
             catch (Exception exc)
             {
-                sendText.MsgToSend.Add("自定义接口调用失败");
-                MainSave.CQLog.Info("自定义接口", $"调用失败，错误信息：{exc.Message}");
-                return sendText;
+                sendText.MsgToSend.Add($"网络图片接口调用失败, {exc.Message}");
+                e.CQLog.Info("网络图片接口", exc.Message + exc.StackTrace);
+                QuotaHistory.HandleQuota(e.FromGroup, e.FromQQ, 1);
             }
+
+            return result;
         }
 
         public FunctionResult Progress(CQPrivateMessageEventArgs e)

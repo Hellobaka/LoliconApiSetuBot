@@ -184,7 +184,7 @@ namespace me.cqp.luohuaming.Setu.PublicInfos
                 }
                 else
                 {
-                    sb.AppendLine($"未找到相似的动漫");
+                    sb.AppendLine($"未找到相似的动画");
                 }
                 return sb.ToString();
             }

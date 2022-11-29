@@ -1,12 +1,11 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using HtmlAgilityPack;
-using me.cqp.luohuaming.Setu.Code.Helper;
+﻿using HtmlAgilityPack;
+using me.cqp.luohuaming.Setu.PublicInfos;
 using Native.Sdk.Cqp;
 using Native.Sdk.Cqp.EventArgs;
 using Native.Tool.Http;
-using me.cqp.luohuaming.Setu.PublicInfos;
+using System;
+using System.IO;
+using System.Text;
 
 namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
 {

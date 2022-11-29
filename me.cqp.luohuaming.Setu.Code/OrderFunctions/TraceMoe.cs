@@ -1,11 +1,12 @@
-﻿using System;
-using System.Text;
-using System.Threading;
+﻿using me.cqp.luohuaming.Setu.PublicInfos;
+using me.cqp.luohuaming.Setu.PublicInfos.Config;
 using Native.Sdk.Cqp.EventArgs;
 using Native.Sdk.Cqp.Model;
 using Native.Tool.Http;
 using Newtonsoft.Json;
-using me.cqp.luohuaming.Setu.PublicInfos;
+using System;
+using System.Linq;
+using System.Text;
 
 namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
 {
@@ -27,34 +28,49 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
 
         public FunctionResult Progress(CQGroupMessageEventArgs e)
         {
-            FunctionResult result = new FunctionResult()
+            FunctionResult result = new()
             {
                 Result = true,
                 SendFlag = true,
             };
-            SendText sendText = new SendText();
-            sendText.SendID = e.FromGroup;
-            result.SendObject.Add(sendText);
-
-            if (e.Message.CQCodes.Count != 0)
+            SendText sendText = new()
             {
-                foreach (var item in e.Message.CQCodes)
+                SendID = e.FromGroup
+            };
+            result.SendObject.Add(sendText);
+            if (QuotaHistory.GroupQuotaDict[e.FromGroup] >= AppConfig.MaxGroupQuota)
+            {
+                sendText.MsgToSend.Add(AppConfig.MaxGroupResoponse);
+                return result;
+            }
+
+            if (QuotaHistory.QueryQuota(e.FromGroup, e.FromQQ) <= 0)
+            {
+                sendText.MsgToSend.Add(AppConfig.MaxMemberResoponse);
+                return result;
+            }
+            try
+            {
+                if (!MainSave.SauceNao_Saves.Any(x => x.GroupID == e.FromGroup && x.QQID == e.FromQQ))
                 {
-                    if (item.IsImageCQCode)
-                    {
-                        string FunctionResult = TraceMoe_Call(item);
-                        if (FunctionResult != null)
-                        {
-                            sendText.MsgToSend.Add(FunctionResult);
-                        }
-                    }
+                    CQCode img = e.Message.CQCodes.FirstOrDefault(x => x.IsImageCQCode);
+                    if (img == null) return result;
+                    sendText.MsgToSend.Add(TraceMoe_Call(img));
+                }
+                else
+                {
+                    int quota = AppConfig.MaxPersonQuota - QuotaHistory.HandleQuota(e.FromGroup, e.FromQQ, -1);
+                    e.FromGroup.SendGroupMessage(AppConfig.StartResponse.Replace("<count>", quota.ToString()));
+
+                    result.SendFlag = true;
+                    MainSave.TraceMoe_Saves.Add(new DelayAPI_Save(e.FromGroup.Id, e.FromQQ.Id));
+                    sendText.MsgToSend.Add("请在接下来的一条消息内发送需要搜索的图片");
                 }
             }
-            else
+            catch (Exception exc)
             {
-                result.SendFlag = true;
-                MainSave.TraceMoe_Saves.Add(new DelayAPI_Save(e.FromGroup.Id, e.FromQQ.Id));
-                sendText.MsgToSend.Add("请在接下来的一条消息内发送需要搜索的图片");
+                sendText.MsgToSend.Add($"解析出错，错误信息：{exc.Message}");
+                e.CQLog.Info("Tracemoe", exc.Message + "\n" + exc.StackTrace);
             }
             return result;
         }
@@ -71,25 +87,15 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
         public static string TraceMoe_Call(string picURL)
         {
             string url = $"https://trace.moe/api/search?url={picURL}";
-            using (HttpWebClient http = new HttpWebClient()
+            using HttpWebClient http = new()
             {
                 TimeOut = 10000,
                 Encoding = Encoding.UTF8,
                 Proxy = MainSave.Proxy,
                 AllowAutoRedirect = true,
-            })
-            {
-                try
-                {
-                    var json = JsonConvert.DeserializeObject<TraceMoe_Result.Data>(http.DownloadString(url));
-                    return json.ToString();
-                }
-                catch(Exception e)
-                {
-                    MainSave.CQLog.Info("解析出错", e.Message,"\n",e.StackTrace);
-                    return "解析出错，详情请看日志";
-                }
-            }
+            };
+            var json = JsonConvert.DeserializeObject<TraceMoe_Result.Data>(http.DownloadString(url));
+            return json.ToString();
         }
     }
 }
