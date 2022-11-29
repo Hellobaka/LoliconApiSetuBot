@@ -5,8 +5,6 @@
        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-       xmlns:local="clr-namespace:me.cqp.luohuaming.Setu.UI"
-       xmlns:smtx="clr-namespace:ShowMeTheXAML;assembly=ShowMeTheXAML"
        mc:Ignorable="d" 
        d:DesignHeight="450" d:DesignWidth="800"
        Title="Settings" Loaded="Page_Settings_Loaded" Width="1017" Height="489" >
