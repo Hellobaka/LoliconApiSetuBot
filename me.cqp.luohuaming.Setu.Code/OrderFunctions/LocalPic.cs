@@ -33,7 +33,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
             FunctionResult result = new FunctionResult()
             {
                 Result = true,
-                SendFlag = false,
+                SendFlag = true,
             };
             SendText sendText = new SendText
             {
