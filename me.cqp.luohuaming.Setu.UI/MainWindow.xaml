@@ -3,9 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:local="clr-namespace:me.cqp.luohuaming.Setu.UI"
-        xmlns:ShowMeTheXAML="clr-namespace:ShowMeTheXAML;assembly=ShowMeTheXAML" x:Class="me.cqp.luohuaming.Setu.UI.MainWindow"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" x:Class="me.cqp.luohuaming.Setu.UI.MainWindow"
         mc:Ignorable="d"
         Title="MainWindow" Height="558" Width="1017" WindowStartupLocation="CenterScreen" WindowStyle="None" ResizeMode="NoResize" BorderBrush="Black">
 
@@ -42,38 +40,39 @@
                                     HorizontalAlignment="Right" Margin="16"
                                     IsChecked="{Binding IsChecked, ElementName=MenuToggleButton, Mode=TwoWay}" />
                     <ListBox x:Name="MenuListBox" Margin="0 16 0 16" SelectedIndex="0"
+                             SelectionChanged="MenuListBox_SelectionChanged"
                              ItemsSource="{Binding DemoItems}" PreviewMouseLeftButtonUp="UIElement_OnPreviewMouseLeftButtonUp">
                         <ListBox.Resources>
                             <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource MaterialDesignScrollBarMinimal}"/>
                         </ListBox.Resources>
-                        <ListBoxItem Tag="Settings" MouseLeftButtonUp="ListBoxItem_MouseDown">
-                            <StackPanel Orientation="Horizontal" Tag="Settings"  MouseDown="ListBoxItem_MouseDown">
+                        <ListBoxItem Tag="Settings">
+                            <StackPanel Orientation="Horizontal" Tag="Settings">
                                 <materialDesign:PackIcon Kind="Settings" Width="25" Height="25" Margin="10" VerticalAlignment="Center"/>
-                                <TextBlock Text="设置" Tag="Settings" VerticalAlignment="Center" Margin="20 10" MouseDown="ListBoxItem_MouseDown"/>
+                                <TextBlock Text="设置" VerticalAlignment="Center" Margin="20 10"/>
                             </StackPanel>
                         </ListBoxItem>
-                        <ListBoxItem Tag="CustomAPI" MouseLeftButtonUp="ListBoxItem_MouseDown">
-                            <StackPanel Orientation="Horizontal" Tag="CustomAPI" MouseDown="ListBoxItem_MouseDown">
+                        <ListBoxItem Tag="CustomAPI">
+                            <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="ChatTyping" Width="25" Height="25" Margin="10" VerticalAlignment="Center"/>
-                                <TextBlock Text="自定义接口" Tag="CustomAPI" VerticalAlignment="Center" Margin="20 10" MouseDown="ListBoxItem_MouseDown"/>
+                                <TextBlock Text="自定义接口" VerticalAlignment="Center" Margin="20 10"/>
                             </StackPanel>
                         </ListBoxItem>
-                        <ListBoxItem Tag="LocalPic" MouseLeftButtonUp="ListBoxItem_MouseDown">
-                            <StackPanel Orientation="Horizontal" Tag="LocalPic" MouseDown="ListBoxItem_MouseDown">
+                        <ListBoxItem Tag="LocalPic">
+                            <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="FolderEditOutline" Width="25" Height="25" Margin="10" VerticalAlignment="Center"/>
-                                <TextBlock Text="本地图片" Tag="LocalPic" VerticalAlignment="Center" Margin="20 10" MouseDown="ListBoxItem_MouseDown"/>
+                                <TextBlock Text="本地图片" VerticalAlignment="Center" Margin="20 10"/>
                             </StackPanel>
                         </ListBoxItem>
-                        <ListBoxItem Tag="JsonDeserize" MouseLeftButtonUp="ListBoxItem_MouseDown">
-                            <StackPanel Orientation="Horizontal" Tag="JsonDeserize" MouseDown="ListBoxItem_MouseDown">
+                        <ListBoxItem Tag="JsonDeserize">
+                            <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="FolderEditOutline" Width="25" Height="25" Margin="10" VerticalAlignment="Center"/>
-                                <TextBlock Text="Json解析" Tag="JsonDeserize" VerticalAlignment="Center" Margin="20 10" MouseDown="ListBoxItem_MouseDown"/>
+                                <TextBlock Text="Json解析" VerticalAlignment="Center" Margin="20 10"/>
                             </StackPanel>
                         </ListBoxItem>
-                        <ListBoxItem Tag="AboutMe" MouseLeftButtonUp="ListBoxItem_MouseDown">
-                            <StackPanel Orientation="Horizontal" Tag="AboutMe" MouseDown="ListBoxItem_MouseDown">
-                                <materialDesign:PackIcon Kind="GithubBox" Width="25" Height="25" Margin="10" VerticalAlignment="Center"/>
-                                <TextBlock Text="关于" Tag="AboutMe" VerticalAlignment="Center" Margin="20 10" MouseDown="ListBoxItem_MouseDown"/>
+                        <ListBoxItem Tag="AboutMe">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Github" Width="25" Height="25" Margin="10" VerticalAlignment="Center"/>
+                                <TextBlock Text="关于" VerticalAlignment="Center" Margin="20 10"/>
                             </StackPanel>
                         </ListBoxItem>
                     </ListBox>

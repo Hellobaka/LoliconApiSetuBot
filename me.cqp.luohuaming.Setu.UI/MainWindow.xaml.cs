@@ -12,9 +12,12 @@ namespace me.cqp.luohuaming.Setu.UI
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static MainWindow Instance { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
+            Instance = this;
         }
 
         private void button_Exit_Click(object sender, RoutedEventArgs e)
@@ -42,83 +45,8 @@ namespace me.cqp.luohuaming.Setu.UI
 
         private void ListBoxItem_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            try
-            {                
-                string tag = "";
-                switch (sender.GetType().Name)
-                {
-                    case "StackPanel":
-                        StackPanel item1 = sender as StackPanel;
-                        tag = item1.Tag.ToString();
-                        break;
-                    case "ListBoxItem":
-                        ListBoxItem item2 = sender as ListBoxItem;
-                        tag = item2.Tag.ToString();
-                        break;
-                    case "TextBlock":
-                        TextBlock item3 = sender as TextBlock;
-                        tag = item3.Tag.ToString();
-                        break;
-                }
-                //this.frmMain.Navigate(new Uri("pack://application:,,,/me.cqp.luohuaming.Setu.UI;component/" + tag + ".xaml", UriKind.Absolute));
-                if (tag == "Settings")
-                {
-                    if (frmMain.Content.GetType().Name == "Settings") return;
-                    Settings pg = new Settings();
-                    frmMain.Content = pg;
-                    pg.ParentWindow = this;
-                }
-                else if (tag == "AboutMe")
-                {
-                    if (frmMain.Content.GetType().Name == "AboutMe") return;
-                    AboutMe pg = new AboutMe();
-                    frmMain.Content = pg;
-                    pg.parentwindow = this;
-                }
-                else if (tag == "CustomAPI")
-                {
-                    if (frmMain.Content.GetType().Name == "CustomAPI") return;
-                    CustomAPI pg = new CustomAPI();
-                    frmMain.Content = pg;
-                    pg.parentwindow = this;
-                }
-                else if (tag == "LocalPic")
-                {
-                    if (frmMain.Content.GetType().Name == "LocalPic") return;
-                    LocalPic pg = new LocalPic();
-                    frmMain.Content = pg;
-                    pg.parentwindow = this;
-                }
-                else if (tag == "JsonDeserize")
-                {
-                    if (frmMain.Content.GetType().Name == "JsonDeserize") return;
-                    JsonDeserize pg = new JsonDeserize();
-                    frmMain.Content = pg;
-                    pg.parentwindow = this;
-                }
-            }
-            catch(Exception exc)
-            {
-                Console.WriteLine(exc.Message + " " + exc.Source);
-            }
         }
 
-        public void PagesTurn(string pagename)
-        {
-            try
-            {
-                if (pagename == "Back")
-                {
-                    frmMain.GoBack();
-                }
-                //this.frmMain.Navigate(new Uri("pack://application:,,,/me.cqp.luohuaming.Setu.UI;component/" + pagename + ".xaml", UriKind.Absolute));
-            }
-            catch(Exception e)
-            {
-                SnackbarMessage_Show($"发生错误:{e.Message}", 2);
-            }
-
-        }
         /// <summary>
         /// 底部提示条消息显示
         /// </summary>
@@ -128,7 +56,6 @@ namespace me.cqp.luohuaming.Setu.UI
         {
             Snackbar_Message.Visibility = Visibility.Visible;
             Snackbar_Message.MessageQueue.Enqueue(message, null, null, null, false, true, TimeSpan.FromSeconds(seconds));
-            //Xamldisplay_Snackbar.Visibility = Visibility.Collapsed;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -136,6 +63,36 @@ namespace me.cqp.luohuaming.Setu.UI
             Settings pg = new Settings();
             frmMain.Content = pg;
             pg.ParentWindow = this;
+        }
+
+        private void MenuListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string name = ((ListBoxItem)MenuListBox.SelectedItem).Tag.ToString();
+            switch (name)
+            {
+                case "Settings":
+                    if (frmMain.Content.GetType().Name == "Settings") return;
+                    frmMain.Content = new Settings();
+                    break;
+                case "CustomAPI":
+                    if (frmMain.Content.GetType().Name == "CustomAPI") return;
+                    frmMain.Content = new CustomAPI();
+                    break;
+                case "LocalPic":
+                    if (frmMain.Content.GetType().Name == "LocalPic") return;
+                    frmMain.Content = new LocalPic();
+                    break;
+                case "JsonDeserize":
+                    if (frmMain.Content.GetType().Name == "JsonDeserize") return;
+                    frmMain.Content = new JsonDeserize();
+                    break;
+                case "AboutMe":
+                    if (frmMain.Content.GetType().Name == "AboutMe") return;
+                    frmMain.Content = new AboutMe();
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
