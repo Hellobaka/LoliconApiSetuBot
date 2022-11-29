@@ -43,10 +43,6 @@ namespace me.cqp.luohuaming.Setu.UI
             MenuToggleButton.IsChecked = false;
         }
 
-        private void ListBoxItem_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-        }
-
         /// <summary>
         /// 底部提示条消息显示
         /// </summary>
