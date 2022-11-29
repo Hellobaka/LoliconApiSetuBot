@@ -34,7 +34,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
             FunctionResult result = new FunctionResult()
             {
                 Result = true,
-                SendFlag = false,
+                SendFlag = true,
             };
             SendText sendText = new SendText
             {
@@ -54,7 +54,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
             }
 
 
-            if (!MainSave.SauceNao_Saves.Any(x => x.GroupID == e.FromGroup && x.QQID == e.FromQQ))
+            if (MainSave.SauceNao_Saves.Any(x => x.GroupID == e.FromGroup && x.QQID == e.FromQQ))
             {
                 CQCode img = e.Message.CQCodes.FirstOrDefault(x => x.IsImageCQCode);
                 if (img == null) return result;
@@ -65,7 +65,6 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                 int quota = AppConfig.MaxPersonQuota - QuotaHistory.HandleQuota(e.FromGroup, e.FromQQ, -1);
                 e.FromGroup.SendGroupMessage(AppConfig.StartResponse.Replace("<count>", quota.ToString()));
 
-                result.SendFlag = true;
                 MainSave.SauceNao_Saves.Add(new DelayAPI_Save(e.FromGroup.Id, e.FromQQ.Id));
                 sendText.MsgToSend.Add("请在接下来的一条消息内发送需要搜索的图片");
             }
@@ -114,7 +113,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                 {
                     string filename = Guid.NewGuid().ToString().ToString();
                     http.DownloadFile(naoResult.header.thumbnail, $@"{MainSave.ImageDirectory}\SauceNaotemp\{filename}.jpg");
-                    str = str.Replace("{1}", CQApi.CQCode_Image($@"\SauceNaotemp\{filename}.jpg").ToSendString());
+                    str = str.Replace("{1}", CQApi.CQCode_Image($@"SauceNaotemp\{filename}.jpg").ToSendString());
                 }
                 catch
                 {
