@@ -51,7 +51,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
             }
             try
             {
-                if (!MainSave.SauceNao_Saves.Any(x => x.GroupID == e.FromGroup && x.QQID == e.FromQQ))
+                if (MainSave.SauceNao_Saves.Any(x => x.GroupID == e.FromGroup && x.QQID == e.FromQQ))
                 {
                     CQCode img = e.Message.CQCodes.FirstOrDefault(x => x.IsImageCQCode);
                     if (img == null) return result;
@@ -86,7 +86,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
 
         public static string TraceMoe_Call(string picURL)
         {
-            string url = $"https://trace.moe/api/search?url={picURL}";
+            string url = $"https://api.trace.moe/search?anilistInfo&url={picURL}";
             using HttpWebClient http = new()
             {
                 TimeOut = 10000,

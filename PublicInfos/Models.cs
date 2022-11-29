@@ -150,36 +150,29 @@ namespace me.cqp.luohuaming.Setu.PublicInfos
         public long GroupID { get; set; }
         public long QQID { get; set; }
     }
+
     public class TraceMoe_Result
     {
         public class Data
         {
-            public long RawDocsCount { get; set; }
-            public long RawDocsSearchTime { get; set; }
-            public long ReRankSearchTime { get; set; }
-            public bool CacheHit { get; set; }
-            public int trial { get; set; }
-            public Doc[] docs { get; set; }
-            public int limit { get; set; }
-            public int limit_ttl { get; set; }
-            public int quota { get; set; }
-            public int quota_ttl { get; set; }
+            public int frameCount { get; set; }
+            public string error { get; set; }
+            public Result[] result { get; set; }
             public override string ToString()
             {
                 StringBuilder sb = new StringBuilder();
-                if (docs.Length > 0)
+                if (result.Length > 0)
                 {
                     sb.AppendLine("相似度第一的是：");
-                    if (!string.IsNullOrWhiteSpace(docs[0].anime))
-                        sb.AppendLine($"名称：{docs[0].anime}");
-                    if (!string.IsNullOrWhiteSpace(docs[0].title_native))
-                        sb.AppendLine($"日文名称：{docs[0].title_native}");
-                    if (!string.IsNullOrWhiteSpace(docs[0].title_romaji))
-                        sb.AppendLine($"罗马音名称：{docs[0].title_romaji}");
-                    sb.AppendLine($"相似度：{docs[0].similarity * 100:f2}%");
-                    sb.AppendLine($"集数：{docs[0].episode}");
-                    sb.AppendLine($"大约出现在：{(int)docs[0].from / 60}:{(int)docs[0].from % 60}" +
-                        $" - {(int)docs[0].to / 60}:{(int)docs[0].to % 60}");
+                    if (result[0].anilist != null)
+                    {
+                        sb.AppendLine($"名称：{result[0].anilist.title.native}");
+                        sb.AppendLine($"罗马音名称：{result[0].anilist.title.romaji}");
+                    }
+                    sb.AppendLine($"相似度：{result[0].similarity * 100:f2}%");
+                    sb.AppendLine($"集数：{result[0].episode}");
+                    sb.AppendLine($"大约出现在：{(int)result[0].from / 60}:{(int)result[0].from % 60}" +
+                        $" - {(int)result[0].to / 60}:{(int)result[0].to % 60}");
                     sb.Append($"每日搜索额度有限，请勿倒垃圾");
                 }
                 else
@@ -190,27 +183,32 @@ namespace me.cqp.luohuaming.Setu.PublicInfos
             }
         }
 
-        public class Doc
+        public class Result
         {
+            public Anilist anilist { get; set; }
+            public string filename { get; set; }
+            public int episode { get; set; }
             public float from { get; set; }
             public float to { get; set; }
-            public int anilist_id { get; set; }
-            public float at { get; set; }
-            public string season { get; set; }
-            public string anime { get; set; }
-            public string filename { get; set; }
-            public object episode { get; set; }
-            public string tokenthumb { get; set; }
             public float similarity { get; set; }
-            public string title { get; set; }
-            public string title_native { get; set; }
-            public string title_chinese { get; set; }
-            public string title_english { get; set; }
-            public string title_romaji { get; set; }
-            public int mal_id { get; set; }
+            public string video { get; set; }
+            public string image { get; set; }
+        }
+
+        public class Anilist
+        {
+            public int id { get; set; }
+            public int idMal { get; set; }
+            public Title title { get; set; }
             public string[] synonyms { get; set; }
-            public object[] synonyms_chinese { get; set; }
-            public bool is_adult { get; set; }
+            public bool isAdult { get; set; }
+        }
+
+        public class Title
+        {
+            public string native { get; set; }
+            public string romaji { get; set; }
+            public string english { get; set; }
         }
     }
 }
