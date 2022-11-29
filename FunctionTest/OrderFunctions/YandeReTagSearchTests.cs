@@ -15,9 +15,6 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions.Tests
         [TestMethod()]
         public void TagSearchTest()
         {
-            var c = YandeReTagSearch.TagSearch("genshin impact");
-            //Debug.WriteLine(c.ToString());
-            Assert.AreNotEqual(c, null);
         }
     }
 }

@@ -65,7 +65,7 @@ namespace me.cqp.luohuaming.Setu.UI
             ConfigHelper.SetConfig("YandereTagSearchOrder", text_YandereTagSearch.Text);
 
             ConfigHelper.SetConfig("StartResponse", text_StartPullPic.Text);
-            ConfigHelper.SetConfig("Sucess", text_Sucess.Text);
+            ConfigHelper.SetConfig("SucessResponse", text_Sucess.Text);
             ConfigHelper.SetConfig("MaxMemberResoponse", text_MaxMember.Text);
             ConfigHelper.SetConfig("MaxGroupResoponse", text_MaxGroup.Text);
 
