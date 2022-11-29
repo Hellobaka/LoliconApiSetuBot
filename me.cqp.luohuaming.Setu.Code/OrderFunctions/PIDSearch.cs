@@ -1,12 +1,14 @@
 ﻿using me.cqp.luohuaming.Setu.PublicInfos;
 using me.cqp.luohuaming.Setu.PublicInfos.API;
 using me.cqp.luohuaming.Setu.PublicInfos.Config;
+using Native.Sdk.Cqp;
 using Native.Sdk.Cqp.EventArgs;
 using Scighost.PixivApi.Illust;
 using System;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -69,25 +71,40 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
 
                 e.FromGroup.SendGroupMessage($"正在查询pid={pid}的插画信息，请等待……");
                 IllustInfo illustInfo = PixivAPI.GetPicInfo(pid);
-                e.FromGroup.SendGroupMessage($"");
-                if (illustInfo.Tags.Any(x => x.Name.Contains("R-18")))
+                e.FromGroup.SendGroupMessage($"title: {illustInfo.Title}\nauthor: {illustInfo.UserName}\n共有: {illustInfo.PageCount}p\npid: {pid}");
+                bool r18Flag = illustInfo.Tags.Any(x => x.Name.Contains("R-18"));
+                if (r18Flag)
                 {
                     if (AppConfig.R18 is false)
                     {
                         sendText.MsgToSend.Add("限制图片。");
                         return result;
                     }
+                }
+                int msgId = 0;
+                string filename = new DirectoryInfo(Path.Combine(MainSave.ImageDirectory, "PIDSearch")).GetFiles().FirstOrDefault(x => x.Name.Contains(pid.ToString()))?.Name;
+                if (string.IsNullOrEmpty(filename))
+                {
+                    var fileInfo = new FileInfo(PixivAPI.DownloadPic(pid, Path.Combine(MainSave.ImageDirectory, "PIDSearch")));
+                    var c = e.FromGroup.SendGroupMessage(CQApi.CQCode_Image(@"PIDSearch\" + fileInfo.Name).ToSendString());
+                    msgId = c.Id;
+                }
+                else
+                {
+                    var c = e.FromGroup.SendGroupMessage(CQApi.CQCode_Image(@"PIDSearch\" + filename).ToSendString());
+                    msgId = c.Id;
+                }
 
-                    var message = e.FromGroup.SendGroupMessage(PixivAPI.DownloadPic(pid, Path.Combine(MainSave.ImageDirectory, "PIDSearch")));
-                    if (AppConfig.R18_PicRevoke is false) return result;
+                if (AppConfig.R18_PicRevoke && r18Flag)
+                {
                     Task task = new(() =>
                     {
                         Thread.Sleep(AppConfig.R18_RevokeTime);
-                        e.CQApi.RemoveMessage(message.Id);
+                        e.CQApi.RemoveMessage(msgId);
                     }); task.Start();
                 }
             }
-            catch(WebException exc)
+            catch (WebException exc)
             {
                 e.CQLog.Info("PIDSearch", exc.Message + exc.StackTrace);
                 sendText.MsgToSend.Add($"网络错误，请重试");
