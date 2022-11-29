@@ -24,6 +24,10 @@ namespace me.cqp.luohuaming.Setu.Code
                 {
                     return result;
                 }
+                if(QuotaHistory.GroupQuotaDict.ContainsKey(e.FromGroup) is false)
+                {
+                    QuotaHistory.GroupQuotaDict.Add(e.FromGroup, 0);
+                }
                 DelaySauceNao(e);
                 DelayTraceMoe(e);
 
@@ -48,32 +52,32 @@ namespace me.cqp.luohuaming.Setu.Code
 
             if (img == null)
             {
-                MainSave.TraceMoe_Saves.Remove(MainSave.SauceNao_Saves.First(x => x.GroupID == e.FromGroup && x.QQID == e.FromQQ));
+                MainSave.SauceNao_Saves.Remove(MainSave.SauceNao_Saves.First(x => x.GroupID == e.FromGroup && x.QQID == e.FromQQ));
                 e.FromGroup.SendGroupMessage("发送的不是图片，调用失败");
                 return;
             }
             else
             {
-                MainSave.TraceMoe_Saves.Remove(MainSave.SauceNao_Saves.First(x => x.GroupID == e.FromGroup && x.QQID == e.FromQQ));
+                MainSave.SauceNao_Saves.Remove(MainSave.SauceNao_Saves.First(x => x.GroupID == e.FromGroup && x.QQID == e.FromQQ));
                 OrderFunctions.SauceNao.SauceNao_Call(img, e);
             }
         }
 
         public static void DelayTraceMoe(CQGroupMessageEventArgs e)
         {
-            if (!MainSave.SauceNao_Saves.Any(x => x.GroupID == e.FromGroup && x.QQID == e.FromQQ)) return;
+            if (!MainSave.TraceMoe_Saves.Any(x => x.GroupID == e.FromGroup && x.QQID == e.FromQQ)) return;
             e.Handler = true;
             CQCode img = e.Message.CQCodes.FirstOrDefault(x => x.IsImageCQCode);
 
             if (img == null)
             {
-                MainSave.TraceMoe_Saves.Remove(MainSave.SauceNao_Saves.First(x => x.GroupID == e.FromGroup && x.QQID == e.FromQQ));
+                MainSave.TraceMoe_Saves.Remove(MainSave.TraceMoe_Saves.First(x => x.GroupID == e.FromGroup && x.QQID == e.FromQQ));
                 e.FromGroup.SendGroupMessage("发送的不是图片，调用失败");
                 return;
             }
             else
             {
-                MainSave.TraceMoe_Saves.Remove(MainSave.SauceNao_Saves.First(x => x.GroupID == e.FromGroup && x.QQID == e.FromQQ));
+                MainSave.TraceMoe_Saves.Remove(MainSave.TraceMoe_Saves.First(x => x.GroupID == e.FromGroup && x.QQID == e.FromQQ));
                 string FunctionResult = OrderFunctions.TraceMoe.TraceMoe_Call(img);
                 e.FromGroup.SendGroupMessage(FunctionResult);
             }
