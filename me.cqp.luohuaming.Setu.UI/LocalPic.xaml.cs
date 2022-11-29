@@ -22,14 +22,6 @@ namespace me.cqp.luohuaming.Setu.UI
         {
             InitializeComponent();
         }
-        #region ---字段---
-        MainWindow _parentWin;
-        public MainWindow parentwindow
-        {
-            get { return _parentWin; }
-            set { _parentWin = value; }
-        }
-        #endregion
 
         private void btn_Plus_Click(object sender, RoutedEventArgs e)
         {
@@ -154,7 +146,7 @@ namespace me.cqp.luohuaming.Setu.UI
             }
             if (ls.Count == 0)
             {
-                parentwindow.SnackbarMessage_Show("未选中任何控件，点击滑块前的方块选择控件", 1.2);
+                MainWindow.Instance.SnackbarMessage_Show("未选中任何控件，点击滑块前的方块选择控件", 1.2);
                 return;
             }
             foreach (UIElement item in ls)
@@ -253,12 +245,12 @@ namespace me.cqp.luohuaming.Setu.UI
                     ||x.FullName.EndsWith("webp")||x.FullName.EndsWith("tif")||x.FullName.EndsWith("tga")).ToArray();
                 //随机取一个
                 string picpath = fileInfos.OrderBy(_ => Guid.NewGuid()).First().FullName;
-                parentwindow.SnackbarMessage_Show($"接口测试通过", 1);
+                MainWindow.Instance.SnackbarMessage_Show($"接口测试通过", 1);
                 Process.Start(new ProcessStartInfo(picpath));
             }
             catch
             {
-                parentwindow.SnackbarMessage_Show($"接口测试失败,检查路径是否有误", 1);
+                MainWindow.Instance.SnackbarMessage_Show($"接口测试失败,检查路径是否有误", 1);
             }
         }
 
@@ -271,7 +263,7 @@ namespace me.cqp.luohuaming.Setu.UI
                 if (((item as StackPanel).Children[3] as TextBox).Text != "本地图片文件夹路径" &&
                     ((item as StackPanel).Children[2] as TextBox).Text == "指令...")
                 {
-                    parentwindow.SnackbarMessage_Show("存在一行路径已设置但指令未设置，请纠正", 1);
+                    MainWindow.Instance.SnackbarMessage_Show("存在一行路径已设置但指令未设置，请纠正", 1);
                     return;
                 }
                 if (((item as StackPanel).Children[3] as TextBox).Text == "本地图片文件夹路径" && ((item as StackPanel).Children[2] as TextBox).Text == "指令...")
@@ -296,7 +288,7 @@ namespace me.cqp.luohuaming.Setu.UI
             //序列化
             string temp = JsonConvert.SerializeObject(ls);
             File.WriteAllText(MainSave.AppDirectory + "LocalPic.json", temp);
-            parentwindow.SnackbarMessage_Show("设置已保存", 1);
+            MainWindow.Instance.SnackbarMessage_Show("设置已保存", 1);
         }
         //按ListBoxItem事件
         private void ListBoxItem_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

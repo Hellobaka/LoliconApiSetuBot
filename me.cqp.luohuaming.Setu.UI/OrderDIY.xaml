@@ -43,11 +43,6 @@
                             <TextBox x:Name="text_PIDSearch"
                                 Text="#pid" Padding="2 0 0 0"
                                 TextWrapping="Wrap" />
-                            <TextBlock
-                                Text="关键字搜图:"  Margin="0,10,0,7"/>
-                            <TextBox x:Name="text_HotSearch"
-                                Text="#搜图" Padding="2 0 0 0"
-                                TextWrapping="Wrap" />
                             <TextBlock Text="SauceNao搜图:"  Margin="0,10,0,7"/>
                             <TextBox x:Name="text_SauceNao"
                                 Text="#nao" Padding="2 0 0 0"
@@ -57,11 +52,11 @@
                                 Text="#trace" Padding="2 0 0 0"
                                 TextWrapping="Wrap" />
                             <TextBlock Text="YandeID检索:"  Margin="0,10,0,7"/>
-                            <TextBox x:Name="text_YandereIDSearch"
+                            <TextBox IsEnabled="False" x:Name="text_YandereIDSearch"
                                 Text="#yid" Padding="2 0 0 0"
                                 TextWrapping="Wrap" />
                             <TextBlock Text="YandeTag检索:"  Margin="0,10,0,7"/>
-                            <TextBox x:Name="text_YandereTagSearch"
+                            <TextBox IsEnabled="False" x:Name="text_YandereTagSearch"
                                 Text="#ytag" Padding="2 0 0 0"
                                 TextWrapping="Wrap" />
                         </StackPanel>                
@@ -84,27 +79,7 @@
                                         Text="拉取图片成功" />
                             <TextBox x:Name="text_Sucess"  Padding="2,0,0,0"
                                        Text="机器人当日剩余调用次数:&lt;quota&gt;\n下次额度恢复时间为: &lt;quota_time&gt;\ntitle: &lt;title &gt;\nauthor: &lt;author&gt;\np: &lt;p&gt;\npid: &lt;pid&gt;"
-                                       TextWrapping="Wrap" AcceptsReturn="True"/>
-                            <TextBlock  Margin="0,5,0,7"
-                                        Text="图片下载失败" />
-                            <TextBox  x:Name="text_DownloadFailed" Padding="2,0,0,0"
-                                       Text="下载错误，次数已归还"
-                                       TextWrapping="Wrap" AcceptsReturn="True"/>
-                            <TextBlock  Margin="0,5,0,7"
-                                        Text="超出额度" />
-                            <TextBox  x:Name="text_OutofQuota" Padding="2,0,0,0"
-                                       Text="超出额度，次数已归还"
-                                       TextWrapping="Wrap" AcceptsReturn="True"/>
-                            <TextBlock  Margin="0,5,0,7"
-                                        Text="图片发送失败" />
-                            <TextBox  x:Name="text_SendPicFailed" Padding="2,0,0,0"
-                                       Text="由于不可抗力导致图被吞，复制进浏览器看看吧:&lt;url&gt;"
-                                       TextWrapping="Wrap" AcceptsReturn="True"/>
-                            <TextBlock  Margin="0,5,0,7"
-                                        Text="其他错误" />
-                            <TextBox  x:Name="text_ExtraError" Padding="2,0,0,0"
-                                       Text="发生错误，请尝试重新调用，错误信息:&lt;wrong_msg&gt;"
-                                       TextWrapping="Wrap" AcceptsReturn="True"/>
+                                       TextWrapping="Wrap" AcceptsReturn="True"/>                            
                             <TextBlock  Margin="0,5,0,7"
                                         Text="个人调用次数达到上限" />
                             <TextBox  x:Name="text_MaxMember" Padding="2,0,0,0"

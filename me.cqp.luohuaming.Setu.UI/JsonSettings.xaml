@@ -36,13 +36,13 @@
                 <ProgressBar Name="progressbar_Main" Style="{StaticResource MaterialDesignCircularProgressBar}" Margin="5,0,0,0" Value="0" IsIndeterminate="True" Height="40" Width="40" RenderTransformOrigin="0.5,0.5" Visibility="Hidden" />
             </StackPanel>
             <TextBlock Text="待处理Json"/>
-            <TextBox x:Name="TextBox_JsonText" Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}" TextWrapping="Wrap" VerticalAlignment="Stretch" MinWidth="280" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" materialDesign:HintAssist.Hint="Json文本" Height="80" BorderBrush="#89000000" Margin="0,5" Width="380"/>
+            <TextBox x:Name="TextBox_JsonText" Style="{StaticResource MaterialDesignOutlinedTextBox}" TextWrapping="Wrap" VerticalAlignment="Stretch" MinWidth="280" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" materialDesign:HintAssist.Hint="Json文本" Height="80" BorderBrush="#89000000" Margin="0,5" Width="380"/>
             <TextBlock Text="当前所选Path"/>
             <TextBox x:Name="TextBox_Path"/>
             <TextBlock Text="需要发送图片所在的Path"/>
             <TextBox x:Name="TextBox_PicPath" TextChanged="TextBox_PicPath_TextChanged"/>
             <TextBlock Text="需另外发送的文本(非必需)" Margin="0"/>
-            <TextBox x:Name="TextBox_TextToSend" TextChanged="TextBox_TextToSend_TextChanged" Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}" TextWrapping="Wrap" VerticalAlignment="Stretch" MinWidth="280" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" materialDesign:HintAssist.Hint="文本" Height="80" BorderBrush="#89000000" Margin="0,5" Width="380"/>
+            <TextBox x:Name="TextBox_TextToSend" TextChanged="TextBox_TextToSend_TextChanged" Style="{StaticResource MaterialDesignOutlinedTextBox}" TextWrapping="Wrap" VerticalAlignment="Stretch" MinWidth="280" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" materialDesign:HintAssist.Hint="文本" Height="80" BorderBrush="#89000000" Margin="0,5" Width="380"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button x:Name="Button_Help" Click="Button_Help_Click" Content="帮助" HorizontalAlignment="Left" VerticalAlignment="Center" Width="92" Height="30" Margin="8,0,0,0" />
                 <Button x:Name="Button_Quit"  Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Content="退出" HorizontalAlignment="Left" VerticalAlignment="Center" Width="92" Height="30" Margin="8,0,0,0" />

@@ -54,7 +54,8 @@ namespace me.cqp.luohuaming.Setu.UI
             {
                 str += item.ToString() + "|";
             }
-            ConfigHelper.SetConfig("AdminList", str.Substring(0, str.Length - 1));
+            if(str.Length > 0)
+                ConfigHelper.SetConfig("AdminList", str.Substring(0, str.Length - 1));
 
             ConfigHelper.InitConfig();
             SnackbarMessage_Show("更改已保存", 2);

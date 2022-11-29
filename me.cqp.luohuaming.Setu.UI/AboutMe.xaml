@@ -29,7 +29,7 @@
                 <RowDefinition Height="71*"/>
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0">
-                <materialDesign:PackIcon Kind="GithubBox" HorizontalAlignment="Left" Height="45" Margin="10,0,0,0" VerticalAlignment="Top" Width="49"/>
+                <materialDesign:PackIcon Kind="Github" HorizontalAlignment="Left" Height="45" Margin="10,0,0,0" VerticalAlignment="Top" Width="49"/>
                 <TextBlock HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center">
                     <Hyperlink Tag="https://github.com/Jie2GG/Native.Framework" Click="Hyperlink_Click">https://github.com/Jie2GG/Native.Framework</Hyperlink>
                 </TextBlock>

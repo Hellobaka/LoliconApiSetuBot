@@ -22,14 +22,6 @@ namespace me.cqp.luohuaming.Setu.UI
         {
             InitializeComponent();
         }
-        #region ---字段---
-        MainWindow _parentWin;
-        public MainWindow parentwindow
-        {
-            get { return _parentWin; }
-            set { _parentWin = value; }
-        }
-        #endregion
 
         private void btn_Plus_Click(object sender, RoutedEventArgs e)
         {
@@ -154,7 +146,7 @@ namespace me.cqp.luohuaming.Setu.UI
             }
             if (ls.Count == 0)
             {
-                parentwindow.SnackbarMessage_Show("未选中任何控件，点击滑块前的方块选择控件", 1.2);
+                MainWindow.Instance.SnackbarMessage_Show("未选中任何控件，点击滑块前的方块选择控件", 1.2);
                 return;
             }
             foreach (UIElement item in ls)
@@ -218,12 +210,12 @@ namespace me.cqp.luohuaming.Setu.UI
                 //将字节数组转换为图片
                 string fullpath = Path.Combine(targetdir, DateTime.Now.ToString("yyyyMMddHHss") + ".jpg");
                 http.DownloadFile(url, fullpath);
-                parentwindow.SnackbarMessage_Show($"接口测试通过,图片已成功保存", 1);
+                MainWindow.Instance.SnackbarMessage_Show($"接口测试通过,图片已成功保存", 1);
                 Process.Start(fullpath);
             }
             catch
             {
-                parentwindow.SnackbarMessage_Show($"接口测试失败,检查接口是否有误", 1);
+                MainWindow.Instance.SnackbarMessage_Show($"接口测试失败,检查接口是否有误", 1);
             }
         }
 
@@ -236,7 +228,7 @@ namespace me.cqp.luohuaming.Setu.UI
                 if (((item as StackPanel).Children[3] as TextBox).Text != "API链接" &&
                     ((item as StackPanel).Children[2] as TextBox).Text == "指令...")
                 {
-                    parentwindow.SnackbarMessage_Show("存在一行链接已设置但指令未设置，请纠正", 1);
+                    MainWindow.Instance.SnackbarMessage_Show("存在一行链接已设置但指令未设置，请纠正", 1);
                     return;
                 }
                 if (((item as StackPanel).Children[3] as TextBox).Text == "API链接" && ((item as StackPanel).Children[2] as TextBox).Text == "指令...")
@@ -261,7 +253,7 @@ namespace me.cqp.luohuaming.Setu.UI
             //序列化
             string temp = JsonConvert.SerializeObject(ls);
             File.WriteAllText(MainSave.AppDirectory + "CustomAPI.json", temp);
-            parentwindow.SnackbarMessage_Show("设置已保存", 1);
+            MainWindow.Instance.SnackbarMessage_Show("设置已保存", 1);
         }
         //按ListBoxItem事件
         private void ListBoxItem_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -300,7 +292,7 @@ namespace me.cqp.luohuaming.Setu.UI
         {
             if (order.Length > 255)
             {
-                parentwindow.SnackbarMessage_Show("指令长度不可大于255", 1.5);
+                MainWindow.Instance.SnackbarMessage_Show("指令长度不可大于255", 1.5);
                 return false;
             }
             if (order.Contains("\\") ||
@@ -313,7 +305,7 @@ namespace me.cqp.luohuaming.Setu.UI
                order.Contains(">") ||
                order.Contains("|"))
             {
-                parentwindow.SnackbarMessage_Show("指令中不能使用字符/、\\、:、*、?、\"、<、>、| ", 1.5);
+                MainWindow.Instance.SnackbarMessage_Show("指令中不能使用字符/、\\、:、*、?、\"、<、>、| ", 1.5);
                 return false;
             }
             return true;

@@ -14,6 +14,8 @@ namespace me.cqp.luohuaming.Setu.UI
     {
         public static MainWindow Instance { get; set; }
 
+        public bool FormLoaded { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -59,10 +61,12 @@ namespace me.cqp.luohuaming.Setu.UI
             Settings pg = new Settings();
             frmMain.Content = pg;
             pg.ParentWindow = this;
+            FormLoaded = true;
         }
 
         private void MenuListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (!FormLoaded) return;
             string name = ((ListBoxItem)MenuListBox.SelectedItem).Tag.ToString();
             switch (name)
             {
