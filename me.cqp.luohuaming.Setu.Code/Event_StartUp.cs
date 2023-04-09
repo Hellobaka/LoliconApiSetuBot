@@ -1,16 +1,11 @@
-﻿using System;
-using System.IO;
-using System.Timers;
+﻿using me.cqp.luohuaming.Setu.PublicInfos;
+using me.cqp.luohuaming.Setu.PublicInfos.Config;
 using Native.Sdk.Cqp.EventArgs;
 using Native.Sdk.Cqp.Interface;
-using Native.Tool.IniConfig;
+using System;
+using System.IO;
 using System.Net;
-using me.cqp.luohuaming.Setu.PublicInfos;
-using me.cqp.luohuaming.Setu.Code.OrderFunctions;
-using Native.Tool.IniConfig.Linq;
 using System.Reflection;
-using me.cqp.luohuaming.Setu.PublicInfos.Config;
-using System.Collections.Generic;
 
 namespace me.cqp.luohuaming.Setu.Code
 {
@@ -27,7 +22,6 @@ namespace me.cqp.luohuaming.Setu.Code
                 ConfigHelper.ConfigFileName = Path.Combine(MainSave.AppDirectory, "Config.json");
 
                 ConfigHelper.InitConfig();
-                MainSave.InitPixivClient();
                 if (AppConfig.ProxyEnabled)
                 {
                     MainSave.Proxy = new WebProxy
@@ -36,6 +30,7 @@ namespace me.cqp.luohuaming.Setu.Code
                         Credentials = new NetworkCredential(AppConfig.ProxyUserName, AppConfig.ProxyPassword)
                     };
                 }
+                MainSave.InitPixivClient();
                 foreach (var item in Assembly.GetAssembly(typeof(Event_GroupMessage)).GetTypes())
                 {
                     if (item.IsInterface)
