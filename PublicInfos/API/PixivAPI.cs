@@ -22,6 +22,14 @@ namespace me.cqp.luohuaming.Setu.PublicInfos.API
             return filename;
         }
 
+        public static string DownloadPic(string url, string path)
+        {
+            var downloadTask = MainSave.PixivClient.DownloadPic(url, path);
+            string filename = downloadTask.Result;
+            downloadTask.Wait();
+            return filename;
+        }
+
         public static List<IllustRankItem> GetRankList(RankType type)
         {
             var task = MainSave.PixivClient.GetRankingList(type);

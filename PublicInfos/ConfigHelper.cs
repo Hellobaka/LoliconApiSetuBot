@@ -92,6 +92,8 @@ namespace me.cqp.luohuaming.Setu.PublicInfos
             AppConfig.R18 = GetConfig("R18", false);
             AppConfig.R18_PicRevoke = GetConfig("R18_PicRevoke", false);
             AppConfig.R18_RevokeTime = GetConfig("R18_RevokeTime", 60 * 1000);
+            AppConfig.AntiBan = GetConfig("AntiBan", false);
+            AppConfig.AntiBanType = (AntiBanType)GetConfig("AntiBanType", 0);
             AppConfig.ProxyEnabled = GetConfig("ProxyEnabled", false);
             AppConfig.ProxyURL = GetConfig("ProxyURL", "");
             AppConfig.ProxyUserName = GetConfig("ProxyUserName", "");

@@ -2,6 +2,12 @@
 
 namespace me.cqp.luohuaming.Setu.PublicInfos.Config
 {
+    public enum AntiBanType
+    {
+        Filp,
+        MD5
+    }
+
     public static class AppConfig
     {
         public static int MaxGroupQuota { get; set; }
@@ -9,6 +15,8 @@ namespace me.cqp.luohuaming.Setu.PublicInfos.Config
         public static bool R18 { get; set; } = false;
         public static bool R18_PicRevoke { get; set; }
         public static int R18_RevokeTime { get; set; }
+        public static bool AntiBan { get; set; }
+        public static AntiBanType AntiBanType { get; set; }
         public static bool ProxyEnabled { get; set; }
         public static string ProxyURL { get; set; }
         public static string ProxyUserName { get; set; }

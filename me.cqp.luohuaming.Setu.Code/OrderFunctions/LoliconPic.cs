@@ -6,6 +6,7 @@ using Native.Sdk.Cqp.EventArgs;
 using Native.Tool.Http;
 using Newtonsoft.Json;
 using System;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -87,10 +88,14 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                 var pic = deserialize.data.First();
                 string filename = new DirectoryInfo(basePath).GetFiles().FirstOrDefault(x => x.Name.Contains(pic.pid.ToString()))?.Name;
                 e.FromGroup.SendGroupMessage(deserialize.ToString().Replace("<@>", e.FromQQ.CQCode_At().ToString()));
-                if (string.IsNullOrEmpty(filename))
+                if (string.IsNullOrEmpty(filename))// 本地无图片
                 {
-                    var fileinfo = new FileInfo(PixivAPI.DownloadPic(pic.pid, basePath));
+                    var fileinfo = new FileInfo(PixivAPI.DownloadPic(pic.urls.original, basePath));
                     filename = fileinfo.Name;
+                }
+                if(AppConfig.AntiBan)
+                {
+                    AntiBan(filename, out filename);                    
                 }
                 var msgItem = e.FromGroup.SendGroupMessage(CQApi.CQCode_Image(@"LoliconPic\" + filename));
                 if (AppConfig.R18_PicRevoke && r18)
@@ -116,9 +121,38 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
             return result;
         }
 
+        private void AntiBan(string file, out string filename)
+        {
+            string path = Path.Combine(MainSave.ImageDirectory, "LoliconPic", file);
+            FileInfo info = new(path);
+            filename = info.Name;
+            if(File.Exists(path) is false)
+            {
+                return;
+            }
+            using Bitmap img = (Bitmap)Image.FromFile(path);
+            switch (AppConfig.AntiBanType)
+            {
+                case AntiBanType.Filp:
+                    img.RotateFlip(RotateFlipType.RotateNoneFlipX);
+                    break;
+                case AntiBanType.MD5:
+                    Random rd = new();
+                    img.SetPixel(0, 0, Color.FromArgb(rd.Next(0, 255), rd.Next(0, 255), rd.Next(0, 255)));
+                    break;
+                default:
+                    break;
+            }
+            img.Save(info.FullName.Replace(info.Extension, "_anti" + info.Extension));
+            filename = filename.Replace(info.Extension, "_anti" + info.Extension);
+        }
+
         public FunctionResult Progress(CQPrivateMessageEventArgs e)
         {
-            throw new NotImplementedException();
+            return new FunctionResult
+            {
+                Result = false
+            };
         }
     }
 
