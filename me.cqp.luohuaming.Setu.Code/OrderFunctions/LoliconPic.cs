@@ -90,6 +90,11 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                 e.FromGroup.SendGroupMessage(deserialize.ToString().Replace("<@>", e.FromQQ.CQCode_At().ToString()));
                 if (string.IsNullOrEmpty(filename))// 本地无图片
                 {
+                    if(string.IsNullOrEmpty(pic.urls.original))
+                    {
+                        sendText.MsgToSend.Add($"url为空，可能是cookie失效");
+                        return result;
+                    }
                     var fileinfo = new FileInfo(PixivAPI.DownloadPic(pic.urls.original, basePath));
                     filename = fileinfo.Name;
                 }
