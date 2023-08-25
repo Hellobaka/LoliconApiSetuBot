@@ -79,8 +79,6 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
         {
             string url = "https://saucenao.com/search.php?output_type=2&api_key=56faa0cddf50860330a295e0c331be7c4b4c021f&db=999&numres=3&url=";
             url += CommonHelper.GetImageURL(cqcode.ToSendString());
-            Directory.CreateDirectory(Path.Combine(MainSave.ImageDirectory, "SauceNao"));
-            Directory.CreateDirectory(Path.Combine(MainSave.ImageDirectory, "SauceNaoTemp"));
             using HttpWebClient http = new()
             {
                 TimeOut = 10000,
@@ -131,8 +129,16 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
             }
             catch (Exception exc)
             {
-                e.CQLog.Info("SauceNao搜图", $"搜索失败，错误信息:{exc.Message}在{exc.StackTrace}");
-                e.FromGroup.SendGroupMessage($"拉取失败，错误信息:{exc.Message}");
+                if (exc.InnerException != null)
+                {
+                    e.CQLog.Info("SauceNao搜图", $"搜索失败，错误信息:{exc.InnerException.Message}在{exc.InnerException.StackTrace}");
+                    e.FromGroup.SendGroupMessage($"拉取失败，错误信息:{exc.InnerException.Message}");
+                }
+                else
+                {
+                    e.CQLog.Info("SauceNao搜图", $"搜索失败，错误信息:{exc.Message}在{exc.StackTrace}");
+                    e.FromGroup.SendGroupMessage($"拉取失败，错误信息:{exc.Message}");
+                }
             }
             try
             {

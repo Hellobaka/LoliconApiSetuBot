@@ -20,6 +20,10 @@ namespace me.cqp.luohuaming.Setu.Code
                 MainSave.CQLog = e.CQLog;
                 MainSave.ImageDirectory = CommonHelper.GetAppImageDirectory();
                 ConfigHelper.ConfigFileName = Path.Combine(MainSave.AppDirectory, "Config.json");
+                Directory.CreateDirectory(Path.Combine(MainSave.ImageDirectory, "PIDSearch"));
+                Directory.CreateDirectory(Path.Combine(MainSave.ImageDirectory, "LoliconPic"));
+                Directory.CreateDirectory(Path.Combine(MainSave.ImageDirectory, "SauceNao"));
+                Directory.CreateDirectory(Path.Combine(MainSave.ImageDirectory, "SauceNaoTemp"));
 
                 ConfigHelper.InitConfig();
                 if (AppConfig.ProxyEnabled)

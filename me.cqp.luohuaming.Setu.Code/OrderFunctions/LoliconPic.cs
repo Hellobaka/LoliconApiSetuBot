@@ -119,8 +119,16 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
             }
             catch (Exception exc)
             {
-                e.CQLog.Info("lolicon", exc.Message + exc.StackTrace);
-                sendText.MsgToSend.Add($"发生未知错误，错误信息: 在{exc.Source}上，发生错误: {exc.Message}");
+                if (exc.InnerException != null)
+                {
+                    e.CQLog.Info("Lolicon", exc.InnerException.Message + exc.InnerException.StackTrace);
+                    sendText.MsgToSend.Add($"发生错误: {exc.InnerException.Message}");
+                }
+                else
+                {
+                    e.CQLog.Info("Lolicon", exc.Message + exc.StackTrace);
+                    sendText.MsgToSend.Add($"发生错误: {exc.Message}");
+                }
                 QuotaHistory.HandleQuota(e.FromGroup, e.FromQQ, 1);
             }
             return result;
