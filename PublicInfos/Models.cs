@@ -153,41 +153,38 @@ namespace me.cqp.luohuaming.Setu.PublicInfos
 
     public class TraceMoe_Result
     {
-        public class Data
+        public int frameCount { get; set; }
+        public string error { get; set; }
+        public Result[] result { get; set; }
+        public override string ToString()
         {
-            public int frameCount { get; set; }
-            public string error { get; set; }
-            public Result[] result { get; set; }
-            public override string ToString()
+            StringBuilder sb = new StringBuilder();
+            if (result.Length > 0)
             {
-                StringBuilder sb = new StringBuilder();
-                if (result.Length > 0)
+                sb.AppendLine("相似度第一的是：");
+                if (result[0].anilist != null)
                 {
-                    sb.AppendLine("相似度第一的是：");
-                    if (result[0].anilist != null)
-                    {
-                        sb.AppendLine($"名称：{result[0].anilist.title.native}");
-                        sb.AppendLine($"罗马音名称：{result[0].anilist.title.romaji}");
-                    }
-                    sb.AppendLine($"相似度：{result[0].similarity * 100:f2}%");
-                    sb.AppendLine($"集数：{result[0].episode}");
-                    sb.AppendLine($"大约出现在：{(int)result[0].from / 60}:{(int)result[0].from % 60}" +
-                        $" - {(int)result[0].to / 60}:{(int)result[0].to % 60}");
-                    sb.Append($"每日搜索额度有限，请勿倒垃圾");
+                    sb.AppendLine($"名称：{result[0].anilist.title.native}");
+                    sb.AppendLine($"罗马音名称：{result[0].anilist.title.romaji}");
                 }
-                else
-                {
-                    sb.AppendLine($"未找到相似的动画");
-                }
-                return sb.ToString();
+                sb.AppendLine($"相似度：{result[0].similarity * 100:f2}%");
+                sb.AppendLine($"集数：{result[0].episode}");
+                sb.AppendLine($"大约出现在：{((int)result[0].from / 60).ToString().PadLeft(2, '0')}:{((int)result[0].from % 60).ToString().PadLeft(2, '0')}" +
+                    $" - {((int)result[0].to / 60).ToString().PadLeft(2, '0')}:{((int)result[0].to % 60).ToString().PadLeft(2, '0')}");
+                sb.Append($"每日搜索额度有限，请勿倒垃圾");
             }
+            else
+            {
+                sb.AppendLine($"未找到相似的动画");
+            }
+            return sb.ToString();
         }
 
         public class Result
         {
             public Anilist anilist { get; set; }
             public string filename { get; set; }
-            public int episode { get; set; }
+            public int? episode { get; set; }
             public float from { get; set; }
             public float to { get; set; }
             public float similarity { get; set; }

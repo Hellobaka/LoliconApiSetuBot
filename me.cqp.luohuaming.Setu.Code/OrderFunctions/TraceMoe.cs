@@ -94,7 +94,7 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
                 Proxy = MainSave.Proxy,
                 AllowAutoRedirect = true,
             };
-            var json = JsonConvert.DeserializeObject<TraceMoe_Result.Data>(http.DownloadString(url));
+            var json = JsonConvert.DeserializeObject<TraceMoe_Result>(http.DownloadString(url));
             return json.ToString();
         }
     }
