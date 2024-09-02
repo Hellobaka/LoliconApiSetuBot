@@ -37,7 +37,6 @@
     <OutputPath>bin\x86\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
     <LangVersion>10</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
