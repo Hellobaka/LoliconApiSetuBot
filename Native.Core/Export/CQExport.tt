@@ -1,6 +1,6 @@
 ﻿<#@ template debug="false" hostspecific="true" language="C#" #>
 <#@ assembly name="System.Core" #>
-<#@ assembly name="EnvDTE" #>
+<#@ assembly name="Microsoft.VisualStudio.Interop" #>
 <#@ assembly name="$(SolutionDir)Lib\Newtonsoft.Json.dll" #>
 <#@ import namespace="System" #>
 <#@ import namespace="System.IO" #>
