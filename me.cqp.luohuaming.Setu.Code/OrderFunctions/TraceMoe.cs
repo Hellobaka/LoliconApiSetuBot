@@ -5,7 +5,10 @@ using Native.Sdk.Cqp.Model;
 using Native.Tool.Http;
 using Newtonsoft.Json;
 using System;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Text;
 
 namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
@@ -79,22 +82,37 @@ namespace me.cqp.luohuaming.Setu.Code.OrderFunctions
         {
             throw new NotImplementedException();
         }
+
         public static string TraceMoe_Call(CQCode imageCQCode)
         {
-            return TraceMoe_Call(CommonHelper.GetImageURL(imageCQCode.ToString()));
+            string path = MainSave.CQApi.ReceiveImage(imageCQCode);
+            return TraceMoe_Call(path);
         }
 
-        public static string TraceMoe_Call(string picURL)
+        public static string TraceMoe_Call(string picPath)
         {
-            string url = $"https://api.trace.moe/search?anilistInfo&url={picURL}";
-            using HttpWebClient http = new()
+            string url = $"https://api.trace.moe/search?anilistInfo";
+            var httpClientHandler = new HttpClientHandler
             {
-                TimeOut = 10000,
-                Encoding = Encoding.UTF8,
                 Proxy = MainSave.Proxy,
-                AllowAutoRedirect = true,
+                UseProxy = true
             };
-            var json = JsonConvert.DeserializeObject<TraceMoe_Result>(http.DownloadString(url));
+            using HttpClient http = new(httpClientHandler)
+            {
+                Timeout = TimeSpan.FromSeconds(10),
+            };
+
+            using var form = new MultipartFormDataContent();
+            var fileStream = new FileStream(picPath, FileMode.Open, FileAccess.Read);
+            var fileContent = new StreamContent(fileStream);
+            fileContent.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("image/jpeg");
+
+            // 添加文件到请求
+            form.Add(fileContent, "image", Path.GetFileName(picPath));
+            var t = http.PostAsync(url, form).Result;
+            t.EnsureSuccessStatusCode();
+            
+            var json = JsonConvert.DeserializeObject<TraceMoe_Result>(t.Content.ReadAsStringAsync().Result);
             return json.ToString();
         }
     }
